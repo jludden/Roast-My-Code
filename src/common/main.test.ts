@@ -1,6 +1,7 @@
 
-import { Calculator, Greeter } from './main';
- 
+import { Calculator } from './calculator';
+import { Greeter } from './main'; 
+
 it('greets the world', () => {
  const greeter = new Greeter("World");
  expect(greeter.greet()).toEqual("Hello, World");
