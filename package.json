@@ -8,10 +8,11 @@
     "react-scripts-ts": "3.1.0"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "start": "concurrently --kill-others \"cross-env NODE_PATH=src react-scripts-ts start\" \"npm run server\"",
+    "build": "cross-env NODE_PATH=src react-scripts-ts build",
+    "test": "cross-env NODE_PATH=src react-scripts-ts test --env=jsdom",
+    "eject": "cross-env NODE_PATH=src react-scripts-ts eject",
+    "server": "json-server --watch --port 3001 ./src/api/db.json"
   },
   "devDependencies": {
     "@types/jest": "^23.3.13",
