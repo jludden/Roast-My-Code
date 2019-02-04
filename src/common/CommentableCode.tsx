@@ -7,8 +7,8 @@ export interface ICCProps {
 }
 
 export default class CommentableCode extends React.Component<ICCProps, object> {
-    public simpleMethod() {
-        return 6;
+    public simpleMethod(a:number, b:number) {
+        return a*b;
     }
 
     public render() {

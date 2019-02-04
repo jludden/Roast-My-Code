@@ -1,5 +1,5 @@
 import { Calculator } from './calculator';
-import CommentableCode, { ICCProps } from './CommentableCode';
+import CommentableCode from './CommentableCode';
 import { Greeter } from './main'; 
 
 
@@ -16,6 +16,6 @@ it('add/substract two numbers', () => {
 it('runs a simple method', () => {
     const props : any = "ab"; // todo
     const codeComponent = new CommentableCode(props);
-    expect(codeComponent.simpleMethod()).toEqual(6);
+    expect(codeComponent.simpleMethod(15,3)).toEqual(45);
 })
 
