@@ -40,23 +40,31 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
     //    this.getCode().then(resp => this.setState({ data: "my returned data" })); // todo async await
         // .then(resp => this.setState({data: resp[0].body}));
 
+        this.runCodePrettify();
         const result = await this.getCode();
         return this.getCode().then(resp => this.setState({ data: result.data.toString() })); // todo async await
     }
 
-
     public render() {
         const {document} = this.props;
 
-        const data = (props: { document: React.ReactNode; }) => {
-            return (
-                <div>
-                    <h1> AXIOS testing</h1>
-                    <h2> {props.document} </h2>
-                </div>
-            )
-        }
+        // const data = (props: { document: React.ReactNode; }) => {
+        //     return (
+        //         <div>
+        //             <h1> AXIOS testing</h1>
+        //             <h2> {props.document} </h2>
+        //         </div>
+        //     )
+        // }
 
+        const toPrint = "let a = Math.Max(a, b, c);"
+        const toPrintMultiLine = `// This is line 4.
+        foo();
+        bar();
+        baz();
+        boo();
+        far();
+        faz();`
 
 
         // can't render a pure function <p>{data}</p> 
@@ -65,6 +73,12 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             <h1>
                Hello welcome to the Annotateable Code Sample {this.state.data}
             </h1>
+            <pre className="prettyprint linenums">
+                {toPrintMultiLine}
+            </pre>
+            <code className="prettyprint">
+                {toPrint}
+            </code>
             <data/>
             <ClassHeader document="hello"/>
             <h2>
@@ -75,5 +89,14 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             </p>
             </div>
         );
+    }
+    
+    private runCodePrettify() {
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.async = true;
+    
+        script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
     }
 }

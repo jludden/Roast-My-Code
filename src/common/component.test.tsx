@@ -21,7 +21,7 @@ jest.mock('./axios-github.ts', () => {
     }
 })   
 
-import axiosGithub from './axios-github'
+// import axiosGithub from './axios-github'
 it("fetches data on componentDidMount", () => {
     const codeComponent = enzyme.shallow<enzyme.ShallowWrapper>(<CommentableCode document="hello"/>);
     try {
