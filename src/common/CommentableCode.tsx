@@ -42,11 +42,12 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
 
         this.runCodePrettify();
         const result = await this.getCode();
-        return this.getCode().then(resp => this.setState({ data: result.data.toString() })); // todo async await
+        return this.getCode().then(resp => this.setState({ data: result.data[0].body })); // todo async await
     }
 
     public render() {
         const {document} = this.props;
+        const {data} = this.state;
 
         // const data = (props: { document: React.ReactNode; }) => {
         //     return (
@@ -75,6 +76,12 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             </h1>
             <pre className="prettyprint linenums">
                 {toPrintMultiLine}
+            </pre>
+            <pre className="prettyprint linenums">
+                {this.state.data.toString()}
+            </pre>
+            <pre className="prettyprint linenums">
+                {data}
             </pre>
             <code className="prettyprint">
                 {toPrint}
