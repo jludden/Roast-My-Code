@@ -3,6 +3,6 @@
       { "id": 1, "title": "json-server", "author": "rohith" }
     ],
     "comments": [
-      { "id": 1, "body": "some comment", "postId": 1 }
+      { "id": 1, "body": "\t// some comment\n\tfoo();\n\tbar();\n\tabc();", "postId": 1 }
     ]
   }

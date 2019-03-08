@@ -2,15 +2,16 @@ import * as React from "react";
 import '../App.css';
 import axiosGithub from './axios-github';
 import ClassHeader from "./ClassHeader";
+// import { AxiosPromise } from 'axios';
 
 // todo type instead of interface?
 export interface ICCProps {
     document: string
 }
 
-export interface ICCState {
-    data: string
-}
+// export interface ICCState {
+//     data: string
+// }
 
 export interface IGithubData {
     data: IComment[]
@@ -22,13 +23,28 @@ export interface IComment {
     postId: number
 }
 
-export default class CommentableCode extends React.Component<ICCProps, ICCState> {
-    public state: ICCState = {
-        data: 'intial state'
+export interface IGithubRepo {
+    name: string,
+    content: string
+}
+
+export default class CommentableCode extends React.Component<ICCProps, IGithubData> {
+    public state: IGithubData = {
+        data: [
+            {
+                body: "",
+                id: 0,
+                postId: 0
+            }
+        ]
     }
 
     public async getCode():Promise<IGithubData> {
         return await axiosGithub.get("http://localhost:3001/comments/");
+    }
+
+    public async GetGithub():Promise<IGithubData> {
+        return await axiosGithub.get("https://api.github.com/repos/jludden/ReefLifeSurvey---Species-Explorer/contents/app/src/main/java/me/jludden/reeflifesurvey/detailed/DetailsActivity.kt")
     }
 
     public simpleMethod(a:number, b:number) {
@@ -41,13 +57,15 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
         // .then(resp => this.setState({data: resp[0].body}));
 
         this.runCodePrettify();
+        await this.GetGithub();
         const result = await this.getCode();
-        return this.getCode().then(resp => this.setState({ data: result.data[0].body })); // todo async await
+        return this.setState(result);
+        // return this.getCode().then(resp => this.setState(result)); // todo async await
     }
 
     public render() {
         const {document} = this.props;
-        const {data} = this.state;
+        // const {data} = this.state;
 
         // const data = (props: { document: React.ReactNode; }) => {
         //     return (
@@ -72,17 +90,19 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
         return (
             <div>
             <h1>
-               Hello welcome to the Annotateable Code Sample {this.state.data}
+               Hello welcome to the Annotateable Code Sample
             </h1>
             <pre className="prettyprint linenums">
                 {toPrintMultiLine}
             </pre>
+            
             <pre className="prettyprint linenums">
-                {this.state.data.toString()}
+                {this.state.data[0].body}
             </pre>
+            {/*
             <pre className="prettyprint linenums">
-                {data}
-            </pre>
+                {data[0]}
+            </pre> */}
             <code className="prettyprint">
                 {toPrint}
             </code>
