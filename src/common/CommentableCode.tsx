@@ -13,9 +13,9 @@ export interface ICCProps {
 //     data: string
 // }
 
-export interface IGithubData {
-    data: IComment[]
-}
+// export interface IGithubData {
+//     data: IGithubRepo[]
+// }
 
 export interface IComment {
     id: number,
@@ -28,16 +28,29 @@ export interface IGithubRepo {
     content: string
 }
 
+export interface IGithubData {
+    data: IGithubRepo
+}
+
 export default class CommentableCode extends React.Component<ICCProps, IGithubData> {
+    // public state: IGithubRepo = {
+    //     data: [
+    //         {
+    //             body: "",
+    //             id: 0,
+    //             postId: 0
+    //         }
+    //     ]
+    // }
     public state: IGithubData = {
-        data: [
+        data: 
             {
-                body: "",
-                id: 0,
-                postId: 0
+                content: "",
+                name: ""
             }
-        ]
+        
     }
+
 
     public async getCode():Promise<IGithubData> {
         return await axiosGithub.get("http://localhost:3001/comments/");
@@ -57,15 +70,15 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
         // .then(resp => this.setState({data: resp[0].body}));
 
         this.runCodePrettify();
-        await this.GetGithub();
-        const result = await this.getCode();
+        const result = await this.GetGithub();
+        // await this.getCode();
         return this.setState(result);
         // return this.getCode().then(resp => this.setState(result)); // todo async await
     }
 
     public render() {
         const {document} = this.props;
-        // const {data} = this.state;
+        const decoded = atob(this.state.data.content);
 
         // const data = (props: { document: React.ReactNode; }) => {
         //     return (
@@ -76,15 +89,15 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
         //     )
         // }
 
-        const toPrint = "let a = Math.Max(a, b, c);"
-        const toPrintMultiLine = `// This is line 4.
-        foo();
-        bar();
-        baz();
-        boo();
-        far();
-        faz();`
-
+        // const toPrint = "let a = Math.Max(a, b, c);"
+        // const toPrintMultiLine = `// This is line 4.
+        // foo();
+        // bar();
+        // baz();
+        // boo();
+        // far();
+        // faz();`
+        
 
         // can't render a pure function <p>{data}</p> 
         return (
@@ -92,20 +105,6 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
             <h1>
                Hello welcome to the Annotateable Code Sample
             </h1>
-            <pre className="prettyprint linenums">
-                {toPrintMultiLine}
-            </pre>
-            
-            <pre className="prettyprint linenums">
-                {this.state.data[0].body}
-            </pre>
-            {/*
-            <pre className="prettyprint linenums">
-                {data[0]}
-            </pre> */}
-            <code className="prettyprint">
-                {toPrint}
-            </code>
             <data/>
             <ClassHeader document="hello"/>
             <h2>
@@ -114,6 +113,21 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
             <p className="text-xs-right">
                 custom class
             </p>
+
+            <pre className="prettyprint linenums">
+                {decoded}
+            </pre>
+
+            {/* <pre className="prettyprint linenums">
+                {toPrintMultiLine}
+            </pre> */}
+            {/* <pre className="prettyprint linenums">
+                {this.state.data.content}
+            </pre>
+             */}
+                        {/* <code className="prettyprint">
+                {toPrint}
+            </code> */}
             </div>
         );
     }
