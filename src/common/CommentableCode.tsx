@@ -1,7 +1,9 @@
 import * as React from "react";
 import '../App.css';
 import axiosGithub from './axios-github';
-import ClassHeader from "./ClassHeader";
+import DocumentBody from "./DocumentBody";
+import DocumentHeader from "./DocumentHeader";
+
 // import { AxiosPromise } from 'axios';
 
 // todo type instead of interface?
@@ -47,8 +49,7 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
             {
                 content: "",
                 name: ""
-            }
-        
+            }        
     }
 
 
@@ -69,7 +70,7 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
     //    this.getCode().then(resp => this.setState({ data: "my returned data" })); // todo async await
         // .then(resp => this.setState({data: resp[0].body}));
 
-        this.runCodePrettify();
+        // this.runCodePrettify();
         const result = await this.GetGithub();
         // await this.getCode();
         return this.setState(result);
@@ -78,7 +79,7 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
 
     public render() {
         const {document} = this.props;
-        const decoded = atob(this.state.data.content);
+        // const decoded = atob(this.state.data.content);
 
         // const data = (props: { document: React.ReactNode; }) => {
         //     return (
@@ -105,39 +106,18 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
             <h1>
                Hello welcome to the Annotateable Code Sample
             </h1>
-            <data/>
-            <ClassHeader document="hello"/>
             <h2>
-                {document}
-            </h2>            
+                My props: {document}
+            </h2>    
             <p className="text-xs-right">
                 custom class
             </p>
-
-            <pre className="prettyprint linenums">
-                {decoded}
-            </pre>
-
-            {/* <pre className="prettyprint linenums">
-                {toPrintMultiLine}
-            </pre> */}
-            {/* <pre className="prettyprint linenums">
-                {this.state.data.content}
-            </pre>
-             */}
-                        {/* <code className="prettyprint">
-                {toPrint}
-            </code> */}
+            <data/>
+            <h3>Document Begin:</h3>
+            <DocumentHeader document={this.state.data.name}/>
+            <DocumentBody name={this.state.data.name} content={this.state.data.content}/> 
+            <h3>Document End</h3>
             </div>
         );
-    }
-    
-    private runCodePrettify() {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.async = true;
-    
-        script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
     }
 }

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import './App.css';
 import CommentableCode from './common/CommentableCode';
-
 import logo from './logo.svg';
 
 class App extends React.Component {
@@ -20,5 +19,6 @@ class App extends React.Component {
     );
   }
 }
+
 
 export default App;
