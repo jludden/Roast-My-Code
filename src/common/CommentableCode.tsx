@@ -1,8 +1,11 @@
 import * as React from "react";
 import '../App.css';
 import axiosGithub from './axios-github';
-import DocumentBody from "./DocumentBody";
-import DocumentHeader from "./DocumentHeader";
+import Comment from './Comment';
+import DocumentBody from './DocumentBody';
+import DocumentHeader from './DocumentHeader';
+
+
 
 // import { AxiosPromise } from 'axios';
 
@@ -53,13 +56,19 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
     }
 
 
-    public async getCode():Promise<IGithubData> {
+    public async getCode(): Promise<IGithubData> {
         return await axiosGithub.get("http://localhost:3001/comments/");
     }
 
-    public async GetGithub():Promise<IGithubData> {
+    public async GetGithub(): Promise<IGithubData> {
         return await axiosGithub.get("https://api.github.com/repos/jludden/ReefLifeSurvey---Species-Explorer/contents/app/src/main/java/me/jludden/reeflifesurvey/detailed/DetailsActivity.kt")
     }
+
+    public submitCommentHandler = (details: Comment) => {
+        // todo
+        this.simpleMethod(5, 5);
+    }
+
 
     public simpleMethod(a:number, b:number) {
         return a*b;
@@ -79,28 +88,6 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
 
     public render() {
         const {document} = this.props;
-        // const decoded = atob(this.state.data.content);
-
-        // const data = (props: { document: React.ReactNode; }) => {
-        //     return (
-        //         <div>
-        //             <h1> AXIOS testing</h1>
-        //             <h2> {props.document} </h2>
-        //         </div>
-        //     )
-        // }
-
-        // const toPrint = "let a = Math.Max(a, b, c);"
-        // const toPrintMultiLine = `// This is line 4.
-        // foo();
-        // bar();
-        // baz();
-        // boo();
-        // far();
-        // faz();`
-        
-
-        // can't render a pure function <p>{data}</p> 
         return (
             <div>
             <h1>
@@ -115,7 +102,7 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
             <data/>
             <h3>Document Begin:</h3>
             <DocumentHeader document={this.state.data.name}/>
-            <DocumentBody name={this.state.data.name} content={this.state.data.content}/> 
+            <DocumentBody name={this.state.data.name} content={this.state.data.content} onSubmitComment={this.submitCommentHandler}/> 
             <h3>Document End</h3>
             </div>
         );

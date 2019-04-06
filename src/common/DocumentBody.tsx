@@ -10,19 +10,25 @@ import '../App.css';
 import * as prettify from 'code-prettify'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import Comment from './Comment'
+import SubmitComment from './SubmitCommentForm';
+import myRenderer from './SyntaxRenderer'
+
+
 
 // import IGithubData from './CommentableCode';
 // import IGithubRepo from './CommentableCode';
 
-export interface IGithubRepo {
-    name: string,
-    content: string
+export interface IDocumentBodyProps {
+    name: string, // github data - refactor to new interface
+    content: string,
+    onSubmitComment: ((details: Comment) => void) // handler for submitting a new comment
 }
 
-interface IDbResponse {
-    data: string,
+interface IDocumentBodyState {
     clicksCnt: number,
-    comments: Comment[]
+    comments: Comment[],
+    currentlySelected: boolean,
+    data: string
 }
 
 // interface IPrettifyJS {
@@ -35,11 +41,12 @@ interface IDbResponse {
 //     }
 // }  
 
-export default class DocumentBody extends React.Component<IGithubRepo, IDbResponse>
+export default class DocumentBody extends React.Component<IDocumentBodyProps, IDocumentBodyState>
 {      
-    public state : IDbResponse = {
+    public state : IDocumentBodyState = {
         clicksCnt: 0,
         comments: [],
+        currentlySelected: false,
         data: "nothing"
     }
 
@@ -59,18 +66,28 @@ export default class DocumentBody extends React.Component<IGithubRepo, IDbRespon
                 onDoubleClick={this.onDoubleClick}>
                 <button onClick={this.handleButtonPress}>Add Click</button>
                 <h3> number of clicks: {this.state.clicksCnt} </h3>
+                <pre> currently selected: {String(this.state.currentlySelected)}</pre> 
+                <div>
+                    {this.state.currentlySelected && <SubmitComment comment={this.state.comments[0]} onSubmitComment={this.props.onSubmitComment}/>}
+                </div>
                 <pre> comments selected: {this.getComments()}</pre> 
-              
-                <h2> code-prettifier doc-body </h2>
-                <pre className="prettyprint linenums" id="doc-body">
+                
+                <h2> react-syntax-highlighter (doc-body)</h2>
+                <div id="doc-body">
+                {/* possibly want to use a ref here https://reactjs.org/docs/refs-and-the-dom.html */}
+                <SyntaxHighlighter language="kotlin" className="left-align" showLineNumbers={true} renderer={myRenderer}>{decoded}</SyntaxHighlighter>
+                </div>
+
+                <h2> code-prettifier </h2>
+                <pre className="prettyprint linenums">
                     {decoded}
                 </pre>
                 <h2> code-prettifier 2</h2>
                 <pre className="prettyprint">
                     {decoded}
                 </pre>
-                <h2> react-syntax-highlighter</h2>
-                <SyntaxHighlighter language="kotlin" className="left-align">{decoded}</SyntaxHighlighter>
+                
+                
             </div>
         );
     }
@@ -105,6 +122,7 @@ export default class DocumentBody extends React.Component<IGithubRepo, IDbRespon
         } 
 
         if(!text || !text.length) {
+            this.setState({currentlySelected: false})
             return false;
         }
         // const range = window.getSelection().getRangeAt(0);
@@ -124,8 +142,8 @@ export default class DocumentBody extends React.Component<IGithubRepo, IDbRespon
             const end = preCaretRange.toString().length;
 
             const comments = this.state.comments.concat(new Comment(start, end));
+            this.setState({currentlySelected: true})
             this.setState({comments})
-
         }
 
 
