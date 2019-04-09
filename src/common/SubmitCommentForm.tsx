@@ -10,29 +10,56 @@ export interface ISubmitCommentFormProps {
 }
 
 interface ISubmitCommentFormState {
-    result?: SubmitCommentResponse
+    result?: SubmitCommentResponse,
+    buttonText: string,
+    resultMessage: string,
+    active: boolean
 }
-
+/*
+    todo maybe this should just be a comment
+    with submit and cancel buttons
+    a single (add) button creates (or at least unhides) the textbox, submit/cancel buttons, etc
+*/
 export default class SubmitCommentForm extends React.Component<ISubmitCommentFormProps, ISubmitCommentFormState> {
+    public state: ISubmitCommentFormState = {
+        active: false,
+        buttonText: "submit",
+        result: undefined,
+        resultMessage: ""
+    }
+
     public render() {
         return (
-            <div hidden={!this.props.isCurrentlySelected}>
-                Hello world - submit comment form
-                <b>{this.getMessage()}</b>
-                <button onClick={this.handleClick}>Submit</button>
+            <div>
+                <div hidden={this.state.active || !this.props.isCurrentlySelected}>
+                    <button onClick={this.handleAdd}>Add</button>
+                </div>
+                <div hidden={!this.state.active}>
+                    Hello world - submit comment form
+                    <b>{this.state.resultMessage}</b>
+                    <button onClick={this.handleSubmit} hidden={this.state.result === SubmitCommentResponse.Success}>{this.state.buttonText}</button>
+                    {/* todo text box */}
+                    {/* todo cancel */}
+                </div>
             </div>
         )
     }
 
-    private handleClick = async () => {
-        const result = await this.props.onSubmitComment(this.props.comment);
-        this.setState({result});
-    };
-
-    private getMessage(): string {
-        if(this.state == null || this.state.result == null) { return ""; }
-        if(this.state.result === SubmitCommentResponse.Success) { return "Success!"; }
-        return "Error!";
+    private handleAdd = () => {
+        this.setState({active: true});
     }
 
+    private handleSubmit = async () => {
+        const result = await this.props.onSubmitComment(this.props.comment);
+        let resultMessage;
+        let buttonText = this.state.buttonText;
+        if (result === SubmitCommentResponse.Success) { 
+            resultMessage="Success!"; 
+        }
+        else {
+            resultMessage = "Error!";
+            buttonText = "Retry";
+        } 
+        this.setState({result, resultMessage, buttonText});
+    };
 }
