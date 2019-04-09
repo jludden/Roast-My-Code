@@ -1,8 +1,30 @@
 {
-    "blogs": [
-      { "id": 1, "title": "json-server", "author": "rohith" }
-    ],
-    "comments": [
-      { "id": 1, "body": "\t// some comment\n\tfoo();\n\tbar();\n\tabc();", "postId": 1 }
-    ]
-  }
+  "blogs": [
+    {
+      "id": 1,
+      "title": "json-server",
+      "author": "rohith"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "\t// some comment\n\tfoo();\n\tbar();\n\tabc();",
+      "postId": 1
+    },
+    {
+      "body": "hello world",
+      "id": 2
+    },
+    {
+      "startIndex": 1045,
+      "endIndex": 1051,
+      "id": 3
+    },
+    {
+      "startIndex": 1045,
+      "endIndex": 1051,
+      "id": 4
+    }
+  ]
+}

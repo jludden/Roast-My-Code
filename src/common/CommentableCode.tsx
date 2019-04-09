@@ -37,6 +37,11 @@ export interface IGithubData {
     data: IGithubRepo
 }
 
+export enum SubmitCommentResponse {
+    Success, Error
+}
+
+
 export default class CommentableCode extends React.Component<ICCProps, IGithubData> {
     // public state: IGithubRepo = {
     //     data: [
@@ -64,9 +69,14 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
         return await axiosGithub.get("https://api.github.com/repos/jludden/ReefLifeSurvey---Species-Explorer/contents/app/src/main/java/me/jludden/reeflifesurvey/detailed/DetailsActivity.kt")
     }
 
-    public submitCommentHandler = (details: Comment) => {
-        // todo
-        this.simpleMethod(5, 5);
+    public submitCommentHandler = async (comment: Comment): Promise<SubmitCommentResponse> => {
+        return await axiosGithub
+        .post("/comments", comment)
+        .then((response) => {
+            return SubmitCommentResponse.Success;
+        }).catch((error) => {
+            return SubmitCommentResponse.Error;
+        });
     }
 
 

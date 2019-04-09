@@ -1,25 +1,38 @@
 import * as React from "react";
 import Comment from './Comment'
+import { SubmitCommentResponse } from './CommentableCode';
 
 
 export interface ISubmitCommentFormProps {
     comment: Comment,
-    // onSubmitComment: (event: React.MouseEvent<HTMLButtonElement>) => void
-
-    onSubmitComment: ((details: Comment) => void) // handler for submitting a new comment
+    isCurrentlySelected: boolean,
+    onSubmitComment: ((details: Comment) => Promise<SubmitCommentResponse>) // handler for submitting a new comment
 }
 
-export default class SubmitCommentForm extends React.Component<ISubmitCommentFormProps> {
+interface ISubmitCommentFormState {
+    result?: SubmitCommentResponse
+}
+
+export default class SubmitCommentForm extends React.Component<ISubmitCommentFormProps, ISubmitCommentFormState> {
     public render() {
         return (
-            <div>
+            <div hidden={!this.props.isCurrentlySelected}>
                 Hello world - submit comment form
+                <b>{this.getMessage()}</b>
                 <button onClick={this.handleClick}>Submit</button>
             </div>
         )
     }
 
-    private handleClick = () => {
-        this.props.onSubmitComment(this.props.comment);
+    private handleClick = async () => {
+        const result = await this.props.onSubmitComment(this.props.comment);
+        this.setState({result});
     };
+
+    private getMessage(): string {
+        if(this.state == null || this.state.result == null) { return ""; }
+        if(this.state.result === SubmitCommentResponse.Success) { return "Success!"; }
+        return "Error!";
+    }
+
 }

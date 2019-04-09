@@ -5,12 +5,17 @@ import '../App.css';
 
 // import '../prettifyTypes';
 // import * as prettify from './google-code-prettify/prettify';
-
 // import * as prettify from '../google-code-prettify/prettify.js';
 import * as prettify from 'code-prettify'
 import SyntaxHighlighter from 'react-syntax-highlighter'
+// import { kotlin } from 'react-syntax-highlighter/dist/languages/hljs'
+import { github } from 'react-syntax-highlighter/dist/styles/hljs'
+
+
 import Comment from './Comment'
+import { SubmitCommentResponse } from './CommentableCode';
 import SubmitComment from './SubmitCommentForm';
+
 import myRenderer from './SyntaxRenderer'
 
 
@@ -21,7 +26,7 @@ import myRenderer from './SyntaxRenderer'
 export interface IDocumentBodyProps {
     name: string, // github data - refactor to new interface
     content: string,
-    onSubmitComment: ((details: Comment) => void) // handler for submitting a new comment
+    onSubmitComment: ((comment: Comment) => Promise<SubmitCommentResponse>) // handler for submitting a new comment
 }
 
 interface IDocumentBodyState {
@@ -67,15 +72,13 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
                 <button onClick={this.handleButtonPress}>Add Click</button>
                 <h3> number of clicks: {this.state.clicksCnt} </h3>
                 <pre> currently selected: {String(this.state.currentlySelected)}</pre> 
-                <div>
-                    {this.state.currentlySelected && <SubmitComment comment={this.state.comments[0]} onSubmitComment={this.props.onSubmitComment}/>}
-                </div>
+                <SubmitComment comment={this.state.comments[0]} isCurrentlySelected={this.state.currentlySelected} onSubmitComment={this.props.onSubmitComment}/>
                 <pre> comments selected: {this.getComments()}</pre> 
                 
                 <h2> react-syntax-highlighter (doc-body)</h2>
                 <div id="doc-body">
                 {/* possibly want to use a ref here https://reactjs.org/docs/refs-and-the-dom.html */}
-                <SyntaxHighlighter language="kotlin" className="left-align" showLineNumbers={true} renderer={myRenderer}>{decoded}</SyntaxHighlighter>
+                <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={myRenderer}>{decoded}</SyntaxHighlighter>
                 </div>
 
                 <h2> code-prettifier </h2>
