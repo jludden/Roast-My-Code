@@ -1,7 +1,11 @@
-// import * as React from "react";
+import * as React from "react";
 // import { createElement } from 'react-syntax-highlighter';
 // import * as rsh from 'react-syntax-highlighter';
-// 
+import Comment from './Comment'
+
+import { SubmitCommentResponse } from './CommentableCode';
+import SubmitComment from './SubmitCommentForm';
+
 
 // interface IRenderProps {
 //     rows: any,
@@ -9,18 +13,26 @@
 //     useInlineStyles: any
 // }
 
-export default function myRenderer({ rows, stylesheet, useInlineStyles }: {rows?:any, stylesheet?:any, useInlineStyles?:any}) {
-    const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.ts
+export default function myRenderer({ rows, stylesheet, useInlineStyles }: {rows?:any, stylesheet?:any, useInlineStyles?:any}):JSX.Element {
+    const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
 
-    return rows.map((node: any, i: number) =>
-    createElement({
-        key: `code-segement${i}`,
-        node,
-        stylesheet,
-        useInlineStyles,
-      })
-    );
+    // using the index as a key should be okay in this case, we are never insertering or deleting elements
+    return rows.map((node: any, i: number) => (
+      <div key={i}> 
+        <SubmitComment isCurrentlySelected={false} comment={new Comment(1, 2)} onSubmitComment={submitCommentHandler}/>
+        {createElement({
+            key: `code-segement${i}`,
+            node,
+            stylesheet,
+            useInlineStyles,
+          })}
+      </div>
+    ));
   }
+
+export async function submitCommentHandler(comment: Comment): Promise<SubmitCommentResponse> {
+    return SubmitCommentResponse.Success;
+}
 
 // function rowRenderer({ rows, stylesheet, useInlineStyles }, { index, key, style }) {
 //   return createElement({
