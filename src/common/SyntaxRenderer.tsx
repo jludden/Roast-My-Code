@@ -8,28 +8,52 @@ import SubmitComment from './SubmitCommentForm';
 
 // todo delete this whole thing
 
-// interface IRenderProps {
-//     rows: any,
-//     stylesheet: any,
-//     useInlineStyles: any
-// }
+interface IRenderProps {
+    rows: any,
+    stylesheet: any,
+    useInlineStyles: any
+}
 
-export default function myRenderer({ rows, stylesheet, useInlineStyles }: {rows?:any, stylesheet?:any, useInlineStyles?:any}):JSX.Element {
-    const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
 
-    // using the index as a key should be okay in this case, we are never insertering or deleting elements
-    return rows.map((node: any, i: number) => (
-      <div key={i}> 
-        <SubmitComment isCurrentlySelected={false} comment={new Comment(1, 2)} onSubmitComment={submitCommentHandler}/>
-        {createElement({
-            key: `code-segement${i}`,
-            node,
-            stylesheet,
-            useInlineStyles,
-          })}
-      </div>
-    ));
-  }
+
+export const LineRenderer: React.FunctionComponent<IRenderProps> = ({ rows, stylesheet, useInlineStyles }): JSX.Element => {
+  const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
+
+  return rows.map((node: any, i: number) => (
+    <div key={i}> 
+      <SubmitComment isCurrentlySelected={false} comment={new Comment(1, 2)} onSubmitComment={submitCommentHandler}/>
+      {createElement({
+          key: `code-segement${i}`,
+          node,
+          stylesheet,
+          useInlineStyles,
+        })}
+    </div>
+  ));
+}
+
+
+
+
+
+
+
+// export default function myRenderer({ rows, stylesheet, useInlineStyles }: {rows?:any, stylesheet?:any, useInlineStyles?:any}):JSX.Element {
+//     const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
+
+//     // using the index as a key should be okay in this case, we are never insertering or deleting elements
+//     return rows.map((node: any, i: number) => (
+//       <div key={i}> 
+//         <SubmitComment isCurrentlySelected={false} comment={new Comment(1, 2)} onSubmitComment={submitCommentHandler}/>
+//         {createElement({
+//             key: `code-segement${i}`,
+//             node,
+//             stylesheet,
+//             useInlineStyles,
+//           })}
+//       </div>
+//     ));
+//   }
 
 export async function submitCommentHandler(comment: Comment): Promise<SubmitCommentResponse> {
     return SubmitCommentResponse.Success;

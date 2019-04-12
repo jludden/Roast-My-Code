@@ -15,11 +15,9 @@ import { github } from 'react-syntax-highlighter/dist/styles/hljs'
 import Comment from './Comment'
 import { SubmitCommentResponse } from './CommentableCode';
 import SubmitComment from './SubmitCommentForm';
+// import { LineRenderer } from './SyntaxRenderer';
 
 // import myRenderer from './SyntaxRenderer' todo delete that whole class, have function local
-
-
-
 // import IGithubData from './CommentableCode';
 // import IGithubRepo from './CommentableCode';
 
@@ -36,16 +34,6 @@ interface IDocumentBodyState {
     data: string
 }
 
-// interface IPrettifyJS {
-//     prettyPrint(): void
-// }
-
-// declare global {
-//     interface IWindow {
-//       prettyprint(): void
-//     }
-// }  
-
 export default class DocumentBody extends React.Component<IDocumentBodyProps, IDocumentBodyState>
 {      
     public state : IDocumentBodyState = {
@@ -55,9 +43,9 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
         data: "nothing"
     }
 
-    public async componentDidMount() {
-         this.runCodePrettify(); // todo serve the CSS file
-     }
+    // public async componentDidMount() {
+    //      this.runCodePrettify(); // todo serve the CSS file
+    //  }
 
     public componentDidUpdate() {
         prettify.prettyPrint();
@@ -78,11 +66,11 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
                 <h2> react-syntax-highlighter (doc-body)</h2>
                 <div id="doc-body">
                 {/* possibly want to use a ref here https://reactjs.org/docs/refs-and-the-dom.html */}
-                {/* <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={myRenderer}>{decoded}</SyntaxHighlighter> */}
-                <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={this.renderLine}>{decoded}</SyntaxHighlighter>
+                {/* <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={()=>{LineRenderer()}}>{decoded}</SyntaxHighlighter> */}
+                <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={false} renderer={this.renderLine}>{decoded}</SyntaxHighlighter>
                 </div>
 
-                <h2> code-prettifier </h2>
+                {/* <h2> code-prettifier </h2>
                 <pre className="prettyprint linenums">
                     {decoded}
                 </pre>
@@ -90,20 +78,20 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
                 <pre className="prettyprint">
                     {decoded}
                 </pre>
-                
+                 */}
                 
             </div>
         );
     }
       
+
     // render a single line in the list of Syntax Highlighted elements
     private renderLine = ({ rows, stylesheet, useInlineStyles }: {rows?:any, stylesheet?:any, useInlineStyles?:any}): JSX.Element => {
         const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
 
         // using the index as a key should be okay in this case, we are never insertering or deleting elements
         return rows.map((node: any, i: number) => (
-          <div key={i}> 
-            {/* <SubmitComment isCurrentlySelected={false} comment={new Comment(1, 2)} onSubmitComment={this.props.onSubmitComment}/> */}
+          <div key={i} data-index={i} onClick={this.handleLineClicked}> 
             <SubmitComment comment={this.state.comments[0]} isCurrentlySelected={this.state.currentlySelected} onSubmitComment={this.props.onSubmitComment}/>
             {createElement({
                 key: `code-segement${i}`,
@@ -113,6 +101,13 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
               })}
           </div>
         ));
+    }
+    
+    private handleLineClicked = (event: React.SyntheticEvent<EventTarget>) => {
+        const lineNumber = (event.currentTarget as HTMLDivElement).dataset.index;
+
+        // tslint:disable-next-line:no-console
+        console.log(lineNumber);
     }
     
     private onMouseUp = (event: React.SyntheticEvent<EventTarget>) => {
@@ -200,30 +195,30 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
         this.setState({clicksCnt : this.state.clicksCnt + 1});
       };
 
-    // todo customize CSS or use theme
-    private runCodePrettify() {
-        prettify.prettyPrint();
+    // // todo customize CSS or use theme
+    // private runCodePrettify() {
+    //     prettify.prettyPrint();
 
-        // ./src/google-code-prettify/prettify');
-        // const prettify = require('../google-code-prettify/prettify');
-        // prettify.print();
+    //     // ./src/google-code-prettify/prettify');
+    //     // const prettify = require('../google-code-prettify/prettify');
+    //     // prettify.print();
         
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.async = true;
+    //     const script = document.createElement('script');
+    //     script.type = 'text/javascript';
+    //     script.async = true;
         
-        // this version automatically appends CSS 
-        script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js';
-        // append script to document head
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
+    //     // this version automatically appends CSS 
+    //     script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js';
+    //     // append script to document head
+    //     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
         
-        // Notes:
-        // note you can pass in a skin here, but there aren't many options
-        // script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst';
+    //     // Notes:
+    //     // note you can pass in a skin here, but there aren't many options
+    //     // script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sunburst';
 
-        // todo will need to use new CDN at some point:
-        //        script.src = 'https://cdn.jsdelivr.net/google/code-prettify/master/loader/run_prettify.js';
-        //
-        // script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/prettify.js';        
-    }
+    //     // todo will need to use new CDN at some point:
+    //     //        script.src = 'https://cdn.jsdelivr.net/google/code-prettify/master/loader/run_prettify.js';
+    //     //
+    //     // script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/prettify.js';        
+    // }
 }
