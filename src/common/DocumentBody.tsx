@@ -16,7 +16,7 @@ import Comment from './Comment'
 import { SubmitCommentResponse } from './CommentableCode';
 import SubmitComment from './SubmitCommentForm';
 
-import myRenderer from './SyntaxRenderer'
+// import myRenderer from './SyntaxRenderer' todo delete that whole class, have function local
 
 
 
@@ -78,7 +78,8 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
                 <h2> react-syntax-highlighter (doc-body)</h2>
                 <div id="doc-body">
                 {/* possibly want to use a ref here https://reactjs.org/docs/refs-and-the-dom.html */}
-                <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={myRenderer}>{decoded}</SyntaxHighlighter>
+                {/* <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={myRenderer}>{decoded}</SyntaxHighlighter> */}
+                <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={this.renderLine}>{decoded}</SyntaxHighlighter>
                 </div>
 
                 <h2> code-prettifier </h2>
@@ -95,6 +96,24 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
         );
     }
       
+    // render a single line in the list of Syntax Highlighted elements
+    private renderLine = ({ rows, stylesheet, useInlineStyles }: {rows?:any, stylesheet?:any, useInlineStyles?:any}): JSX.Element => {
+        const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
+
+        // using the index as a key should be okay in this case, we are never insertering or deleting elements
+        return rows.map((node: any, i: number) => (
+          <div key={i}> 
+            {/* <SubmitComment isCurrentlySelected={false} comment={new Comment(1, 2)} onSubmitComment={this.props.onSubmitComment}/> */}
+            <SubmitComment comment={this.state.comments[0]} isCurrentlySelected={this.state.currentlySelected} onSubmitComment={this.props.onSubmitComment}/>
+            {createElement({
+                key: `code-segement${i}`,
+                node,
+                stylesheet,
+                useInlineStyles,
+              })}
+          </div>
+        ));
+    }
     
     private onMouseUp = (event: React.SyntheticEvent<EventTarget>) => {
         event.preventDefault();

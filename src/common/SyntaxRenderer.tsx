@@ -6,6 +6,7 @@ import Comment from './Comment'
 import { SubmitCommentResponse } from './CommentableCode';
 import SubmitComment from './SubmitCommentForm';
 
+// todo delete this whole thing
 
 // interface IRenderProps {
 //     rows: any,
