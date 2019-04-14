@@ -1,9 +1,9 @@
 
 export default class Comment 
 {
-    public originalText: string;
+    // public selectedText: string;
     public commentText: string;
-    constructor(public startIndex: number, public endIndex: number){
+    constructor(public lineNumber: number, public selectedText: string){
 
     }
 

@@ -33,6 +33,7 @@ export default class SubmitCommentForm extends React.Component<ISubmitCommentFor
             <div>
                 <div hidden={this.state.active || !this.props.isCurrentlySelected}>
                     <button onClick={this.handleAdd}>Add</button>
+                    <p>{this.getCommentText}</p>
                 </div>
                 <div hidden={!this.state.active}>
                     Hello world - submit comment form
@@ -62,4 +63,12 @@ export default class SubmitCommentForm extends React.Component<ISubmitCommentFor
         } 
         this.setState({result, resultMessage, buttonText});
     };
+
+    private getCommentText = () => {
+        if (this.props.comment && this.props.comment.selectedText) {
+            return this.props.comment.selectedText;
+        }
+        
+        return "";
+    }
 }
