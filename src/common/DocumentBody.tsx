@@ -41,7 +41,7 @@ export default class DocumentBody extends React.Component<
 > {
   public state: IDocumentBodyState = {
     clicksCnt: 0,
-    comments: [],
+    comments: [new Comment(1,"hello")],
     currentlySelected: false,
     data: "nothing",
     selectedLine: -1
@@ -113,7 +113,7 @@ export default class DocumentBody extends React.Component<
     // using the index as a key should be okay in this case, we are never insertering or deleting elements
     return rows.map((node: any, i: number) => (
       <div key={i} data-index={i} onClick={this.handleLineClicked}>
-      {/* todo!!! don't know about passing this state down here... */}
+      {/* todo!!! don't know about passing this state down here... is it causing a re-render for every line? */}
         <SubmitComment
           comment={this.state.comments[this.state.comments.length-1]}
           isCurrentlySelected={this.state.selectedLine === i}
@@ -129,7 +129,7 @@ export default class DocumentBody extends React.Component<
     ));
   };
 
-  private handleLineClicked = (event: React.SyntheticEvent<EventTarget>) => {
+  private handleLineClicked = (event: React.SyntheticEvent<EventTarget>) => { // todo if no selection also allow adding comment?
     // const lineNumber = (event.currentTarget as HTMLDivElement).dataset.index;
 
     // // tslint:disable-next-line:no-console
@@ -163,7 +163,6 @@ export default class DocumentBody extends React.Component<
   };
 
   private onDoubleClick = (event: React.SyntheticEvent<EventTarget>) => {
-    this.setState({ clicksCnt: this.state.clicksCnt + 1 });
     this.checkTextSelected();
   };
 
