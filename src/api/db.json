@@ -38,6 +38,11 @@
     },
     {
       "id": 7
+    },
+    {
+      "lineNumber": 14,
+      "selectedText": "\nimport kotlinx.android.synthetic.main.activity_details.*\nimport kotlinx.android.synthetic.main.activity_details_content.*\nimport me.jludden.reeflifesurvey.Injection\nimport me.jludden.reeflifesurvey.R\nimport me.jludden.reeflifesurvey.customviews.BaseDisplayableImage\nimport me.jludden.reeflifesurvey.customviews.BottomSheet\nimport me.jludden.reeflifesurvey.customviews.ImageDrawer\nimport me.jludden.reeflifesurvey.customviews.ImageDrawer.OnImageDrawerInteractionListener\nimport me.jludden.reeflifesurvey.data.*\nimport me.jludden.reeflifesurvey.data.utils.SharedPreferencesUtils.setUpFavoritesButton",
+      "id": 8
     }
   ]
 }
