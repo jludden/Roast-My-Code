@@ -1,7 +1,7 @@
 import * as React from "react";
 // import { createElement } from 'react-syntax-highlighter';
 // import * as rsh from 'react-syntax-highlighter';
-import Comment from './Comment'
+import RoastComment from './RoastComment'
 
 import { SubmitCommentResponse } from './CommentableCode';
 import SubmitComment from './SubmitCommentForm';
@@ -21,7 +21,7 @@ export const LineRenderer: React.FunctionComponent<IRenderProps> = ({ rows, styl
 
   return rows.map((node: any, i: number) => (
     <div key={i}> 
-      <SubmitComment isCurrentlySelected={false} comment={new Comment(1, "todo")} onSubmitComment={submitCommentHandler}/>
+      <SubmitComment isCurrentlySelected={false} comment={new RoastComment(1, "todo")} onSubmitComment={submitCommentHandler}/>
       {createElement({
           key: `code-segement${i}`,
           node,
@@ -55,7 +55,7 @@ export const LineRenderer: React.FunctionComponent<IRenderProps> = ({ rows, styl
 //     ));
 //   }
 
-export async function submitCommentHandler(comment: Comment): Promise<SubmitCommentResponse> {
+export async function submitCommentHandler(comment: RoastComment): Promise<SubmitCommentResponse> {
     return SubmitCommentResponse.Success;
 }
 

@@ -1,26 +1,16 @@
 import * as React from "react";
 import '../App.css';
-import axiosGithub from './axios-github';
-import Comment from './Comment';
+import API, { IGithubData } from './API';
 import DocumentBody from './DocumentBody';
+import DocumentCommentsView from './DocumentCommentsView';
 import DocumentHeader from './DocumentHeader';
+import RoastComment, { ICommentList } from './RoastComment';
 
-
-
-// import { AxiosPromise } from 'axios';
 
 // todo type instead of interface?
 export interface ICCProps {
     document: string
 }
-
-// export interface ICCState {
-//     data: string
-// }
-
-// export interface IGithubData {
-//     data: IGithubRepo[]
-// }
 
 export interface IComment {
     id: number,
@@ -28,50 +18,33 @@ export interface IComment {
     postId: number
 }
 
-export interface IGithubRepo {
-    name: string,
-    content: string
-}
-
-export interface IGithubData {
-    data: IGithubRepo
-}
-
 export enum SubmitCommentResponse {
     Success, Error
 }
 
+interface ICCState {
+    comments: ICommentList
+    repo: IGithubData,
+}
 
-export default class CommentableCode extends React.Component<ICCProps, IGithubData> {
-    // public state: IGithubRepo = {
-    //     data: [
-    //         {
-    //             body: "",
-    //             id: 0,
-    //             postId: 0
-    //         }
-    //     ]
-    // }
-    public state: IGithubData = {
-        data: 
+export default class CommentableCode extends React.Component<ICCProps, ICCState> {
+    public state: ICCState = {
+        comments: 
+        {
+            data: []
+        },
+        repo: 
+        {
+            data: 
             {
                 content: "",
                 name: ""
-            }        
+            }      
+        } 
     }
 
-
-    public async getCode(): Promise<IGithubData> {
-        return await axiosGithub.get("http://localhost:3001/comments/");
-    }
-
-    public async GetGithub(): Promise<IGithubData> {
-        return await axiosGithub.get("https://api.github.com/repos/jludden/ReefLifeSurvey---Species-Explorer/contents/app/src/main/java/me/jludden/reeflifesurvey/detailed/DetailsActivity.kt")
-    }
-
-    public submitCommentHandler = async (comment: Comment): Promise<SubmitCommentResponse> => {
-        return await axiosGithub
-        .post("/comments", comment)
+    public submitCommentHandler = async (comment: RoastComment): Promise<SubmitCommentResponse> => { 
+        return await API.postComment(comment)
         .then((response) => {
             return SubmitCommentResponse.Success;
         }).catch((error) => {
@@ -85,15 +58,8 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
     }
 
     public async componentDidMount() {
-       // axiosGithub.get("http://localhost:3001/comments")
-    //    this.getCode().then(resp => this.setState({ data: "my returned data" })); // todo async await
-        // .then(resp => this.setState({data: resp[0].body}));
-
-        // this.runCodePrettify();
-        const result = await this.GetGithub();
-        // await this.getCode();
-        return this.setState(result);
-        // return this.getCode().then(resp => this.setState(result)); // todo async await
+        const [comments, repo] = await API.getRepoAndComments();
+        return this.setState({ comments, repo });
     }
 
     public render() {
@@ -111,8 +77,9 @@ export default class CommentableCode extends React.Component<ICCProps, IGithubDa
             </p>
             <data/>
             <h3>Document Begin:</h3>
-            <DocumentHeader document={this.state.data.name}/>
-            <DocumentBody name={this.state.data.name} content={this.state.data.content} onSubmitComment={this.submitCommentHandler}/> 
+            <DocumentHeader document={this.state.repo.data.name}/>
+            <DocumentCommentsView data={this.state.comments.data}/>
+            <DocumentBody name={this.state.repo.data.name} content={this.state.repo.data.content} onSubmitComment={this.submitCommentHandler}/> 
             <h3>Document End</h3>
             </div>
         );

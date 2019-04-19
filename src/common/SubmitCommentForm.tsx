@@ -1,12 +1,12 @@
 import * as React from "react";
-import Comment from './Comment'
 import { SubmitCommentResponse } from './CommentableCode';
+import RoastComment from './RoastComment'
 
 
 export interface ISubmitCommentFormProps {
-    comment: Comment,
+    comment: RoastComment,
     isCurrentlySelected: boolean,
-    onSubmitComment: ((details: Comment) => Promise<SubmitCommentResponse>) // handler for submitting a new comment
+    onSubmitComment: ((details: RoastComment) => Promise<SubmitCommentResponse>) // handler for submitting a new comment
 }
 
 interface ISubmitCommentFormState {

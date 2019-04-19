@@ -11,9 +11,10 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 // import { kotlin } from 'react-syntax-highlighter/dist/languages/hljs'
 import { github } from "react-syntax-highlighter/dist/styles/hljs";
 
-import Comment from "./Comment";
 import { SubmitCommentResponse } from "./CommentableCode";
+import RoastComment from "./RoastComment";
 import SubmitComment from "./SubmitCommentForm";
+
 
 // import { LineRenderer } from './SyntaxRenderer';
 
@@ -24,12 +25,12 @@ import SubmitComment from "./SubmitCommentForm";
 export interface IDocumentBodyProps {
   name: string; // github data - refactor to new interface
   content: string;
-  onSubmitComment: (comment: Comment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
+  onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
 }
 
 interface IDocumentBodyState {
   clicksCnt: number;
-  comments: Comment[];
+  comments: RoastComment[];
   currentlySelected: boolean;
   data: string;
   selectedLine: number;
@@ -41,7 +42,7 @@ export default class DocumentBody extends React.Component<
 > {
   public state: IDocumentBodyState = {
     clicksCnt: 0,
-    comments: [new Comment(1,"hello")],
+    comments: [new RoastComment(1,"hello")],
     currentlySelected: false,
     data: "nothing",
     selectedLine: -1
@@ -212,7 +213,7 @@ export default class DocumentBody extends React.Component<
                   this.setState({ selectedLine: +index });
                 }
 
-      const comments = this.state.comments.concat(new Comment(index, text));
+      const comments = this.state.comments.concat(new RoastComment(index, text));
       this.setState({ currentlySelected: true });
       this.setState({ comments });
     }
