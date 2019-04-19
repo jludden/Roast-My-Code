@@ -6,7 +6,7 @@ import "../App.css";
 // import '../prettifyTypes';
 // import * as prettify from './google-code-prettify/prettify';
 // import * as prettify from '../google-code-prettify/prettify.js';
-import * as prettify from "code-prettify";
+// import * as prettify from 'code-prettify'
 import SyntaxHighlighter from "react-syntax-highlighter";
 // import { kotlin } from 'react-syntax-highlighter/dist/languages/hljs'
 import { github } from "react-syntax-highlighter/dist/styles/hljs";
@@ -51,9 +51,9 @@ export default class DocumentBody extends React.Component<
   //      this.runCodePrettify(); // todo serve the CSS file
   //  }
 
-  public componentDidUpdate() {
-    prettify.prettyPrint();
-  }
+  // public componentDidUpdate() {
+  //     prettify.prettyPrint();
+  // }
 
   public render() {
     const decoded = atob(this.props.content);
