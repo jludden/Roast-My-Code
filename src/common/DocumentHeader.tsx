@@ -3,7 +3,8 @@ import '../App.css';
 // import ICCProps from './CommentableCode';
 
 export interface ICCProps {
-    document: string
+    documentName: string,
+    commentsCount: number,
 }
 
 export default class DocumentHeader extends React.Component<ICCProps, object> {
@@ -11,7 +12,8 @@ export default class DocumentHeader extends React.Component<ICCProps, object> {
         return (
             <div>
             <h1>CLASS HEADER</h1>
-            <h2>{this.props.document}</h2>
+            <h2>{this.props.documentName}</h2>
+            <span>number of comments: {this.props.commentsCount}</span>
             </div>
         );
     }

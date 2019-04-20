@@ -3,7 +3,9 @@ export default class RoastComment
 {
     // public selectedText: string;
     public commentText: string;
-    constructor(public lineNumber: number, public selectedText: string){
+    public id: number;
+
+    constructor(public lineNumber: number, public selectedText: string) {
 
     }
 
@@ -14,6 +16,10 @@ export default class RoastComment
         
     }
 }
+
+// export interface ICommentPostResponse {
+//     data: RoastComment
+// }
 
 export interface ICommentList {
     data: RoastComment[]

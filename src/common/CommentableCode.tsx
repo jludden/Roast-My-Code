@@ -7,7 +7,7 @@ import DocumentHeader from './DocumentHeader';
 import RoastComment, { ICommentList } from './RoastComment';
 
 
-// todo type instead of interface?
+// todo type instead of interface? is this being used?
 export interface ICCProps {
     document: string
 }
@@ -46,6 +46,9 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
     public submitCommentHandler = async (comment: RoastComment): Promise<SubmitCommentResponse> => { 
         return await API.postComment(comment)
         .then((response) => {
+            const comments = this.state.comments;
+            comments.data.push(response);
+            this.setState({comments});
             return SubmitCommentResponse.Success;
         }).catch((error) => {
             return SubmitCommentResponse.Error;
@@ -77,9 +80,11 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             </p>
             <data/>
             <h3>Document Begin:</h3>
-            <DocumentHeader document={this.state.repo.data.name}/>
-            <DocumentCommentsView data={this.state.comments.data}/>
-            <DocumentBody name={this.state.repo.data.name} content={this.state.repo.data.content} onSubmitComment={this.submitCommentHandler}/> 
+            <DocumentHeader documentName={this.state.repo.data.name} commentsCount={this.state.comments.data.length}/>
+            <div className="flex-container">
+                <DocumentBody name={this.state.repo.data.name} content={this.state.repo.data.content} onSubmitComment={this.submitCommentHandler}/> 
+                <DocumentCommentsView data={this.state.comments.data}/>
+            </div>
             <h3>Document End</h3>
             </div>
         );

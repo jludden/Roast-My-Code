@@ -8,8 +8,9 @@ class API {
         this.axiosInstance = axios.create({baseURL});
     }
     
-    public async postComment(comment: RoastComment): Promise<any> {
-        this.axiosInstance.post("/comments", comment);
+    public async postComment(comment: RoastComment): Promise<RoastComment> {
+        const { data } =  await this.axiosInstance.post("/comments", comment) ;
+        return data;
     }
 
     public async getRepoAndComments(): Promise<[ICommentList, IGithubData]> {
@@ -17,7 +18,7 @@ class API {
         return [comments, repo];
     }
 
-    public async getComments(): Promise<ICommentList> {
+    public async getComments(): Promise<ICommentList> { 
         return await this.axiosInstance.get("/comments");
     }
 
