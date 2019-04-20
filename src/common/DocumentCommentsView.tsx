@@ -1,38 +1,28 @@
 import * as React from "react";
-import RoastComment, { ICommentList } from "./RoastComment";
+import { SubmitCommentResponse } from './CommentableCode';
+import RoastComment from "./RoastComment";
+import SingleCommentView from './SingleCommentView';
 
-// todo
-// tslint:disable-next-line:no-empty-interface
-export interface IDocumentCommentsViewState {}
+export interface ICommentsViewProps {
+    comments: RoastComment[],
+    onEditComment: ((details: RoastComment) => Promise<SubmitCommentResponse>) 
+}
 
-export default class DocumentCommentsView extends React.Component<
-  ICommentList,
-  IDocumentCommentsViewState
-> {
-  constructor(props: ICommentList) {
+export default class DocumentCommentsView extends React.Component<ICommentsViewProps, any> {
+  constructor(props: ICommentsViewProps) {
     super(props);
-
-    this.state = {};
   }
 
-  // todo - key -> comment id
-  // key={comment.commentText}
+
   public render() {
-    const comments = this.props.data;
+    const comments = this.props.comments;
     return (
       <ul className=".flex-item">
         {comments.map(comment => (
-          <SingleCommentView key={comment.commentText} comment={comment} />
+          <SingleCommentView key={comment.id} comment={comment} onEditComment={this.props.onEditComment} />
         ))}
       </ul>
     );
   }
-}
 
-interface IRoastComment {
-  comment: RoastComment;
-}
-
-function SingleCommentView(props: IRoastComment) {
-  return <li>Comment text: {props.comment.selectedText}</li>;
 }

@@ -21,6 +21,6 @@ export default class RoastComment
 //     data: RoastComment
 // }
 
-export interface ICommentList {
-    data: RoastComment[]
-}
+// export interface ICommentList {
+//     data: RoastComment[]
+// }

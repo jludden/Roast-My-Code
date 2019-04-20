@@ -20,6 +20,7 @@ interface ISubmitCommentFormState {
     with submit and cancel buttons
     a single (add) button creates (or at least unhides) the textbox, submit/cancel buttons, etc
 */
+// todo - create a component for showing an error / retry for submitting and editing comments
 export default class SubmitCommentForm extends React.Component<ISubmitCommentFormProps, ISubmitCommentFormState> {
     public state: ISubmitCommentFormState = {
         active: false,

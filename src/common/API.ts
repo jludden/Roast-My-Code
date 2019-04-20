@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import RoastComment, { ICommentList } from './RoastComment';
+import RoastComment from './RoastComment';
 
 class API {
     public axiosInstance: AxiosInstance;
@@ -13,13 +13,24 @@ class API {
         return data;
     }
 
-    public async getRepoAndComments(): Promise<[ICommentList, IGithubData]> {
+    public async putComment(comment: RoastComment): Promise<RoastComment> {
+        const { data }  =  await this.axiosInstance.post(`/comments/${comment.id}`, comment);
+        return data;
+    }
+
+    public async deleteComment(comment: RoastComment): Promise<RoastComment> {
+        const { data } = await this.axiosInstance.delete(`/comments/${comment.id}`);
+        return data;
+    }
+
+    public async getRepoAndComments(): Promise<[RoastComment[], IGithubData]> {
         const [comments, repo] = await Promise.all([this.getComments(), this.getRepo()]);
         return [comments, repo];
     }
 
-    public async getComments(): Promise<ICommentList> { 
-        return await this.axiosInstance.get("/comments");
+    public async getComments(): Promise<RoastComment[]> { 
+        const { data } = await this.axiosInstance.get("/comments");
+        return data;
     }
 
     public async getRepo(): Promise<IGithubData> {

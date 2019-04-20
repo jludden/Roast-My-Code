@@ -10,6 +10,7 @@
     "cross-env": "^5.2.0",
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.8.0",
+    "immutability-helper": "^3.0.0",
     "jest": "^24.1.0",
     "jest-cli": "^24.1.0",
     "react": "^16.7.0",

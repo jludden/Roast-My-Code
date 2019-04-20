@@ -1,10 +1,11 @@
+import update from 'immutability-helper';
 import * as React from "react";
 import '../App.css';
 import API, { IGithubData } from './API';
 import DocumentBody from './DocumentBody';
 import DocumentCommentsView from './DocumentCommentsView';
 import DocumentHeader from './DocumentHeader';
-import RoastComment, { ICommentList } from './RoastComment';
+import RoastComment from './RoastComment';
 
 
 // todo type instead of interface? is this being used?
@@ -23,16 +24,13 @@ export enum SubmitCommentResponse {
 }
 
 interface ICCState {
-    comments: ICommentList
-    repo: IGithubData,
+    comments: RoastComment[],
+    repo: IGithubData
 }
 
 export default class CommentableCode extends React.Component<ICCProps, ICCState> {
     public state: ICCState = {
-        comments: 
-        {
-            data: []
-        },
+        comments: [],
         repo: 
         {
             data: 
@@ -43,12 +41,36 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
         } 
     }
 
+    // POST a new comment
     public submitCommentHandler = async (comment: RoastComment): Promise<SubmitCommentResponse> => { 
         return await API.postComment(comment)
         .then((response) => {
-            const comments = this.state.comments;
-            comments.data.push(response);
-            this.setState({comments});
+            
+            // use immutability-helper to easily update the state
+            this.setState({
+                comments: update(this.state.comments, {$push: [response]} )
+              });
+
+            return SubmitCommentResponse.Success;
+        }).catch((error) => {
+            return SubmitCommentResponse.Error;
+        });
+    }
+
+    // PUT an update to a comment
+    public editCommentHandler = async (comment: RoastComment): Promise<SubmitCommentResponse> => { 
+        return await API.putComment(comment)
+        .then((response) => {
+            
+            // use immutability-helper to easily update the state
+            this.setState({
+                comments: update(this.state.comments, {
+                    [response.id]: {
+                        $set: response
+                    }
+                })
+            });
+
             return SubmitCommentResponse.Success;
         }).catch((error) => {
             return SubmitCommentResponse.Error;
@@ -67,6 +89,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
 
     public render() {
         const {document} = this.props;
+        const comments = this.state.comments;
         return (
             <div>
             <h1>
@@ -80,10 +103,10 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             </p>
             <data/>
             <h3>Document Begin:</h3>
-            <DocumentHeader documentName={this.state.repo.data.name} commentsCount={this.state.comments.data.length}/>
+            <DocumentHeader documentName={this.state.repo.data.name} commentsCount={this.state.comments.length}/>
             <div className="flex-container">
                 <DocumentBody name={this.state.repo.data.name} content={this.state.repo.data.content} onSubmitComment={this.submitCommentHandler}/> 
-                <DocumentCommentsView data={this.state.comments.data}/>
+                <DocumentCommentsView comments={comments} onEditComment={this.editCommentHandler}/>
             </div>
             <h3>Document End</h3>
             </div>
