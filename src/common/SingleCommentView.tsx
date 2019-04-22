@@ -27,7 +27,7 @@ export default class SingleCommentView extends React.Component<IRoastComment, IS
             <li>
                 <span onClick={this.handleCommentClicked} hidden = {isEditOn}> Comment text: {text}</span>
                 <div hidden = {!isEditOn}>
-                    <textarea>{text}</textarea>
+                    <textarea defaultValue={text}/>
                     <button onClick={this.handleCommentSubmit}>Update</button>
                 </div>
             </li>

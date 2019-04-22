@@ -13,6 +13,10 @@
   padding: 20px;
   color: white;
 }
+/* 
+.App-body {
+  flex-grow: 2;
+} */
 
 .App-title {
   font-size: 1.5em;
@@ -39,10 +43,18 @@
 
 .flex-item {
   display: 'flex';
-  flex: 1;
   justify-content: center;
   align-items: center;
   padding: 8px;
+}
+
+/* todo  */
+.flex-item > .comments-pane {
+  flex: 1;
+}
+
+.flex-item > .App-body {
+  flex: 2;
 }
 
 .left-align {

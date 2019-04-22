@@ -59,7 +59,7 @@ export default class DocumentBody extends React.Component<
   public render() {
     const decoded = atob(this.props.content);
     return (
-      <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick} className=".flex-item">
+      <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick} className=".flex-item .App-body">
         <button type="button" onClick={this.handleButtonPress}>Add Click</button>
         <h3> number of clicks: {this.state.clicksCnt} </h3>
         <pre> currently selected: {String(this.state.currentlySelected)}</pre>

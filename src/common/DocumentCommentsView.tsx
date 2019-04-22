@@ -17,7 +17,7 @@ export default class DocumentCommentsView extends React.Component<ICommentsViewP
   public render() {
     const comments = this.props.comments;
     return (
-      <ul className=".flex-item">
+      <ul className=".flex-item .comments-pane" >
         {comments.map(comment => (
           <SingleCommentView key={comment.id} comment={comment} onEditComment={this.props.onEditComment} />
         ))}
