@@ -1,13 +1,10 @@
-import * as React from "react";
-import API, { IGithubData } from "./API";
-import axios from "axios";
-import CommentableCode from "./CommentableCode";
 import * as enzyme from "enzyme";
 import { shallow, ShallowWrapper } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
+import * as Adapter from "enzyme-adapter-react-16";
+import * as React from "react";
+import API from "./API";
+import CommentableCode from "./CommentableCode";
 import DocumentHeader from "./DocumentHeader";
-import DocumentBody from "./DocumentBody";
-import RoastComment from "./RoastComment";
 
 enzyme.configure({ adapter: new Adapter() });
 describe("<CommentableCode />", () => {
@@ -60,22 +57,7 @@ describe("<CommentableCode />", () => {
       <DocumentHeader documentName={""} commentsCount={0} />
     );
 
-    const defaultProps = {
-      name: "",
-      content: "",
-      onSubmitComment: (comment: RoastComment) => {
-        return Promise.resolve() as any;
-      }
-      // name={""}
-      // content={""}
-      // onSubmitComment={(comment: RoastComment) => {
-      //   return Promise.resolve() as any;
-      // }}
-    };
 
-    const containsBodyComponent = shallowWrapper.containsMatchingElement(
-      <DocumentBody {...defaultProps} />
-    );
 
     expect(containsHeaderComponent).toBe(true);
     // expect(containsBodyComponent).toBe(true);
@@ -110,10 +92,10 @@ describe("<CommentableCode />", () => {
     mockAPI.mockImplementation(() => {
       return Promise.resolve([
         {
+          commentText: "capitalize words",
           id: 1,
           lineNumber: 10,
-          selectedText: "hello world",
-          commentText: "capitalize words"
+          selectedText: "hello world"
         }
       ]) as any;
     });

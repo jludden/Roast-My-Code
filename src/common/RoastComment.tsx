@@ -2,10 +2,14 @@
 export default class RoastComment 
 {
     // public selectedText: string;
-    public commentText: string;
-    public id: number;
+    // public commentText: string;
+    // public id: number;
 
-    constructor(public lineNumber: number, public selectedText: string) {
+    constructor(
+        public lineNumber: number,
+         public selectedText: string,
+         public comment: string = "",
+         public id: number = -1) {
 
     }
 
