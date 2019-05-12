@@ -25,22 +25,25 @@ export enum SubmitCommentResponse {
 
 interface ICCState {
   comments: RoastComment[];
-  repo: IGithubData;
+  repo: IGithubData,
+  loading: boolean,
+  msg: string
 }
 
-export default class CommentableCode extends React.Component<
-  ICCProps,
-  ICCState
-> {
-  public state: ICCState = {
-    comments: [],
-    repo: {
-      data: {
-        content: "",
-        name: ""
-      }
+export default class CommentableCode extends React.Component<ICCProps, ICCState> {
+    public state: ICCState = {
+        comments: [],
+        repo: 
+        {
+            data: 
+            {
+                content: "",
+                name: ""
+            }      
+        },
+        loading: false ,
+        msg: ""
     }
-  };
 
   // POST a new comment
   public submitCommentHandler = async (
@@ -91,33 +94,46 @@ export default class CommentableCode extends React.Component<
     return this.setState({ comments, repo });
   }
 
-  public render() {
-    const { document } = this.props;
-    const comments = this.state.comments;
-    return (
-      <div>
-        <h1>Hello welcome to the Annotateable Code Sample</h1>
-        <h2>My props: {document}</h2>
-        <p className="text-xs-right">custom class</p>
-        <data />
-        <h3>Document Begin:</h3>
-        <DocumentHeader
-          documentName={this.state.repo.data.name}
-          commentsCount={this.state.comments.length}
-        />
-        <div className="flex-container">
-          <DocumentBody
-            name={this.state.repo.data.name}
-            content={this.state.repo.data.content}
-            onSubmitComment={this.submitCommentHandler}
-          />
-          <DocumentCommentsView
-            comments={comments}
-            onEditComment={this.editCommentHandler}
-          />
-        </div>
-        <h3>Document End</h3>
-      </div>
-    );
-  }
+    public render() {
+        const {document} = this.props;
+        const comments = this.state.comments;
+        return (
+            <div>
+            <h1>
+               Hello welcome to the Jason's Annotateable Code Sample
+            </h1>
+            <p>
+                lambda functions
+                <button onClick={() => this.handleClick("async-dadjoke")}>{this.state.loading ? "Loading..." : "Call Async dadjoke"}</button>
+                <button onClick={() => this.handleClick("fauna-crud")}>{this.state.loading ? "Loading..." : "Call fauna crud"}</button>
+                <button onClick={() => this.handleClick("getRepo")}>{this.state.loading ? "Loading..." : "Call getRepo"}</button>
+                <br></br>
+                <span>{this.state.msg}</span>
+            </p>
+            <h2>
+                My props: {document}
+            </h2>    
+            <p className="text-xs-right">
+                custom class
+            </p>
+            <data/>
+            <h3>Document Begin:</h3>
+            <DocumentHeader documentName={this.state.repo.data.name} commentsCount={this.state.comments.length}/>
+            <div className="flex-container">
+                <DocumentBody name={this.state.repo.data.name} content={this.state.repo.data.content} onSubmitComment={this.submitCommentHandler}/> 
+                <DocumentCommentsView comments={comments} onEditComment={this.editCommentHandler}/>
+            </div>
+            <h3>Document End</h3>
+            </div>
+        );
+    }
+
+    // temp todo call lambda functions from API
+    private handleClick = (functionName: string) => {
+
+        this.setState({ loading: true });
+        fetch("/.netlify/functions/" + functionName)
+          .then(response => response.json())
+          .then(json => this.setState({ loading: false, msg: json.msg }));
+    }
 }

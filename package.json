@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/aws-lambda": "^8.10.25",
     "@types/jest": "^24.0.11",
     "axios": "^0.18.0",
     "babel-runtime": "6.26.0",
@@ -13,6 +14,7 @@
     "enzyme-adapter-react-16": "^1.8.0",
     "immutability-helper": "^3.0.0",
     "jest-cli": "^24.7.1",
+    "netlify-lambda": "^1.4.7",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-syntax-highlighter": "^10.2.1",
@@ -20,16 +22,16 @@
     "webpack-dev-server": "^3.1.14"
   },
   "scripts": {
-    "start": "concurrently --kill-others \"cross-env NODE_PATH=src react-scripts start\" \"npm run server\"",
-    "build": "cross-env NODE_PATH=src react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "cross-env NODE_PATH=src react-scripts test --env=jsdom",
-    "eject": "cross-env NODE_PATH=src react-scripts eject",
-    "server": "json-server --watch --port 3001 ./src/api/db.json"
+    "eject": "cross-env NODE_PATH=src react-scripts eject"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.3.3",
     "@types/enzyme": "^3.1.16",
     "@types/enzyme-adapter-react-16": "^1.0.3",
-    "@types/node": "^11.13.7",
+    "@types/node": "^12.0.0",
     "@types/react": "^16.8.14",
     "@types/react-dom": "^16.8.4",
     "@types/react-syntax-highlighter": "^10.1.0",
