@@ -1,9 +1,4 @@
 [build]
   command = "yarn build"
-  functions = "src/roast-lambda"
+  functions = "built-lambda"
   publish = "build"
-
-[start]
-    command = "yarn start"
-    functions = "src/roast-lambda"
-    port = 3000

@@ -23,6 +23,7 @@
     "src"
   ],
   "exclude": [
-    "src/roast-lambda"
+    "src/roast-lambda",
+    "src/setupProxy.js"
   ]
 }
