@@ -40,8 +40,12 @@ class API {
   }
 
   public async getRepo(): Promise<IGithubData> {
+    // return await this.axiosInstance.get(
+    //   "https://api.github.com/repos/jludden/ReefLifeSurvey---Species-Explorer/contents/app/src/main/java/me/jludden/reeflifesurvey/detailed/DetailsActivity.kt"
+    //      "http://localhost:34567/.netlify/functions/getRepo"
+
     return await this.axiosInstance.get(
-      "https://api.github.com/repos/jludden/ReefLifeSurvey---Species-Explorer/contents/app/src/main/java/me/jludden/reeflifesurvey/detailed/DetailsActivity.kt"
+      "http://localhost:9000/getRepo"
     );
   }
 }
@@ -55,4 +59,7 @@ export interface IGithubData {
   data: IGithubRepo;
 }
 
-export default new API("http://localhost:3001/");
+// export default new API("http://localhost:3001/");
+// export default new API("http://localhost:34567/.netlify/functions/fauna-crud");
+export default new API("http://localhost:9000/fauna-crud");
+
