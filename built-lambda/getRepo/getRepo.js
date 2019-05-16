@@ -13,10 +13,11 @@ exports.handler = async function(event, context) {
     }
     const data = await response.json();
 
-    return data;
+    // return data;
     return {
       statusCode: 200,
-      body: data
+      body: "ok",
+      ... data
     };
 
     // return {

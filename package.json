@@ -10,6 +10,7 @@
     "code-prettify": "^0.1.0",
     "color-themes-for-google-code-prettify": "^2.0.4",
     "cross-env": "^5.2.0",
+    "encoding": "^0.1.12",
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.13.0",
     "http-proxy-middleware": "^0.19.1",
