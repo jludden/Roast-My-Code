@@ -13,17 +13,14 @@ exports.handler = async function(event, context) {
     }
     const data = await response.json();
 
-    // return data;
     return {
       statusCode: 200,
-      body: "ok",
-      ... data
+      body: JSON.stringify({
+        status: 'SUCCESS',
+        message: '',
+        data: data
+      })
     };
-
-    // return {
-    //   statusCode: 200,
-    //   body: JSON.stringify({ msg: "data goes here" })
-    // };
   } catch (err) {
     console.log(err); // output to netlify function log
     return {

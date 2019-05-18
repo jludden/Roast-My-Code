@@ -4,25 +4,25 @@ import RoastComment from "../common/RoastComment";
 class API {
   public axiosInstance: AxiosInstance;
 
-  constructor(baseURL: string) {
+  constructor(baseURL?: string) {
     this.axiosInstance = axios.create({ baseURL });
   }
 
   public async postComment(comment: RoastComment): Promise<RoastComment> {
-    const { data } = await this.axiosInstance.post("/comments", comment);
+    const { data } = await this.axiosInstance.post("/.netlify/functions/comments", comment);
     return data;
   }
 
   public async putComment(comment: RoastComment): Promise<RoastComment> {
     const { data } = await this.axiosInstance.post(
-      `/comments/${comment.id}`,
+      `/.netlify/functions/comments/${comment.id}`,
       comment
     );
     return data;
   }
 
   public async deleteComment(comment: RoastComment): Promise<RoastComment> {
-    const { data } = await this.axiosInstance.delete(`/comments/${comment.id}`);
+    const { data } = await this.axiosInstance.delete(`/.netlify/functions/comments/${comment.id}`);
     return data;
   }
 
@@ -35,18 +35,17 @@ class API {
   }
 
   public async getComments(): Promise<RoastComment[]> {
-    const { data } = await this.axiosInstance.get("/comments");
+    const { data } = await this.axiosInstance.get("/.netlify/functions/comments");
     return data;
   }
 
+  // todo handle errors obviously
   public async getRepo(): Promise<IGithubData> {
     // return await this.axiosInstance.get(
     //   "https://api.github.com/repos/jludden/ReefLifeSurvey---Species-Explorer/contents/app/src/main/java/me/jludden/reeflifesurvey/detailed/DetailsActivity.kt"
     //      "http://localhost:34567/.netlify/functions/getRepo"
 
-    return await this.axiosInstance.get(
-      "http://localhost:9000/getRepo"
-    );
+    return (await this.axiosInstance.get("/.netlify/functions/getRepo")).data;
   }
 }
 
@@ -61,5 +60,6 @@ export interface IGithubData {
 
 // export default new API("http://localhost:3001/");
 // export default new API("http://localhost:34567/.netlify/functions/fauna-crud");
-export default new API("http://localhost:9000/fauna-crud");
+// export default new API("http://localhost:9000/fauna-crud");
+export default new API();
 

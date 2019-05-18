@@ -91,6 +91,10 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
 
   public async componentDidMount() {
     const [comments, repo] = await API.getRepoAndComments();
+
+    // tslint:disable-next-line:no-console
+    console.log(repo);
+
     return this.setState({ comments, repo });
   }
 
