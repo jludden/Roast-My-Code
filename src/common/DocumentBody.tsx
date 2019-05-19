@@ -32,8 +32,8 @@ interface IDocumentBodyState {
   clicksCnt: number;
   comments: RoastComment[];
   currentlySelected: boolean;
-  data: string;
   selectedLine: number;
+  selectedText: string;
 }
 
 export default class DocumentBody extends React.Component<
@@ -42,10 +42,10 @@ export default class DocumentBody extends React.Component<
 > {
   public state: IDocumentBodyState = {
     clicksCnt: 0,
-    comments: [new RoastComment(1,"hello")],
+    comments: [],
     currentlySelected: false,
-    data: "nothing",
-    selectedLine: -1
+    selectedLine: -1,
+    selectedText: ""
   };
 
   // public async componentDidMount() {
@@ -66,6 +66,7 @@ export default class DocumentBody extends React.Component<
         <SubmitComment
           comment={this.state.comments[0]}
           isCurrentlySelected={this.state.currentlySelected}
+          selectedText={this.state.selectedText}
           onSubmitComment={this.props.onSubmitComment}
         />
         <pre> comments selected: {this.getComments()}</pre>
@@ -119,6 +120,7 @@ export default class DocumentBody extends React.Component<
           comment={this.state.comments[this.state.comments.length-1]}
           isCurrentlySelected={this.state.selectedLine === i}
           onSubmitComment={this.props.onSubmitComment}
+          selectedText={this.state.selectedText}
         />
         {createElement({
           key: `code-segement${i}`,
@@ -208,14 +210,14 @@ export default class DocumentBody extends React.Component<
             //   tslint:disable-next-line:no-console
               console.log(`index: ${index}`);
 
-              // make the comment submission form visibile
+              // make the comment submission form visible
               if (index >= 0) {
                   this.setState({ selectedLine: +index });
                 }
 
-      const comments = this.state.comments.concat(new RoastComment(index, text));
-      this.setState({ currentlySelected: true });
-      this.setState({ comments });
+     // const comments = this.state.comments.concat(new RoastComment(index, text));
+      this.setState({ currentlySelected: true, selectedText: text });
+     // this.setState({ comments });
     }
 
     //  const startContainerPosition = parseInt(range.startContainer.parentNode.dataset.position, 10);
@@ -236,7 +238,7 @@ export default class DocumentBody extends React.Component<
     let count = 0;
     for (const comment of this.state.comments) {
       text = text.concat(
-        `\n [${count}] line ${comment.lineNumber}: ${comment.selectedText}`
+        `\n [${count}] line ${comment.data.lineNumber}: ${comment.data.selectedText}`
       );
       count++;
     }

@@ -5,7 +5,7 @@ import RoastComment from "../../common/RoastComment";
 const mockAPI = jest.spyOn(API, "getComments");
 mockAPI.mockImplementation(() => {
   return Promise.resolve([
-    new RoastComment(10, "hello world", "capitalize words", 1)
+    new RoastComment({id: 12345, data: {lineNumber: 10, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
   ]) as any;
 });
 

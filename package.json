@@ -32,7 +32,8 @@
     "build": "run-p build:**",
     "build:app": "react-scripts build",
     "build:lambda": "yarn netlify-lambda build src/roast-lambda",
-    "test": "cross-env NODE_PATH=src react-scripts test --env=jsdom",
+    "build:test": "set CI=true&&yarn test",
+    "test": "react-scripts test --env=jsdom",
     "eject": "cross-env NODE_PATH=src react-scripts eject"
   },
   "devDependencies": {

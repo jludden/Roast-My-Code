@@ -21,7 +21,12 @@ export const LineRenderer: React.FunctionComponent<IRenderProps> = ({ rows, styl
 
   return rows.map((node: any, i: number) => (
     <div key={i}> 
-      <SubmitComment isCurrentlySelected={false} comment={new RoastComment(1, "todo")} onSubmitComment={submitCommentHandler}/>
+      <SubmitComment 
+      isCurrentlySelected={false}
+       comment={new RoastComment({data: {lineNumber: i}})}
+        onSubmitComment={submitCommentHandler} 
+        selectedText=""
+      />
       {createElement({
           key: `code-segement${i}`,
           node,

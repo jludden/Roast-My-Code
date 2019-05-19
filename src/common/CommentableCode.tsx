@@ -65,8 +65,20 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
 
   // PUT an update to a comment
   public editCommentHandler = async (
-    comment: RoastComment
+    comment: RoastComment,
+    isDelete: boolean = false
   ): Promise<SubmitCommentResponse> => {
+    if (isDelete) {
+      return await(API.deleteComment(comment))
+        .then(response => {
+          var comments = this.state.comments;
+          comments.splice(comments.indexOf(response), 1);
+          this.setState({comments});
+          return SubmitCommentResponse.Success;
+        });
+        
+    }
+
     return await API.putComment(comment)
       .then(response => {
         // use immutability-helper to easily update the state

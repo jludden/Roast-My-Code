@@ -5,7 +5,7 @@ import SingleCommentView from './SingleCommentView';
 
 export interface ICommentsViewProps {
     comments: RoastComment[],
-    onEditComment: ((details: RoastComment) => Promise<SubmitCommentResponse>) 
+    onEditComment: ((details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>) 
 }
 
 export default class DocumentCommentsView extends React.Component<ICommentsViewProps, any> {

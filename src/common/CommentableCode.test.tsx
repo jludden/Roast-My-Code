@@ -8,7 +8,8 @@ import DocumentHeader from "./DocumentHeader";
 import RoastComment from "./RoastComment";
 import Axios from "axios";
 
-// enzyme.configure({ adapter: new Adapter() });
+enzyme.configure({ adapter: new Adapter() });
+
 describe("<CommentableCode />", () => {
   it("fetches data on componentDidMount", () => {
     const codeComponent = shallow<ShallowWrapper>(
@@ -113,7 +114,7 @@ describe("<CommentableCode />", () => {
 
     const result = await API.getComments();
     expect(result.length).toEqual(1);
-    expect(result[0].lineNumber).toEqual(10);
+    expect(result[0].data.lineNumber).toEqual(10);
 
   });
 });

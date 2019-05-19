@@ -4,7 +4,7 @@ import RoastComment from './RoastComment';
 
 export interface IRoastComment {
     comment: RoastComment;
-    onEditComment: ((details: RoastComment) => Promise<SubmitCommentResponse>) 
+    onEditComment: ((details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>) 
   }
   
 interface ISingleCommentState {
@@ -22,11 +22,12 @@ export default class SingleCommentView extends React.Component<IRoastComment, IS
 
     public render() {
         const isEditOn = this.state.isEditOn;
-        const text = this.props.comment.selectedText;
+        const text = this.props.comment.data.selectedText;
         return (
-            <li>
+            <li>                
                 <span onClick={this.handleCommentClicked} hidden = {isEditOn}> Comment text: {text}</span>
                 <div hidden = {!isEditOn}>
+                    <span className="boxclose" id="boxclose" onClick={this.handleCommentDelete}>x</span>
                     <textarea defaultValue={text}/>
                     <button onClick={this.handleCommentSubmit}>Update</button>
                 </div>
@@ -41,5 +42,9 @@ export default class SingleCommentView extends React.Component<IRoastComment, IS
 
   private handleCommentSubmit = () => {
     this.props.onEditComment(this.props.comment);
+  }
+
+  private handleCommentDelete = () => {
+    this.props.onEditComment(this.props.comment, true)
   }
 }

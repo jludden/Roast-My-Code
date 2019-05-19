@@ -13,7 +13,7 @@ it("API get comments returns array of comments", async () => {
   const spy = jest.spyOn(mockAPI, "getComments");
   spy.mockImplementationOnce(() => {
     return Promise.resolve([
-      new RoastComment(15, "hello world", "capitalize words", 1)
+      new RoastComment({id: 12345, data: {lineNumber: 10, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
     ]) as any;
   });
 
@@ -21,7 +21,7 @@ it("API get comments returns array of comments", async () => {
   // use toEqual for objects and arrays, use toBe for scalar data types only
   expect(results.length).toBe(1);
   expect(results[0]).toEqual(expect.any(RoastComment));
-  expect(results[0].lineNumber).toBe(15);
+  expect(results[0].data.lineNumber).toBe(15);
 
   // expect(mockAPI.getComments).toHaveBeenCalledTimes(1);
 });

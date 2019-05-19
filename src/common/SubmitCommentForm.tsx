@@ -6,6 +6,7 @@ import RoastComment from './RoastComment'
 export interface ISubmitCommentFormProps {
     comment: RoastComment,
     isCurrentlySelected: boolean,
+    selectedText: string,
     onSubmitComment: ((details: RoastComment) => Promise<SubmitCommentResponse>) // handler for submitting a new comment
 }
 
@@ -35,7 +36,8 @@ export default class SubmitCommentForm extends React.Component<ISubmitCommentFor
                 <div hidden={this.state.active || !this.props.isCurrentlySelected}>
                     <button onClick={this.handleAdd}>Add</button>
                     {/* <p>{this.getCommentText}</p> */}
-                    <h1>{this.props.comment.selectedText}</h1>
+                    {/* <h1>{(this.props.comment && this.props.comment.data && this.props.comment.data.selectedText) || "Select text to quote"}</h1> */}
+                    <h1>{this.props.selectedText || "Select text to quote"}</h1>
                 </div>
                 <div hidden={!this.state.active}>
                     Hello world - submit comment form
@@ -65,6 +67,8 @@ export default class SubmitCommentForm extends React.Component<ISubmitCommentFor
         } 
         this.setState({result, resultMessage, buttonText});
     };
+
+
 
     // private getCommentText = () => {
     //     if (this.props.comment) {

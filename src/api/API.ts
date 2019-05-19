@@ -14,7 +14,7 @@ class API {
   }
 
   public async putComment(comment: RoastComment): Promise<RoastComment> {
-    const { data } = await this.axiosInstance.post(
+    const { data } = await this.axiosInstance.put(
       `/.netlify/functions/comments/${comment.id}`,
       comment
     );
@@ -35,9 +35,22 @@ class API {
   }
 
   public async getComments(): Promise<RoastComment[]> {
-    const { data } = await this.axiosInstance.get("/.netlify/functions/comments");
+    const result = await this.axiosInstance.get("/.netlify/functions/comments");
+    // const { data } = await this.axiosInstance.get("/.netlify/functions/comments");
+    const data = result.data;
+    data.map((el: any) => {
+      return el.id = el.ref['@ref'].id;
+    });
+    // data.id = result.data.ref['@ref'].id;
     return data;
   }
+
+  // function getTodoId(todo) {
+  //   if (!todo.ref) {
+  //     return null
+  //   }
+  //   return todo.ref['@ref'].id
+  // }
 
   // todo handle errors obviously
   public async getRepo(): Promise<IGithubData> {
