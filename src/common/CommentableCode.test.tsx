@@ -104,10 +104,12 @@ describe("<CommentableCode />", () => {
     mockAPI.mockImplementation(() => {
       return Promise.resolve([
         {
-          commentText: "capitalize words",
           id: 1,
-          lineNumber: 10,
-          selectedText: "hello world"
+          data: {
+            lineNumber: 10,
+            commentText: "capitalize words",
+            selectedText: "hello world"
+          }
         }
       ]) as any;
     });

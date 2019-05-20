@@ -13,7 +13,7 @@ it("API get comments returns array of comments", async () => {
   const spy = jest.spyOn(mockAPI, "getComments");
   spy.mockImplementationOnce(() => {
     return Promise.resolve([
-      new RoastComment({id: 12345, data: {lineNumber: 10, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
+      new RoastComment({id: 12345, data: {lineNumber: 15, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
     ]) as any;
   });
 
