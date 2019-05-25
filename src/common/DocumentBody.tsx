@@ -102,10 +102,10 @@ export default class DocumentBody extends React.Component<
 
   // track the refs for each line in the document
   // these can then be used to find the exact positioning of each line
-  private lineRefs: HTMLElement[] = [];
-  private setLineRef = (el: any) => 
+  private lineRefs: HTMLDivElement[] = [];
+  private setLineRef = (el: HTMLDivElement) => 
   {
-    const lineNumber = el.dataset.index;
+    const lineNumber = parseInt(el.dataset.index || "");
     this.lineRefs[lineNumber] = el;
   }
 
