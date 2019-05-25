@@ -24,7 +24,7 @@ export default class SingleCommentView extends React.Component<IRoastComment, IS
         const isEditOn = this.state.isEditOn;
         const text = this.props.comment.data.selectedText;
         return (
-            <li>                
+            <li className="float-comment">                
                 <span onClick={this.handleCommentClicked} hidden = {isEditOn}> Comment text: {text}</span>
                 <div hidden = {!isEditOn}>
                     <span className="boxclose" id="boxclose" onClick={this.handleCommentDelete}>x</span>

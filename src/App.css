@@ -82,6 +82,16 @@ span.boxclose{
   content: "×";
 }
 
+.float-comment {
+  background: pink;
+  /* position: absolute;
+  right: 5px;
+  top: 5px; */
+  /* position: relative;
+  top: 50%;
+  right: 5%; */
+}
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

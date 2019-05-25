@@ -107,6 +107,14 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
     // tslint:disable-next-line:no-console
     console.log(repo);
 
+
+    
+    // todo remove: just adding some fake comments until I fix the REST endpoints
+    comments[0] = new RoastComment({id: 12345, data: {lineNumber: 10, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
+    comments[1] = new RoastComment({id: 125, data: {lineNumber: 40, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
+    comments[2] = new RoastComment({id: 432, data: {lineNumber: 90, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
+    comments[3] = new RoastComment({id: 345, data: {lineNumber: 100, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
+
     return this.setState({ comments, repo });
   }
 

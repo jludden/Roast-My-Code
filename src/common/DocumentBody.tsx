@@ -55,11 +55,12 @@ export default class DocumentBody extends React.Component<
   // public componentDidUpdate() {
   //     prettify.prettyPrint();
   // }
+  //`flex-item ${App-body}`}
 
   public render() {
     const decoded = atob(this.props.content);
     return (
-      <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick} className=".flex-item .App-body">
+      <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick} className={`flex-item App-body`}>
         <button type="button" onClick={this.handleButtonPress}>Add Click</button>
         <h3> number of clicks: {this.state.clicksCnt} </h3>
         <pre> currently selected: {String(this.state.currentlySelected)}</pre>
@@ -102,7 +103,7 @@ export default class DocumentBody extends React.Component<
 
   // track the refs for each line in the document
   // these can then be used to find the exact positioning of each line
-  private lineRefs: HTMLDivElement[] = [];
+  private lineRefs: HTMLDivElement[] = []; // todo to be state or not?
   private setLineRef = (el: HTMLDivElement) => 
   {
     const lineNumber = parseInt(el.dataset.index || "");
