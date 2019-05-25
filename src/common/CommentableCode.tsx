@@ -3,7 +3,6 @@ import * as React from "react";
 import "../App.css";
 import API, { IGithubData } from "../api/API";
 import DocumentBody from "./DocumentBody";
-import DocumentCommentsView from "./DocumentCommentsView";
 import DocumentHeader from "./DocumentHeader";
 import RoastComment from "./RoastComment";
 
@@ -110,10 +109,10 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
 
     
     // todo remove: just adding some fake comments until I fix the REST endpoints
-    comments[0] = new RoastComment({id: 12345, data: {lineNumber: 10, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
-    comments[1] = new RoastComment({id: 125, data: {lineNumber: 40, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
-    comments[2] = new RoastComment({id: 432, data: {lineNumber: 90, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
-    comments[3] = new RoastComment({id: 345, data: {lineNumber: 100, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
+    comments[0] = new RoastComment({id: 12398897945, data: {lineNumber: 10, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
+    comments[1] = new RoastComment({id: 129879875, data: {lineNumber: 40, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
+    comments[2] = new RoastComment({id: 4387862, data: {lineNumber: 90, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
+    comments[3] = new RoastComment({id: 9879876, data: {lineNumber: 100, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
 
     return this.setState({ comments, repo });
   }
@@ -144,10 +143,12 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             <data/>
             <h3>Document Begin:</h3>
             <DocumentHeader documentName={this.state.repo.data.name} commentsCount={this.state.comments.length}/>
-            <div className="flex-container">
-                <DocumentBody name={this.state.repo.data.name} content={this.state.repo.data.content} onSubmitComment={this.submitCommentHandler}/> 
-                <DocumentCommentsView comments={comments} onEditComment={this.editCommentHandler}/>
-            </div>
+            <DocumentBody 
+              name={this.state.repo.data.name}
+              content={this.state.repo.data.content}
+              comments={this.state.comments}
+              onSubmitComment={this.submitCommentHandler}
+              onEditComment={this.editCommentHandler}/> 
             <h3>Document End</h3>
             </div>
         );

@@ -84,6 +84,7 @@ span.boxclose{
 
 .float-comment {
   background: pink;
+  position: absolute;
   /* position: absolute;
   right: 5px;
   top: 5px; */

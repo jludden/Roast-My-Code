@@ -13,6 +13,7 @@ import { github } from "react-syntax-highlighter/dist/styles/hljs";
 
 import { SubmitCommentResponse } from "./CommentableCode";
 import RoastComment from "./RoastComment";
+import DocumentCommentsView from "./DocumentCommentsView";
 import SubmitComment from "./SubmitCommentForm";
 
 
@@ -25,15 +26,17 @@ import SubmitComment from "./SubmitCommentForm";
 export interface IDocumentBodyProps {
   name: string; // github data - refactor to new interface
   content: string;
+  comments: RoastComment[]; // todo why props and state
   onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
+  onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>
 }
 
 interface IDocumentBodyState {
   clicksCnt: number;
-  comments: RoastComment[];
   currentlySelected: boolean;
   selectedLine: number;
   selectedText: string;
+  lineRefs: HTMLDivElement[]; 
 }
 
 export default class DocumentBody extends React.Component<
@@ -42,10 +45,10 @@ export default class DocumentBody extends React.Component<
 > {
   public state: IDocumentBodyState = {
     clicksCnt: 0,
-    comments: [],
     currentlySelected: false,
     selectedLine: -1,
-    selectedText: ""
+    selectedText: "",
+    lineRefs: []
   };
 
   // public async componentDidMount() {
@@ -60,12 +63,12 @@ export default class DocumentBody extends React.Component<
   public render() {
     const decoded = atob(this.props.content);
     return (
-      <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick} className={`flex-item App-body`}>
+      <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
         <button type="button" onClick={this.handleButtonPress}>Add Click</button>
         <h3> number of clicks: {this.state.clicksCnt} </h3>
         <pre> currently selected: {String(this.state.currentlySelected)}</pre>
         <SubmitComment
-          comment={this.state.comments[0]}
+          comment={this.props.comments[0]}
           isCurrentlySelected={this.state.currentlySelected}
           selectedText={this.state.selectedText}
           onSubmitComment={this.props.onSubmitComment}
@@ -73,18 +76,26 @@ export default class DocumentBody extends React.Component<
         <pre> comments selected: {this.getComments()}</pre>
 
         <h2> react-syntax-highlighter (doc-body)</h2>
-        <div id="doc-body">
-          {/* possibly want to use a ref here https://reactjs.org/docs/refs-and-the-dom.html */}
-          {/* <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={()=>{LineRenderer()}}>{decoded}</SyntaxHighlighter> */}
-          <SyntaxHighlighter
-            language="kotlin"
-            style={github}
-            className="left-align"
-            showLineNumbers={true}
-            renderer={this.renderSyntaxLines}
-          >
-            {decoded}
-          </SyntaxHighlighter>
+
+
+        <div className="flex-container">
+          <div id="doc-body" className={`flex-item App-body`}>
+            {/* possibly want to use a ref here https://reactjs.org/docs/refs-and-the-dom.html */}
+            {/* <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={()=>{LineRenderer()}}>{decoded}</SyntaxHighlighter> */}
+            <SyntaxHighlighter
+              language="kotlin"
+              style={github}
+              className="left-align"
+              showLineNumbers={true}
+              renderer={this.renderSyntaxLines}
+            >
+              {decoded}
+            </SyntaxHighlighter>
+          </div>
+          <DocumentCommentsView
+            comments={this.props.comments}
+            onEditComment={this.props.onEditComment}
+            lineRefs={this.state.lineRefs}/>
         </div>
 
         {/* <h2> code-prettifier </h2>
@@ -103,11 +114,13 @@ export default class DocumentBody extends React.Component<
 
   // track the refs for each line in the document
   // these can then be used to find the exact positioning of each line
-  private lineRefs: HTMLDivElement[] = []; // todo to be state or not?
+  // private lineRefs: HTMLDivElement[] = []; // todo to be state or not?
   private setLineRef = (el: HTMLDivElement) => 
   {
     const lineNumber = parseInt(el.dataset.index || "");
-    this.lineRefs[lineNumber] = el;
+    const lineRefs =  this.state.lineRefs;
+    lineRefs[lineNumber] = el;
+    this.setState({lineRefs});   
   }
 
 
@@ -129,7 +142,7 @@ export default class DocumentBody extends React.Component<
       <div key={i} data-index={i} onClick={this.handleLineClicked} ref={this.setLineRef}>
       {/* todo!!! don't know about passing this state down here... is it causing a re-render for every line? */}
         <SubmitComment
-          comment={this.state.comments[this.state.comments.length-1]}
+          comment={this.props.comments[this.props.comments.length-1]}
           isCurrentlySelected={this.state.selectedLine === i}
           onSubmitComment={this.props.onSubmitComment}
           selectedText={this.state.selectedText}
@@ -227,7 +240,7 @@ export default class DocumentBody extends React.Component<
                   this.setState({ selectedLine: +index });
                 }
 
-     // const comments = this.state.comments.concat(new RoastComment(index, text));
+     // const comments = this.props.comments.concat(new RoastComment(index, text));
       this.setState({ currentlySelected: true, selectedText: text });
      // this.setState({ comments });
     }
@@ -248,7 +261,7 @@ export default class DocumentBody extends React.Component<
   private getComments(): string {
     let text = "";
     let count = 0;
-    for (const comment of this.state.comments) {
+    for (const comment of this.props.comments) {
       text = text.concat(
         `\n [${count}] line ${comment.data.lineNumber}: ${comment.data.selectedText}`
       );
