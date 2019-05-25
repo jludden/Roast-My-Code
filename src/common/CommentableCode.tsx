@@ -5,6 +5,7 @@ import API, { IGithubData } from "../api/API";
 import DocumentBody from "./DocumentBody";
 import DocumentHeader from "./DocumentHeader";
 import RoastComment from "./RoastComment";
+import { ClipLoader } from 'react-spinners';
 
 // todo type instead of interface? is this being used?
 export interface ICCProps {
@@ -40,7 +41,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
                 name: ""
             }      
         },
-        loading: false ,
+        loading: true,
         msg: ""
     }
 
@@ -105,7 +106,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
 
     // tslint:disable-next-line:no-console
     console.log(repo);
-
+    const loading = false;
 
     
     // todo remove: just adding some fake comments until I fix the REST endpoints
@@ -114,7 +115,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
     comments[2] = new RoastComment({id: 4387862, data: {lineNumber: 90, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
     comments[3] = new RoastComment({id: 9879876, data: {lineNumber: 100, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
 
-    return this.setState({ comments, repo });
+    this.setState({ comments, repo, loading });
   }
 
     public render() {
@@ -125,6 +126,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             <h1>
                Hello welcome to the Jason's Annotateable Code Sample
             </h1>
+            <ClipLoader loading={this.state.loading}/>
             <p>
                 lambda functions
                 <button onClick={() => this.handleClick("async-dadjoke")}>{this.state.loading ? "Loading..." : "Call Async dadjoke"}</button>
