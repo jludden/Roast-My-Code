@@ -80,7 +80,7 @@ export default class DocumentBody extends React.Component<
             style={github}
             className="left-align"
             showLineNumbers={true}
-            renderer={this.renderLine}
+            renderer={this.renderSyntaxLines}
           >
             {decoded}
           </SyntaxHighlighter>
@@ -99,8 +99,19 @@ export default class DocumentBody extends React.Component<
     );
   }
 
-  // render a single line in the list of Syntax Highlighted elements
-  private renderLine = ({
+
+  // track the refs for each line in the document
+  // these can then be used to find the exact positioning of each line
+  private lineRefs: HTMLElement[] = [];
+  private setLineRef = (el: any) => 
+  {
+    const lineNumber = el.dataset.index;
+    this.lineRefs[lineNumber] = el;
+  }
+
+
+  // render the rows of Syntax Highlighted elements
+  private renderSyntaxLines = ({
     rows,
     stylesheet,
     useInlineStyles
@@ -113,8 +124,8 @@ export default class DocumentBody extends React.Component<
       .default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
 
     // using the index as a key should be okay in this case, we are never insertering or deleting elements
-    return rows.map((node: any, i: number) => (
-      <div key={i} data-index={i} onClick={this.handleLineClicked}>
+    return rows.map((node: any, i: number) =>       
+      <div key={i} data-index={i} onClick={this.handleLineClicked} ref={this.setLineRef}>
       {/* todo!!! don't know about passing this state down here... is it causing a re-render for every line? */}
         <SubmitComment
           comment={this.state.comments[this.state.comments.length-1]}
@@ -129,7 +140,7 @@ export default class DocumentBody extends React.Component<
           useInlineStyles
         })}
       </div>
-    ));
+    );
   };
 
   private handleLineClicked = (event: React.SyntheticEvent<EventTarget>) => { // todo if no selection also allow adding comment?
