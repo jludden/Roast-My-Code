@@ -82,9 +82,16 @@ span.boxclose{
   content: "×";
 }
 
-.float-comment {
+.single-comment {
+  border: 1px solid black;
+  padding: 10px;
+
+}
+
+.float-comment-pane {
   background: pink;
   position: absolute;
+  padding: 10px;
   /* position: absolute;
   right: 5px;
   top: 5px; */

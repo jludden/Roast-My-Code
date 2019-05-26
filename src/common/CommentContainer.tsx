@@ -5,8 +5,8 @@ import SingleCommentView from './SingleCommentView';
 
 
 export interface ICommentContainerProps {
-    comments: RoastComment[];
-    lineRef: HTMLDivElement;
+    comments: RoastComment[]; // comments belonging to this line number
+    lineRef: HTMLDivElement;  // div of the (top) line of code associated with these comments
     onEditComment: ((details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>) 
   }
   
@@ -14,9 +14,6 @@ interface ICommentContainerState {
     isEditOn: boolean,
     styles: React.CSSProperties
 }
-
-// todo - create a component for a comment
-    // and share it with documentbody? could even have different css to look different but behave the same
 
 export default class CommentContainer extends React.Component<ICommentContainerProps, ICommentContainerState> {
   constructor(props: ICommentContainerProps) {
@@ -32,11 +29,9 @@ export default class CommentContainer extends React.Component<ICommentContainerP
 
   public componentWillReceiveProps(nextProps: ICommentContainerProps) {
     const styles: React.CSSProperties = {
-      backgroundColor: 'red',
+      // backgroundColor: 'red',
       border: '1px solid black',
-      // top: nextProps.topOffset || this.props.topOffset
       top: this.computeTopOffset(nextProps.lineRef || this.props.lineRef),
-    //     left: this.computeTopWith(this.props.lineRef)
     }
     this.setState({styles});
   }
@@ -44,7 +39,7 @@ export default class CommentContainer extends React.Component<ICommentContainerP
   public render() {
     const comments = this.props.comments;
     return (
-      <li style={this.state.styles}>        
+      <li className="float-comment-pane" style={this.state.styles}>        
         <p>[{this.props.comments[0].data.lineNumber}] comments: {this.props.comments.length}</p>        
         <ul>
           {comments.map(comment => (
@@ -52,8 +47,6 @@ export default class CommentContainer extends React.Component<ICommentContainerP
               key={comment.id}
               comment={comment}
               onEditComment={this.props.onEditComment}
-              // topOffset={this.computeTopOffset(this.props.lineRef)}
-              // lineRef={this.props.lineRefs[comment.data.lineNumber || 0]}
             />
           ))}
         </ul>
@@ -61,6 +54,7 @@ export default class CommentContainer extends React.Component<ICommentContainerP
     );
   }
 
+  // get the top offset of the associated line of code
   public computeTopOffset(ref: HTMLDivElement): string {
     if (!ref) return "0px";
     return `${ref.offsetTop}px`;

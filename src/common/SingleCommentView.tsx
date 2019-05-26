@@ -66,7 +66,7 @@ export default class SingleCommentView extends React.Component<IRoastCommentProp
           <li className="single-comment">                
               <span onClick={this.handleCommentClicked} hidden = {isEditOn}> Line Number: {this.props.comment.data.lineNumber} Comment text: {text}</span>
               <div hidden = {!isEditOn}>
-                  <span className="boxclose" id="boxclose" onClick={this.handleCommentDelete}>x</span>
+                  <span className="boxclose" id="boxclose" onClick={this.handleCommentDelete} />
                   <textarea defaultValue={text}/>
                   <button onClick={this.handleCommentSubmit}>Update</button>
               </div>

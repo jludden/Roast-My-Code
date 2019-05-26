@@ -93,7 +93,7 @@ export default class DocumentBody extends React.Component<
             </SyntaxHighlighter>
           </div>
           <DocumentCommentsView
-            comments={this.props.comments}
+            lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
             onEditComment={this.props.onEditComment}
             lineRefs={this.state.lineRefs}/>
         </div>
@@ -111,6 +111,17 @@ export default class DocumentBody extends React.Component<
     );
   }
 
+      // Group comments into Comment Containers based their associated line number TODO this could be state or something
+  private groupCommentsByLineNumber = (comments: RoastComment[]) =>
+  {
+        const lineNumberMap = new Map<number|undefined, RoastComment[]>();
+        comments.map((comment: RoastComment) => {
+          var line: RoastComment[] = lineNumberMap.get(comment.data.lineNumber) || [];
+          line.push(comment);
+          lineNumberMap.set(comment.data.lineNumber, line);    
+        });
+        return lineNumberMap;
+  }
 
   // track the refs for each line in the document
   // these can then be used to find the exact positioning of each line
