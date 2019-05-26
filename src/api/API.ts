@@ -39,10 +39,14 @@ class API {
     // const { data } = await this.axiosInstance.get("/.netlify/functions/comments");
     const data = result.data;
     data.map((el: any) => {
-      return el.id = el.ref['@ref'].id;
+      return el.data.id = el.ref['@ref'].id;
     });
+    const newData = data.flatMap((el: any) => {
+      return el.data; 
+    });
+    
     // data.id = result.data.ref['@ref'].id;
-    return data;
+    return newData;
   }
 
   // function getTodoId(todo) {
