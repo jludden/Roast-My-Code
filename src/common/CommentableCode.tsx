@@ -5,7 +5,7 @@ import API, { IGithubData } from "../api/API";
 import DocumentBody from "./DocumentBody";
 import DocumentHeader from "./DocumentHeader";
 import RoastComment from "./RoastComment";
-import { ClipLoader } from 'react-spinners';
+import { ClipLoader } from 'react-spinners'; // todo try bulma progress bar
 
 // todo type instead of interface? is this being used?
 export interface ICCProps {

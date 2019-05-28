@@ -1,6 +1,7 @@
 import * as React from "react";
 // import  '../../node_modules/color-themes-for-google-code-prettify/dist/themes/github.min.css'
 import "../App.css";
+
 // import '../google-code-prettify/prettify';
 
 // import '../prettifyTypes';
@@ -15,6 +16,9 @@ import { SubmitCommentResponse } from "./CommentableCode";
 import RoastComment from "./RoastComment";
 import DocumentCommentsView from "./DocumentCommentsView";
 import SubmitComment from "./SubmitCommentForm";
+
+import "rbx/index.css";
+import { Column, Container } from "rbx";
 
 
 // import { LineRenderer } from './SyntaxRenderer';
@@ -77,12 +81,33 @@ export default class DocumentBody extends React.Component<
 
         <h2> react-syntax-highlighter (doc-body)</h2>
 
+        <Column.Group>
+          <Column size="three-quarters">
+              <SyntaxHighlighter
+                language="kotlin"
+                style={github}
+                className="left-align"
+                showLineNumbers={true}
+                renderer={this.renderSyntaxLines}
+              >
+                {decoded}
+              </SyntaxHighlighter>
+          </Column>
+          <Column size="one-quarter">
+            <DocumentCommentsView
+              lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
+              onEditComment={this.props.onEditComment}
+              lineRefs={this.state.lineRefs}/>
+          </Column>
+        </Column.Group>
 
+
+{/* 
         <div className="flex-container">
-          <div id="doc-body" className={`flex-item App-body`}>
+          <div id="doc-body" className={`flex-item App-body`}> */}
             {/* possibly want to use a ref here https://reactjs.org/docs/refs-and-the-dom.html */}
             {/* <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={()=>{LineRenderer()}}>{decoded}</SyntaxHighlighter> */}
-            <SyntaxHighlighter
+            {/* <SyntaxHighlighter
               language="kotlin"
               style={github}
               className="left-align"
@@ -96,7 +121,7 @@ export default class DocumentBody extends React.Component<
             lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
             onEditComment={this.props.onEditComment}
             lineRefs={this.state.lineRefs}/>
-        </div>
+        </div> */}
 
         {/* <h2> code-prettifier </h2>
                 <pre className="prettyprint linenums">
