@@ -71,7 +71,7 @@ export default class SingleCommentView extends React.Component<IRoastCommentProp
         // <Message>
         //   <Message.Header><Delete> </Delete></Message.Header>
         //   <Message.Body>
-            <Textarea fixedSize={true} readOnly placeholder={text}></Textarea>
+            <Textarea fixedSize={true} readOnly={!this.state.isEditOn} placeholder={text} onClick={this.handleCommentClicked}></Textarea>
         //   </Message.Body>
         // </Message>
       //   <Message as="textarea" color="danger" defaultValue={text}>

@@ -3,7 +3,7 @@ import { SubmitCommentResponse } from './CommentableCode';
 import RoastComment from './RoastComment';
 import SingleCommentView from './SingleCommentView';
 import "rbx/index.css";
-import { Container, Card, Heading, Message, Delete } from "rbx";
+import { Container, Card, Content, Heading, Message, Icon, Delete } from "rbx";
 
 export interface ICommentContainerProps {
     comments: RoastComment[]; // comments belonging to this line number
@@ -41,18 +41,43 @@ export default class CommentContainer extends React.Component<ICommentContainerP
   public render() {
     const comments = this.props.comments;
     return (
-      <Card style={this.state.styles}>
-        <Heading>
+      <Card style={this.state.styles} size="large">
+        <Card.Header> 
+          <Card.Header.Title>
             [{this.props.comments[0].data.lineNumber}] comments: {this.props.comments.length}
-            <Delete />
-            </Heading>
-          {comments.map(comment => (
-            <SingleCommentView 
-              key={comment.id}
-              comment={comment}
-              onEditComment={this.props.onEditComment}
-            />
-          ))}
+          </Card.Header.Title>
+          <Card.Header.Icon>
+            <Icon>
+              </Icon>
+          </Card.Header.Icon>
+        </Card.Header>
+
+        <Card.Content> 
+          <Content>
+          <Heading>
+              [{this.props.comments[0].data.lineNumber}] comments: {this.props.comments.length}
+              <Delete />
+          </Heading>
+            {comments.map(comment => (
+              <SingleCommentView 
+                key={comment.id}
+                comment={comment}
+                onEditComment={this.props.onEditComment}
+              />
+            ))}
+          </Content>
+        </Card.Content>
+        <Card.Footer>
+          <Card.Footer.Item as="a" href="#">
+            Save
+          </Card.Footer.Item>
+          <Card.Footer.Item as="a" href="#">
+            Edit
+          </Card.Footer.Item>
+          <Card.Footer.Item as="a" href="#">
+            Delete
+          </Card.Footer.Item>
+        </Card.Footer>
       </Card>
 
 

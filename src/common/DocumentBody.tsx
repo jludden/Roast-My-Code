@@ -18,7 +18,7 @@ import DocumentCommentsView from "./DocumentCommentsView";
 import SubmitComment from "./SubmitCommentForm";
 
 import "rbx/index.css";
-import { Column, Container } from "rbx";
+import { Column, Container, Section } from "rbx";
 
 
 // import { LineRenderer } from './SyntaxRenderer';
@@ -79,8 +79,8 @@ export default class DocumentBody extends React.Component<
         />
         <pre> comments selected: {this.getComments()}</pre>
 
-        <h2> react-syntax-highlighter (doc-body)</h2>
-
+        <Section backgroundColor = "primary" gradient>
+                <Container  color="primary">
         <Column.Group>
           <Column size="three-quarters">
               <SyntaxHighlighter
@@ -93,13 +93,15 @@ export default class DocumentBody extends React.Component<
                 {decoded}
               </SyntaxHighlighter>
           </Column>
-          <Column size="one-quarter">
+          <Column size="one-quarter" backgroundColor="primary">
             <DocumentCommentsView
               lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
               onEditComment={this.props.onEditComment}
               lineRefs={this.state.lineRefs}/>
           </Column>
         </Column.Group>
+        </Container>
+        </Section>
 
 
 {/* 
