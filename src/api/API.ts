@@ -64,6 +64,12 @@ class API {
 
     return (await this.axiosInstance.get("/.netlify/functions/getRepo")).data;
   }
+
+  public async searchRepos(query: string): Promise<IGithubSearchResults> {
+    return await this.axiosInstance.get(
+      `https://api.github.com/search/repositories?q=${query}`
+    )
+  }
 }
 
 export interface IGithubRepo {
@@ -73,6 +79,19 @@ export interface IGithubRepo {
 
 export interface IGithubData {
   data: IGithubRepo;
+}
+
+export interface IGithubSearchResults {
+  data: {
+    total_count: number,
+    incomplete_results: boolean,
+    items: {
+      name: string,
+      contents_url: string,
+      html_url: string,
+      description: string,
+    }[]
+  }
 }
 
 // export default new API("http://localhost:3001/");

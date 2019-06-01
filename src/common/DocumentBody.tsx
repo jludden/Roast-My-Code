@@ -68,7 +68,7 @@ export default class DocumentBody extends React.Component<
     const decoded = atob(this.props.content);
     return (
       <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
-        <button type="button" onClick={this.handleButtonPress}>Add Click</button>
+        {/* <button type="button" onClick={this.handleButtonPress}>Add Click</button>
         <h3> number of clicks: {this.state.clicksCnt} </h3>
         <pre> currently selected: {String(this.state.currentlySelected)}</pre>
         <SubmitComment
@@ -77,7 +77,7 @@ export default class DocumentBody extends React.Component<
           selectedText={this.state.selectedText}
           onSubmitComment={this.props.onSubmitComment}
         />
-        <pre> comments selected: {this.getComments()}</pre>
+        <pre> comments selected: {this.getComments()}</pre> */}
 
         <Section backgroundColor = "primary" gradient>
                 <Container  color="primary">
