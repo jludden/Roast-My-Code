@@ -6,6 +6,17 @@ import DocumentBody from "./DocumentBody";
 import DocumentHeader from "./DocumentHeader";
 import RoastComment from "./RoastComment";
 import { ClipLoader } from 'react-spinners'; // todo try bulma progress bar
+import { ApolloProvider, QueryResult } from "react-apollo";
+import ApolloClient from "apollo-boost";
+
+
+import { Query } from "react-apollo";
+import { gql } from "apollo-boost";
+
+const client = new ApolloClient({
+  uri: "https://48p1r2roz4.sse.codesandbox.io"
+});
+
 
 // todo type instead of interface? is this being used?
 export interface ICCProps {
@@ -122,10 +133,12 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
         const {document} = this.props;
         const comments = this.state.comments;
         return (
+          <ApolloProvider client={client}>
             <div>
             <h1>
                Hello welcome to the Jason's Annotateable Code Sample
             </h1>
+            <CurrencyRatesComponent />
             <ClipLoader loading={this.state.loading}/>
             <p>
                 lambda functions
@@ -153,6 +166,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
               onEditComment={this.editCommentHandler}/> 
             <h3>Document End</h3>
             </div>
+            </ApolloProvider>
         );
     }
 
@@ -164,4 +178,41 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
           .then(response => response.json())
           .then(json => this.setState({ loading: false, msg: json.msg }));
     }
+}
+
+interface IGithubQueryProps {
+
+}
+
+interface Data {
+  rates: Array<{ currency: string; rate: string }>;
+};
+
+interface Variables {
+  first: number;
+};
+
+const CurrencyRatesQuery = gql`
+{
+  rates(currency: "USD") {
+    currency
+    rate
+  }
+}
+`;
+
+export const CurrencyRatesComponent: React.SFC<IGithubQueryProps> = props => {
+
+  return <Query<Data, Variables> query={CurrencyRatesQuery}>
+  {({ loading, error, data }) => { 
+    if (loading) return <p>Loading...</p>;
+    if (error || !data) return <p>Error :(</p>;
+
+    return data.rates.map(({ currency, rate }) => (
+      <div key={currency}>
+        <p>{currency}: {rate}</p>
+      </div>
+    ));
+   }}
+  </Query>
 }
