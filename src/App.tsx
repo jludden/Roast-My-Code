@@ -4,10 +4,7 @@ import CommentableCode from './common/CommentableCode';
 import { Container, Hero, Title, Section } from "rbx";
 import "rbx/index.css";
 // import logo from './' './logo.svg';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
-library.add(faAngleDown);
+
 
 class App extends React.Component {
   public render() {

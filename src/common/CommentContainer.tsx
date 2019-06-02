@@ -4,7 +4,7 @@ import RoastComment from './RoastComment';
 import SingleCommentView from './SingleCommentView';
 import "rbx/index.css";
 import { Container, Card, Content, Heading, Message, Icon, Delete } from "rbx";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FaAngleDown } from 'react-icons/fa';
 
 
 export interface ICommentContainerProps {
@@ -50,7 +50,7 @@ export default class CommentContainer extends React.Component<ICommentContainerP
           </Card.Header.Title>
           <Card.Header.Icon>
             <Icon>
-              <FontAwesomeIcon icon="angle-down" />
+              <FaAngleDown />
             </Icon>
           </Card.Header.Icon>
         </Card.Header>

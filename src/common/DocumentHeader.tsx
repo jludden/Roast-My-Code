@@ -1,23 +1,29 @@
 import * as React from "react";
 import '../App.css';
 import API, { IGithubSearchResults } from "../api/API";
+import { FaBeer, FaBook, FaSearch, FaCodeBranch } from 'react-icons/fa';
 
 // import ICCProps from './CommentableCode';
 
 import "rbx/index.css";
-import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, Delete, Field } from "rbx";
+import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, Delete, Field, Panel, Checkbox, Icon } from "rbx";
 
 export interface ICCProps {
     documentName: string,
     commentsCount: number,
 }
 
+// color: Variables["colors"]
 interface IHeaderState {
+    query: string,
+    queryColor: "primary" | "link" | "success" | "info" | "warning" | "danger" | undefined,
     results: IGithubSearchResults
 }
 
 export default class DocumentHeader extends React.Component<ICCProps, IHeaderState> {
     public state: IHeaderState = {
+        query: "",
+        queryColor: undefined,
         results: {
             data: {
                 total_count: -1,
@@ -30,23 +36,95 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
 
     public render() {
         return (
-            <Section backgroundColor = "primary" gradient>
-                <Container  color="primary">
+            <Section >
+                <Container>
                     <Title>{this.props.documentName}</Title>
                     <Title subtitle>number of comments: {this.props.commentsCount}</Title>
-                    <Field kind="addons">
-                    <Control>
-                        <Input placeholder="Find a repository" />
-                    </Control>
-                    <Control>
-                        <Button color="info" onClick={this.handleSearch}>Search</Button>
-                    </Control>
-                    </Field>
                     <Tag.Group>
                         <Tag rounded> Java </Tag>
                         <Tag> Kotlin <Delete></Delete></Tag>
                         <Tag delete> just deletes </Tag>
                     </Tag.Group>
+
+                    {/* TEST PANEL */}
+                    <Panel>
+                        <Panel.Heading>repositories</Panel.Heading>
+                        <Panel.Block>
+                            <Control iconLeft>
+                            <Input size="small" type="text" placeholder="search" />
+                            <Icon size="small" align="left">
+                                <FaSearch />
+                            </Icon>
+                            </Control>
+                        </Panel.Block>
+                        <Panel.Tab.Group>
+                            <Panel.Tab active>all</Panel.Tab>
+                            <Panel.Tab>public</Panel.Tab>
+                            <Panel.Tab>private</Panel.Tab>
+                            <Panel.Tab>sources</Panel.Tab>
+                            <Panel.Tab>forks</Panel.Tab>
+                        </Panel.Tab.Group>
+                        <Panel.Block as="a" active>
+                            <Panel.Icon>
+                                <FaBook />
+                            </Panel.Icon>
+                            bulma
+                        </Panel.Block>
+                        <Panel.Block>
+                            <Panel.Icon>
+                                <FaBook />
+                            </Panel.Icon>
+                            marksheet
+                        </Panel.Block>
+                        <Panel.Block>
+                            <Panel.Icon>
+                                <FaBook />
+                            </Panel.Icon>
+                            minireset.css
+                        </Panel.Block>
+                        <Panel.Block>
+                            <Panel.Icon>
+                               <FaBook />
+                            </Panel.Icon>
+                            jgthms.github.io
+                        </Panel.Block>
+                        <Panel.Block>
+                            <Panel.Icon>
+                                <FaCodeBranch />
+                            </Panel.Icon>
+                            daniellowtw/infboard
+                        </Panel.Block>
+                        <Panel.Block>
+                            <Panel.Icon>
+                                <FaCodeBranch />
+                            </Panel.Icon>
+                            mojs
+                        </Panel.Block>
+                        <Panel.Block as="label">
+                            <Checkbox />
+                            remember me
+                        </Panel.Block>
+                        <Panel.Block>
+                            <Button fullwidth color="link" outlined>
+                            reset all filters
+                            </Button>
+                        </Panel.Block>
+                        </Panel>
+
+                    {/* OLD  */}
+                    <Field kind="addons">
+                        <Control>
+                            <Input placeholder="Find a repository" 
+                                type="text" 
+                                color={this.state.queryColor}
+                                value={this.state.query} 
+                                onChange={this.handleQueryChange}/>
+                        </Control>
+                        <Control>
+                            <Button color="info" onClick={this.handleSearch}>Search</Button>
+                        </Control>
+                    </Field>
+
                     <p>COUNT: {this.state.results.data.total_count}</p>
                     {this.state.results.data.items.map(item => (
                        ` <p> 
@@ -58,12 +136,24 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
         );
     }
 
-    private handleSearch = async () => {
-            
-        const query = "reeflifesurvey"; // todo
-        var results = await API.searchRepos(query);
- 
-        this.setState({results});
+    private handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {
+        this.setState({query: event.currentTarget.value});
+    }
+
+    private handleSearch = async (event: React.SyntheticEvent<EventTarget>) => {
+        event.preventDefault();   
+
+        const query = this.state.query; // todo
+        if (query) {
+            var results = await API.searchRepos(query);
+            this.setState({results});
+            this.setState({queryColor: "success"});
+
+        }
+        else {
+            this.setState({queryColor: "danger"});
+        }
+
     };
 
                         /* <Field kind="addons">
