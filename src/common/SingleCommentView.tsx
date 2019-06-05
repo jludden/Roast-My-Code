@@ -2,6 +2,10 @@ import * as React from 'react';
 import { SubmitCommentResponse } from './CommentableCode';
 import RoastComment from './RoastComment';
 
+
+import "rbx/index.css";
+import { Message, Box, Textarea, Button, Delete } from "rbx";
+
 export interface IRoastCommentProps {
     comment: RoastComment;
     // lineRef: HTMLDivElement;
@@ -59,18 +63,40 @@ export default class SingleCommentView extends React.Component<IRoastCommentProp
 
   //          <li className="float-comment" style={this.state.styles}>                
 
+  // todo have just a border on one left side: border-width: 0 0 0 4px;
   public render() {
       const isEditOn = this.state.isEditOn;
       const text = this.props.comment.data.selectedText;
       return (
-          <li className="single-comment">                
-              <span onClick={this.handleCommentClicked} hidden = {isEditOn}> Line Number: {this.props.comment.data.lineNumber} Comment text: {text}</span>
-              <div hidden = {!isEditOn}>
-                  <span className="boxclose" id="boxclose" onClick={this.handleCommentDelete} />
-                  <textarea defaultValue={text}/>
-                  <button onClick={this.handleCommentSubmit}>Update</button>
-              </div>
-          </li>
+        // <Message>
+        //   <Message.Header><Delete> </Delete></Message.Header>
+        //   <Message.Body>
+            <Textarea fixedSize={true} readOnly={!this.state.isEditOn} placeholder={text} onClick={this.handleCommentClicked}></Textarea>
+        //   </Message.Body>
+        // </Message>
+      //   <Message as="textarea" color="danger" defaultValue={text}>
+
+      // </Message>    
+
+          // <li className="single-comment">
+          //     <Message as="textarea" color="danger">
+          //       <Message.Body>
+
+          //         HELLO
+          //         </Message.Body>
+          //     </Message>                
+          //     <span onClick={this.handleCommentClicked} hidden = {isEditOn}> Line Number: {this.props.comment.data.lineNumber} Comment text: {text}</span>
+          //     <div hidden = {!isEditOn}>
+          //         <span className="boxclose" id="boxclose" onClick={this.handleCommentDelete} />
+          //         <textarea defaultValue={text}/>
+          //         <Message>
+          //           <Message.Body>
+          //             {text}
+          //           </Message.Body>
+          //         </Message>
+          //         <button onClick={this.handleCommentSubmit}>Update</button>
+          //     </div>
+          // </li>
       );
   }
   

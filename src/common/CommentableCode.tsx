@@ -5,7 +5,18 @@ import API, { IGithubData } from "../api/API";
 import DocumentBody from "./DocumentBody";
 import DocumentHeader from "./DocumentHeader";
 import RoastComment from "./RoastComment";
-import { ClipLoader } from 'react-spinners';
+import { ClipLoader } from 'react-spinners'; // todo try bulma progress bar
+import { ApolloProvider, QueryResult } from "react-apollo";
+import ApolloClient from "apollo-boost";
+
+//"https://48p1r2roz4.sse.codesandbox.io"
+const client = new ApolloClient({
+  uri:  "https://api.github.com/graphql",
+  headers: {
+    Authorization: `bearer ${process.env.REACT_APP_GITHUB_PAT}`,
+  } 
+});
+
 
 // todo type instead of interface? is this being used?
 export interface ICCProps {
@@ -122,11 +133,14 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
         const {document} = this.props;
         const comments = this.state.comments;
         return (
+          <ApolloProvider client={client}>
             <div>
             <h1>
                Hello welcome to the Jason's Annotateable Code Sample
             </h1>
-            <ClipLoader loading={this.state.loading}/>
+
+            {/* todo consider removing this for a bulma loading... */}
+            <ClipLoader loading={this.state.loading}/> 
             <p>
                 lambda functions
                 <button onClick={() => this.handleClick("async-dadjoke")}>{this.state.loading ? "Loading..." : "Call Async dadjoke"}</button>
@@ -153,6 +167,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
               onEditComment={this.editCommentHandler}/> 
             <h3>Document End</h3>
             </div>
+            </ApolloProvider>
         );
     }
 

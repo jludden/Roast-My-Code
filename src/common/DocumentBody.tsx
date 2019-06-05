@@ -1,6 +1,7 @@
 import * as React from "react";
 // import  '../../node_modules/color-themes-for-google-code-prettify/dist/themes/github.min.css'
 import "../App.css";
+
 // import '../google-code-prettify/prettify';
 
 // import '../prettifyTypes';
@@ -15,6 +16,9 @@ import { SubmitCommentResponse } from "./CommentableCode";
 import RoastComment from "./RoastComment";
 import DocumentCommentsView from "./DocumentCommentsView";
 import SubmitComment from "./SubmitCommentForm";
+
+import "rbx/index.css";
+import { Column, Container, Section } from "rbx";
 
 
 // import { LineRenderer } from './SyntaxRenderer';
@@ -64,7 +68,7 @@ export default class DocumentBody extends React.Component<
     const decoded = atob(this.props.content);
     return (
       <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
-        <button type="button" onClick={this.handleButtonPress}>Add Click</button>
+        {/* <button type="button" onClick={this.handleButtonPress}>Add Click</button>
         <h3> number of clicks: {this.state.clicksCnt} </h3>
         <pre> currently selected: {String(this.state.currentlySelected)}</pre>
         <SubmitComment
@@ -73,16 +77,39 @@ export default class DocumentBody extends React.Component<
           selectedText={this.state.selectedText}
           onSubmitComment={this.props.onSubmitComment}
         />
-        <pre> comments selected: {this.getComments()}</pre>
+        <pre> comments selected: {this.getComments()}</pre> */}
 
-        <h2> react-syntax-highlighter (doc-body)</h2>
+        <Section backgroundColor = "primary" gradient="warning">
+                <Container color="primary">
+        <Column.Group>
+          <Column size="three-quarters">
+              <SyntaxHighlighter
+                language="kotlin"
+                style={github}
+                className="left-align"
+                showLineNumbers={true}
+                renderer={this.renderSyntaxLines}
+              >
+                {decoded}
+              </SyntaxHighlighter>
+          </Column>
+          <Column size="one-quarter" backgroundColor="primary">
+            <DocumentCommentsView
+              lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
+              onEditComment={this.props.onEditComment}
+              lineRefs={this.state.lineRefs}/>
+          </Column>
+        </Column.Group>
+        </Container>
+        </Section>
 
 
+{/* 
         <div className="flex-container">
-          <div id="doc-body" className={`flex-item App-body`}>
+          <div id="doc-body" className={`flex-item App-body`}> */}
             {/* possibly want to use a ref here https://reactjs.org/docs/refs-and-the-dom.html */}
             {/* <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={()=>{LineRenderer()}}>{decoded}</SyntaxHighlighter> */}
-            <SyntaxHighlighter
+            {/* <SyntaxHighlighter
               language="kotlin"
               style={github}
               className="left-align"
@@ -96,7 +123,7 @@ export default class DocumentBody extends React.Component<
             lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
             onEditComment={this.props.onEditComment}
             lineRefs={this.state.lineRefs}/>
-        </div>
+        </div> */}
 
         {/* <h2> code-prettifier </h2>
                 <pre className="prettyprint linenums">
