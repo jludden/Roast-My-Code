@@ -79,8 +79,8 @@ export default class DocumentBody extends React.Component<
         />
         <pre> comments selected: {this.getComments()}</pre> */}
 
-        <Section backgroundColor = "primary" gradient>
-                <Container  color="primary">
+        <Section backgroundColor = "primary" gradient="warning">
+                <Container color="primary">
         <Column.Group>
           <Column size="three-quarters">
               <SyntaxHighlighter

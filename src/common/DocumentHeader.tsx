@@ -1,7 +1,8 @@
 import * as React from "react";
 import '../App.css';
 import API, { IGithubSearchResults } from "../api/API";
-import { FaBeer, FaBook, FaSearch, FaCodeBranch } from 'react-icons/fa';
+import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub } from 'react-icons/fa';
+import { RepoSearch } from "./RepoSearch";
 
 // import ICCProps from './CommentableCode';
 
@@ -36,15 +37,18 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
 
     public render() {
         return (
-            <Section >
+            <Section>
                 <Container>
                     <Title>{this.props.documentName}</Title>
-                    <Title subtitle>number of comments: {this.props.commentsCount}</Title>
+                    <Title subtitle><FaGithub/> number of comments: {this.props.commentsCount}</Title>
+                    
                     <Tag.Group>
                         <Tag rounded> Java </Tag>
                         <Tag> Kotlin <Delete></Delete></Tag>
                         <Tag delete> just deletes </Tag>
                     </Tag.Group>
+
+                    <RepoSearch />
 
                     {/* TEST PANEL */}
                     <Panel>
