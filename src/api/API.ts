@@ -65,11 +65,12 @@ class API {
     return (await this.axiosInstance.get("/.netlify/functions/getRepo")).data;
   }
 
-  public async searchRepos(query: string): Promise<IGithubSearchResults> {
-    return await this.axiosInstance.get(
-      `https://api.github.com/search/repositories?q=${query}`
-    )
-  }
+  // old Github API V3 - now using GraphQL V4 in RepoSearch
+  // public async searchRepos(query: string): Promise<IGithubSearchResults> {
+  //   return await this.axiosInstance.get(
+  //     `https://api.github.com/search/repositories?q=${query}`
+  //   )
+  // }
 }
 
 export interface IGithubRepo {

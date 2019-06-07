@@ -2,7 +2,7 @@ import * as React from "react";
 import '../App.css';
 import API, { IGithubSearchResults } from "../api/API";
 import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub } from 'react-icons/fa';
-import { RepoSearch } from "./RepoSearch";
+import RepoSearch from "./RepoSearch";
 
 // import ICCProps from './CommentableCode';
 
@@ -48,17 +48,22 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
                         <Tag delete> just deletes </Tag>
                     </Tag.Group>
 
-                    <RepoSearch />
+                    {/* <RepoSearch/> */}
+
+                    <RepoSearch queryVariables={{
+                        queryString:"language:JavaScript stars:>10000",
+                        first:5
+                        }}/>
 
                     {/* TEST PANEL */}
-                    <Panel>
+                    {/* <Panel>
                         <Panel.Heading>repositories</Panel.Heading>
                         <Panel.Block>
                             <Control iconLeft>
-                            <Input size="small" type="text" placeholder="search" />
-                            <Icon size="small" align="left">
-                                <FaSearch />
-                            </Icon>
+                                <Input size="small" type="text" placeholder="search" />
+                                <Icon size="small" align="left">
+                                    <FaSearch />
+                                </Icon>
                             </Control>
                         </Panel.Block>
                         <Panel.Tab.Group>
@@ -68,6 +73,8 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
                             <Panel.Tab>sources</Panel.Tab>
                             <Panel.Tab>forks</Panel.Tab>
                         </Panel.Tab.Group>
+                        <RepoSearch queryString="language:JavaScript stars:>10000" first={5}/>
+
                         <Panel.Block as="a" active>
                             <Panel.Icon>
                                 <FaBook />
@@ -113,10 +120,10 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
                             reset all filters
                             </Button>
                         </Panel.Block>
-                        </Panel>
+                        </Panel> */}
 
                     {/* OLD  */}
-                    <Field kind="addons">
+                    {/* <Field kind="addons">
                         <Control>
                             <Input placeholder="Find a repository" 
                                 type="text" 
@@ -127,38 +134,38 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
                         <Control>
                             <Button color="info" onClick={this.handleSearch}>Search</Button>
                         </Control>
-                    </Field>
+                    </Field> */}
 
-                    <p>COUNT: {this.state.results.data.total_count}</p>
+                    {/* <p>COUNT: {this.state.results.data.total_count}</p>
                     {this.state.results.data.items.map(item => (
                        ` <p> 
                             item: ${item.name}
                         <p/>`
-                    ))}
+                    ))} */}
                 </Container>
             </Section>
         );
     }
 
-    private handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {
-        this.setState({query: event.currentTarget.value});
-    }
+    // private handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {
+    //     this.setState({query: event.currentTarget.value});
+    // }
 
-    private handleSearch = async (event: React.SyntheticEvent<EventTarget>) => {
-        event.preventDefault();   
+    // private handleSearch = async (event: React.SyntheticEvent<EventTarget>) => {
+    //     event.preventDefault();   
 
-        const query = this.state.query; // todo
-        if (query) {
-            var results = await API.searchRepos(query);
-            this.setState({results});
-            this.setState({queryColor: "success"});
+    //     const query = this.state.query; // todo
+    //     if (query) {
+    //         var results = await API.searchRepos(query);
+    //         this.setState({results});
+    //         this.setState({queryColor: "success"});
 
-        }
-        else {
-            this.setState({queryColor: "danger"});
-        }
+    //     }
+    //     else {
+    //         this.setState({queryColor: "danger"});
+    //     }
 
-    };
+    // };
 
                         /* <Field kind="addons">
                                 <Control>
