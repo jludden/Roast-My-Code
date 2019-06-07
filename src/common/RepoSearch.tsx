@@ -128,12 +128,12 @@ public render() {
             <Query<Data, IGithubQueryVariables> query={REPO_SEARCH_QUERY} variables={this.state.queryVariables}>
               {({ loading, error, data }) => {
                 if (loading) return <PanelWarningLine text="Loading..."/>;
-                if (error || !data) return <PanelWarningLine text="Error :(" color="danger"/>;
+                if (error || !data || !data.search) return <PanelWarningLine text="Error :(" color="danger"/>;
                 if (data.search.repositoryCount < 1) return <PanelWarningLine text="No Results" color="warning"/>;
 
                 return (
                     data.search.edges.map(repo => (
-                      <Panel.Block as="a" active key={repo.node.databaseId}>
+                      <Panel.Block active key={repo.node.databaseId}>
                         <Panel.Icon>
                           <FaCodeBranch />
                         </Panel.Icon>                        

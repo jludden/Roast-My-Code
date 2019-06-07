@@ -3,6 +3,7 @@ import '../App.css';
 import API, { IGithubSearchResults } from "../api/API";
 import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import RepoSearch from "./RepoSearch";
+import RepoExplorer from "./RepoExplorer";
 
 // import ICCProps from './CommentableCode';
 
@@ -53,6 +54,10 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
                     <RepoSearch queryVariables={{
                         queryString:"language:JavaScript stars:>10000",
                         first:5
+                        }}/>
+
+                    <RepoExplorer queryVariables={{
+                        path:"master:app/src/main/java/me/jludden/reeflifesurvey"
                         }}/>
 
                     {/* TEST PANEL */}

@@ -8,9 +8,24 @@ import RoastComment from "./RoastComment";
 import { ClipLoader } from 'react-spinners'; // todo try bulma progress bar
 import { ApolloProvider, QueryResult } from "react-apollo";
 import ApolloClient from "apollo-boost";
+import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
+// import schema from '../api/github.schema.json';
+import IntrospectionResultData from '../generated/graphql';
 
-//"https://48p1r2roz4.sse.codesandbox.io"
+
+
+// import { generateGithubSchema } from "../api/generateGithubSchema";
+// todo move apollo setup to new file
+//"https://48p1r2roz4.sse.codesandbox.io"/
+// https://github.com/nuxt-community/apollo-module/issues/70
+// introspectionQueryResultData: (schema as any)
+
+const fragmentMatcher = new IntrospectionFragmentMatcher({
+  introspectionQueryResultData: IntrospectionResultData
+})
+const cache = new InMemoryCache({ fragmentMatcher });
 const client = new ApolloClient({
+  cache,
   uri:  "https://api.github.com/graphql",
   headers: {
     Authorization: `bearer ${process.env.REACT_APP_GITHUB_PAT}`,
@@ -147,6 +162,8 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
                 <button onClick={() => this.handleClick("fauna-crud")}>{this.state.loading ? "Loading..." : "Call fauna crud"}</button>
                 <button onClick={() => this.handleClick("getRepo")}>{this.state.loading ? "Loading..." : "Call getRepo"}</button>
                 <button onClick={() => this.handleClick("hello-world")}>{this.state.loading ? "Loading..." : "Call hello-world"}</button>
+                <button onClick={() => this.handleGenerateSchema}>{this.state.loading ? "Loading..." : "generate github schema"}</button>
+
                 <br></br>
                 <span>{this.state.msg}</span>
             </p>
@@ -179,4 +196,8 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
           .then(response => response.json())
           .then(json => this.setState({ loading: false, msg: json.msg }));
     }
+
+    private handleGenerateSchema = () => {
+      // generateGithubSchema();
+  }
 }
