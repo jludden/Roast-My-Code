@@ -7,6 +7,7 @@ import {
   FaBook,
   FaFolder,
   FaSearch,
+  FaEllipsisH,
   FaCodeBranch,
   FaGithub,
   FaExclamationCircle
@@ -29,8 +30,8 @@ import {
 } from "rbx";
 
 export interface IGithubQueryProps {
-  queryVariables: IGithubQueryVariables
-  // onEditComment: ((details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>) 
+  queryVariables: IGithubQueryVariables,
+  loadFile: (itemId: string) => void // when a file is selected
 }
 
 interface IRepoSearchState {
@@ -46,47 +47,19 @@ export interface IGithubQueryVariables {
 export interface Data {
   repository: {
     folder: {
-      entries: Array<{ oid: string, name: string, object: {
-        oid: string,
-        text: string
-      } }>;
+      entries: Array<Line>;
     }
   }
 }
 
-// export interface IGithubRepo2 {
-//   // todo ID or other key field?
-//   name: string;
-//   databaseId: number;
-//   url: string; // "https://github.com/freeCodeCamp/freeCodeCamp"
-//   createdAt: string; //"2014-12-24T17:49:19Z"
-//   updatedAt: string;
-//   descriptionHTML: string;
-//   //forks
-
-//   languages: {
-//     nodes: Array<{ name: string }>;
-//   };
-//   primaryLanguage: {
-//     color: string; //"#f1e05a"
-//     name: string;
-//   };
-//   stargazers: {
-//     totalCount: number;
-//   };
-// }
-
-// const searchAPI = ((text: string) => <RepoSearchResults queryVariables={{
-//   queryString: text,
-//   first:5
-//   }}/>);
-
-// const searchAPI = ((text:string) => {
-//   setState
-// };
-
-// const searchAPIDebounced = AwesomeDebouncePromise(searchAPI, 500);
-
+interface Line {
+  oid: string, 
+  name: string, 
+  object: {
+    oid: string,
+    text: string
+  }
+}
 
 export default class RepoExplorer extends React.Component<IGithubQueryProps, IRepoSearchState> {
   public state: IRepoSearchState = {
@@ -105,11 +78,37 @@ export default class RepoExplorer extends React.Component<IGithubQueryProps, IRe
     // this.setState({queryVariables: {queryString: query, first: 5}});
   }
 
+  handleLineClicked = (line: Line) => { // todo if no selection also allow adding comment?
 
-public render() {
-  return (
+    console.log(`RepoExplorer line clicked ${line.name}`);
+
+    // if line is a file, load file into the commentable code container
+    if (line && line.object && line.object.oid) {
+      // loadFile()
+    }
+    else if (line && line.name) {  // if line is a folder, load directory
+      const queryVariables = this.state.queryVariables;
+      queryVariables.path = `${queryVariables.path}/${line.name}`;
+      this.setState({queryVariables});
+    }
+  }
+
+  inParentDirectory() {
+    return this.state.queryVariables.path == "master:app";
+  }
+
+  handleNavUp = () => {
+    const queryVariables = this.state.queryVariables;
+    var tempPath = queryVariables.path;
+    queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf("/"));
+    this.setState({queryVariables});
+  }
+
+
+  public render() {
+    return (
           <Panel>
-            <Panel.Heading>Repositories</Panel.Heading>
+            <Panel.Heading>Repository Contents</Panel.Heading>
             <Panel.Block>
               <Control iconLeft>
                 <Input size="small" type="text" placeholder="search" onChange={this.handleQueryChange} />
@@ -119,12 +118,22 @@ public render() {
               </Control>
             </Panel.Block>
             <Panel.Tab.Group>
-              <Panel.Tab active>all</Panel.Tab>
-              <Panel.Tab>public</Panel.Tab>
+              <Panel.Tab active>files</Panel.Tab>
+              <Panel.Tab>commits</Panel.Tab>
               <Panel.Tab>private</Panel.Tab>
               <Panel.Tab>sources</Panel.Tab>
               <Panel.Tab>forks</Panel.Tab>
             </Panel.Tab.Group>
+
+            {/* show a ... button to navigate upwards if we're not in the top directory */}
+            { !this.inParentDirectory() &&
+              <Panel.Block onClick={this.handleNavUp}>
+              <Panel.Icon>
+                <FaEllipsisH />
+              </Panel.Icon>
+            </Panel.Block>
+            }
+
             <Query<Data, IGithubQueryVariables> query={REPO_EXPLORER_QUERY} variables={this.state.queryVariables}>
               {({ loading, error, data }) => {
                 if (loading) return <PanelWarningLine text="Loading..."/>;
@@ -133,7 +142,7 @@ public render() {
 
                 return (
                     data.repository.folder.entries.map(file => (
-                      <Panel.Block active key={file.oid}>
+                      <Panel.Block active key={file.oid} onClick={() => this.handleLineClicked(file)}>
                         { file.object.text &&
                           <Panel.Icon>
                           <FaBook />
@@ -144,7 +153,7 @@ public render() {
                           <FaFolder />
                         </Panel.Icon>
                         }
-                        {file.name}             
+                       {file.name} 
                       </Panel.Block>
                     ))
                 )}} 

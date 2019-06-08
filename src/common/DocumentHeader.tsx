@@ -52,13 +52,14 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
                     {/* <RepoSearch/> */}
 
                     <RepoSearch queryVariables={{
-                        queryString:"language:JavaScript stars:>10000",
-                        first:5
+                        queryString: "language:JavaScript stars:>10000",
+                        first: 5
                         }}/>
-
-                    <RepoExplorer queryVariables={{
-                        path:"master:app/src/main/java/me/jludden/reeflifesurvey"
-                        }}/>
+                        
+                    <RepoExplorer 
+                        queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
+                        loadFile={this.OnRepoExplorerItemClicked}
+                        />
 
                     {/* TEST PANEL */}
                     {/* <Panel>
@@ -150,6 +151,11 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
                 </Container>
             </Section>
         );
+    }
+
+    // when a file is selected in the repository explorer, load it into view
+    private OnRepoExplorerItemClicked = (itemID: string) => {
+        // todo load item into commentable code
     }
 
     // private handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {

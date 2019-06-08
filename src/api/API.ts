@@ -98,5 +98,7 @@ export interface IGithubSearchResults {
 // export default new API("http://localhost:3001/");
 // export default new API("http://localhost:34567/.netlify/functions/fauna-crud");
 // export default new API("http://localhost:9000/fauna-crud");
+
+// https://jludden-react.netlify.com
 export default new API();
 

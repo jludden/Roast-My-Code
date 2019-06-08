@@ -109,7 +109,7 @@ export default class RepoSearch extends React.Component<IGithubQueryProps, IRepo
 public render() {
   return (
           <Panel>
-            <Panel.Heading>Repositories</Panel.Heading>
+            <Panel.Heading>Search Repositories</Panel.Heading>
             <Panel.Block>
               <Control iconLeft>
                 <Input size="small" type="text" placeholder="search" onChange={this.handleQueryChange} />
@@ -120,10 +120,10 @@ public render() {
             </Panel.Block>
             <Panel.Tab.Group>
               <Panel.Tab active>all</Panel.Tab>
-              <Panel.Tab>public</Panel.Tab>
-              <Panel.Tab>private</Panel.Tab>
-              <Panel.Tab>sources</Panel.Tab>
-              <Panel.Tab>forks</Panel.Tab>
+              <Panel.Tab>recommended</Panel.Tab>
+              <Panel.Tab>most commented</Panel.Tab>
+              <Panel.Tab>starred</Panel.Tab>
+              <Panel.Tab>personal</Panel.Tab>
             </Panel.Tab.Group>
             <Query<Data, IGithubQueryVariables> query={REPO_SEARCH_QUERY} variables={this.state.queryVariables}>
               {({ loading, error, data }) => {
