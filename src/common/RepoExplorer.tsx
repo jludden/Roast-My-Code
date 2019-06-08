@@ -16,6 +16,7 @@ import {
   Section,
   Title,
   Tag,
+  Breadcrumb,
   Container,
   Input,
   Button,
@@ -104,6 +105,17 @@ export default class RepoExplorer extends React.Component<IGithubQueryProps, IRe
     this.setState({queryVariables});
   }
 
+  handleNavTo = (path: string) => {
+    const queryVariables = this.state.queryVariables;
+    var tempPath = queryVariables.path;
+    queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(path)+path.length);
+    this.setState({queryVariables});
+  }
+
+  paths(): string[] {
+    return this.state.queryVariables.path.split("/");
+  }
+
 
   public render() {
     return (
@@ -117,20 +129,25 @@ export default class RepoExplorer extends React.Component<IGithubQueryProps, IRe
                 </Icon>
               </Control>
             </Panel.Block>
-            <Panel.Tab.Group>
+            {/* <Panel.Tab.Group>
               <Panel.Tab active>files</Panel.Tab>
               <Panel.Tab>commits</Panel.Tab>
               <Panel.Tab>private</Panel.Tab>
               <Panel.Tab>sources</Panel.Tab>
               <Panel.Tab>forks</Panel.Tab>
-            </Panel.Tab.Group>
+            </Panel.Tab.Group> */}
 
-            {/* show a ... button to navigate upwards if we're not in the top directory */}
+            {/* top line will be for navigating up the file path*/}
             { !this.inParentDirectory() &&
-              <Panel.Block onClick={this.handleNavUp}>
-              <Panel.Icon>
+              <Panel.Block>
+              <Panel.Icon onClick={this.handleNavUp}>
                 <FaEllipsisH />
               </Panel.Icon>
+              <Breadcrumb align="centered">
+                { this.paths().map( path => (
+                  <Breadcrumb.Item onClick={() => this.handleNavTo(path)} key={path}> {path} </Breadcrumb.Item>
+                ))}     
+              </Breadcrumb>
             </Panel.Block>
             }
 
