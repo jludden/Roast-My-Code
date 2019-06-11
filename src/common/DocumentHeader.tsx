@@ -4,6 +4,7 @@ import API, { IGithubSearchResults } from "../api/API";
 import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import RepoSearch from "./RepoSearch";
 import RepoExplorer from "./RepoExplorer";
+import { Blob } from '../generated/graphql';
 
 // import ICCProps from './CommentableCode';
 
@@ -13,6 +14,7 @@ import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, De
 export interface ICCProps {
     documentName: string,
     commentsCount: number,
+    loadFileHandler: (file: Blob) => void // when a file is selected
 }
 
 // color: Variables["colors"]
@@ -58,7 +60,7 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
                         
                     <RepoExplorer 
                         queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
-                        loadFile={this.OnRepoExplorerItemClicked}
+                        loadFileHandler={this.props.loadFileHandler}
                         />
 
                     {/* TEST PANEL */}
@@ -153,10 +155,7 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
         );
     }
 
-    // when a file is selected in the repository explorer, load it into view
-    private OnRepoExplorerItemClicked = (itemID: string) => {
-        // todo load item into commentable code
-    }
+
 
     // private handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {
     //     this.setState({query: event.currentTarget.value});

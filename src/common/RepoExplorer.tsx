@@ -2,6 +2,8 @@ import * as React from "react";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { Query } from "react-apollo";
 import { gql } from "apollo-boost";
+import { Blob } from '../generated/graphql';
+
 import {
   FaBeer,
   FaBook,
@@ -32,7 +34,7 @@ import {
 
 export interface IGithubQueryProps {
   queryVariables: IGithubQueryVariables,
-  loadFile: (itemId: string) => void // when a file is selected
+  loadFileHandler: (file: Blob) => void // when a file is selected
 }
 
 interface IRepoSearchState {
@@ -56,10 +58,11 @@ export interface Data {
 interface Line {
   oid: string, 
   name: string, 
-  object: {
-    oid: string,
-    text: string
-  }
+  object: Blob
+  // object: {
+  //   oid: string,
+  //   text: string
+  // }
 }
 
 export default class RepoExplorer extends React.Component<IGithubQueryProps, IRepoSearchState> {
@@ -73,19 +76,17 @@ export default class RepoExplorer extends React.Component<IGithubQueryProps, IRe
   
   searchAPIDebounced = AwesomeDebouncePromise(this.searchAPI, 500);
 
+  // todo handle this search box? or disable it
   handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {
     const query = event.currentTarget.value; // todo debounce and instantly search?
-    this.searchAPIDebounced(query);
+    // this.searchAPIDebounced(query);
     // this.setState({queryVariables: {queryString: query, first: 5}});
   }
 
   handleLineClicked = (line: Line) => { // todo if no selection also allow adding comment?
-
-    console.log(`RepoExplorer line clicked ${line.name}`);
-
     // if line is a file, load file into the commentable code container
-    if (line && line.object && line.object.oid) {
-      // loadFile()
+    if (line && line.name && line.object && line.object.oid) {
+      this.props.loadFileHandler(line.object); 
     }
     else if (line && line.name) {  // if line is a folder, load directory
       const queryVariables = this.state.queryVariables;
@@ -95,20 +96,19 @@ export default class RepoExplorer extends React.Component<IGithubQueryProps, IRe
   }
 
   inParentDirectory() {
-    return this.state.queryVariables.path == "master:app";
+    return this.state.queryVariables.path === "master:app";
   }
 
-  handleNavUp = () => {
+  // props.queryVariables.path will look something like:
+  //  "master:app/src/main/java/me/jludden/reeflifesurvey"
+  // pass in a folder name (e.g. "java") to go up to that level
+  //  "master:app/src/main/java/"
+  // or pass in nothing to just go up one level
+  handleNavTo = (folder: string = "/") => {
+    const offset = (folder === "/") ? 0 : folder.length; // preserve the ending slash
     const queryVariables = this.state.queryVariables;
     var tempPath = queryVariables.path;
-    queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf("/"));
-    this.setState({queryVariables});
-  }
-
-  handleNavTo = (path: string) => {
-    const queryVariables = this.state.queryVariables;
-    var tempPath = queryVariables.path;
-    queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(path)+path.length);
+    queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(folder) + offset);
     this.setState({queryVariables});
   }
 
@@ -140,7 +140,7 @@ export default class RepoExplorer extends React.Component<IGithubQueryProps, IRe
             {/* top line will be for navigating up the file path*/}
             { !this.inParentDirectory() &&
               <Panel.Block>
-              <Panel.Icon onClick={this.handleNavUp}>
+              <Panel.Icon onClick={() => this.handleNavTo()}>
                 <FaEllipsisH />
               </Panel.Icon>
               <Breadcrumb align="centered">
@@ -165,6 +165,7 @@ export default class RepoExplorer extends React.Component<IGithubQueryProps, IRe
                           <FaBook />
                         </Panel.Icon> 
                         }
+                        {/* todo this will cause .png to appear as folder */}
                         { !file.object.text &&
                         <Panel.Icon>
                           <FaFolder />
@@ -210,6 +211,7 @@ const REPO_EXPLORER_QUERY = gql`
             ... on Blob {
               id 
               oid 
+              commitResourcePath
               commitUrl 
               isTruncated
               text

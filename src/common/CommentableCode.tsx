@@ -10,7 +10,7 @@ import { ApolloProvider, QueryResult } from "react-apollo";
 import ApolloClient from "apollo-boost";
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 // import schema from '../api/github.schema.json';
-import IntrospectionResultData from '../generated/graphql';
+import IntrospectionResultData, { Blob } from '../generated/graphql';
 
 
 
@@ -134,14 +134,16 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
     console.log(repo);
     const loading = false;
 
-    
     // todo remove: just adding some fake comments until I fix the REST endpoints
    /* comments[0] = new RoastComment({id: 12398897945, data: {lineNumber: 10, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
     comments[1] = new RoastComment({id: 129879875, data: {lineNumber: 40, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
     comments[2] = new RoastComment({id: 4387862, data: {lineNumber: 90, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
     comments[3] = new RoastComment({id: 9879876, data: {lineNumber: 100, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
 */
-    this.setState({ comments, repo, loading });
+
+    // todo load repo on startup
+    this.setState({ comments, loading });
+  // this.setState({ comments, repo, loading });
   }
 
     public render() {
@@ -162,8 +164,6 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
                 <button onClick={() => this.handleClick("fauna-crud")}>{this.state.loading ? "Loading..." : "Call fauna crud"}</button>
                 <button onClick={() => this.handleClick("getRepo")}>{this.state.loading ? "Loading..." : "Call getRepo"}</button>
                 <button onClick={() => this.handleClick("hello-world")}>{this.state.loading ? "Loading..." : "Call hello-world"}</button>
-                <button onClick={() => this.handleGenerateSchema}>{this.state.loading ? "Loading..." : "generate github schema"}</button>
-
                 <br></br>
                 <span>{this.state.msg}</span>
             </p>
@@ -175,7 +175,10 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             </p>
             <data/>
             <h3>Document Begin:</h3>
-            <DocumentHeader documentName={this.state.repo.data.name} commentsCount={this.state.comments.length}/>
+            <DocumentHeader 
+              documentName={this.state.repo.data.name} 
+              commentsCount={this.state.comments.length}
+              loadFileHandler={this.LoadFileBlob}/>
             <DocumentBody 
               name={this.state.repo.data.name}
               content={this.state.repo.data.content}
@@ -197,7 +200,14 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
           .then(json => this.setState({ loading: false, msg: json.msg }));
     }
 
-    private handleGenerateSchema = () => {
-      // generateGithubSchema();
-  }
+    // when a file is selected in the repository explorer, load it into view
+    private LoadFileBlob = (file: Blob) => {
+      // todo load item into commentable code
+      var repo = this.state.repo;
+      if (file.text){
+        repo.data.content = file.text;
+      }
+      // content={this.state.repo.data.content}
+      this.setState({repo});
+    }
 }

@@ -65,7 +65,8 @@ export default class DocumentBody extends React.Component<
   //`flex-item ${App-body}`}
 
   public render() {
-    const decoded = atob(this.props.content);
+    // const decoded = atob(this.props.content);
+    const decoded = this.props.content; // todo figure out how we're getting the raw file from github
     return (
       <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
         {/* <button type="button" onClick={this.handleButtonPress}>Add Click</button>
@@ -83,6 +84,7 @@ export default class DocumentBody extends React.Component<
                 <Container color="primary">
         <Column.Group>
           <Column size="three-quarters">
+              {decoded && 
               <SyntaxHighlighter
                 language="kotlin"
                 style={github}
@@ -91,7 +93,7 @@ export default class DocumentBody extends React.Component<
                 renderer={this.renderSyntaxLines}
               >
                 {decoded}
-              </SyntaxHighlighter>
+              </SyntaxHighlighter> }
           </Column>
           <Column size="one-quarter" backgroundColor="primary">
             <DocumentCommentsView
@@ -155,6 +157,7 @@ export default class DocumentBody extends React.Component<
   // private lineRefs: HTMLDivElement[] = []; // todo to be state or not?
   private setLineRef = (el: HTMLDivElement) => 
   {
+    if (!el || !el.dataset) return;
     const lineNumber = parseInt(el.dataset.index || "");
     const lineRefs =  this.state.lineRefs;
     lineRefs[lineNumber] = el;
