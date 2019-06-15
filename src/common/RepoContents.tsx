@@ -32,12 +32,13 @@ import {
   Icon
 } from "rbx";
 
-export interface IGithubQueryProps {
+export interface IRepoContentsProps {
+  title: string,
   queryVariables: IGithubQueryVariables,
   loadFileHandler: (file: Blob) => void // when a file is selected
 }
 
-interface IRepoSearchState {
+interface IRepoContentsState {
   queryVariables: IGithubQueryVariables
 }
 
@@ -65,8 +66,8 @@ interface Line {
   // }
 }
 
-export default class RepoExplorer extends React.Component<IGithubQueryProps, IRepoSearchState> {
-  public state: IRepoSearchState = {
+export default class RepoExplorer extends React.Component<IRepoContentsProps, IRepoContentsState> {
+  public state: IRepoContentsState = {
     queryVariables: this.props.queryVariables
   };
 
@@ -120,7 +121,7 @@ export default class RepoExplorer extends React.Component<IGithubQueryProps, IRe
   public render() {
     return (
           <Panel>
-            <Panel.Heading>Repository Contents</Panel.Heading>
+            <Panel.Heading>{this.props.title}</Panel.Heading>
             <Panel.Block>
               <Control iconLeft>
                 <Input size="small" type="text" placeholder="search" onChange={this.handleQueryChange} />
@@ -157,6 +158,7 @@ export default class RepoExplorer extends React.Component<IGithubQueryProps, IRe
                 if (error || !data || !data.repository) return <PanelWarningLine text="Error :(" color="danger"/>;
                 // if (data.search.repositoryCount < 1) return <PanelWarningLine text="No Results" color="warning"/>;
 
+                // todo add Tags for number of comments if > 0
                 return (
                     data.repository.folder.entries.map(file => (
                       <Panel.Block active key={file.oid} onClick={() => this.handleLineClicked(file)}>

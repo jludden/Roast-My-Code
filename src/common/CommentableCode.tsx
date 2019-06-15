@@ -11,7 +11,8 @@ import ApolloClient from "apollo-boost";
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 // import schema from '../api/github.schema.json';
 import IntrospectionResultData, { Blob } from '../generated/graphql';
-
+import RepoSearchContainer from "./RepoSearch/RepoSearchContainer";
+import RepoContents from "./RepoContents";
 
 
 // import { generateGithubSchema } from "../api/generateGithubSchema";
@@ -175,10 +176,15 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             </p>
             <data/>
             <h3>Document Begin:</h3>
+            <RepoSearchContainer
+              loadFileHandler={this.LoadFileBlob}/>
+            <RepoContents 
+              title={this.state.repo.data.name}
+              queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
+              loadFileHandler={this.LoadFileBlob}/>
             <DocumentHeader 
               documentName={this.state.repo.data.name} 
-              commentsCount={this.state.comments.length}
-              loadFileHandler={this.LoadFileBlob}/>
+              commentsCount={this.state.comments.length}/>
             <DocumentBody 
               name={this.state.repo.data.name}
               content={this.state.repo.data.content}

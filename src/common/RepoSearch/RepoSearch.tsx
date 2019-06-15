@@ -2,6 +2,9 @@ import * as React from "react";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { Query } from "react-apollo";
 import { gql } from "apollo-boost";
+import { Repository } from '../../generated/graphql';
+
+
 import {
   FaBeer,
   FaBook,
@@ -45,7 +48,8 @@ export interface IGithubQueryVariables {
 export interface Data {
   search: {
     repositoryCount: number;
-    edges: Array<{ node: IGithubRepo2 }>;
+    edges: Array<{ node: Repository }>;
+    // edges: Array<{ node: IGithubRepo2 }>;
   };
 }
 
@@ -53,6 +57,7 @@ export interface Data {
 //   node: IGithubRepo2
 // }
 
+// todo use Repository from graphql.tsx
 // todo combine with other github repo interface, obviously
 export interface IGithubRepo2 {
   // todo ID or other key field?
@@ -133,18 +138,18 @@ public render() {
 
                 return (
                     data.search.edges.map(repo => (
-                      <Panel.Block active key={repo.node.databaseId}>
+                      <Panel.Block active key={repo.node.id}>
                         <Panel.Icon>
                           <FaCodeBranch />
                         </Panel.Icon>                        
                         {repo.node.name}: last updated at {repo.node.updatedAt}, more
-                        here:<a href={repo.node.url} target="_blank">{repo.node.url}</a>
+                        here:<a href={repo.node.url} target="_blank" rel="noopener noreferrer">{repo.node.url}</a>
                         { repo.node.primaryLanguage &&
                           <Tag.Group>
                             <Tag rounded> {repo.node.primaryLanguage.name} </Tag>
+                            <Tag rounded> {repo.node.stargazers.totalCount} Stars</Tag>
                           </Tag.Group>
                         }
-                        
                       </Panel.Block>
                     ))
                 )}} 
@@ -243,6 +248,7 @@ const REPO_SEARCH_QUERY = gql`
         node {
           ... on Repository {
             name
+            id
             databaseId
             createdAt
             url
