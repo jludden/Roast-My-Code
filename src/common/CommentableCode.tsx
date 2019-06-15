@@ -181,12 +181,26 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             </p>
             <data/>
             <h3>Document Begin:</h3>
+
+            {/* Repo Search */}
             <RepoSearchContainer
               loadRepoHandler={this.LoadRepo}/>
+
+            {/* todo extract below to own component - nothing here unless repo is non null */}    
+            { this.state.repo && 
             <RepoContents 
-              title={(this.state.repo && this.state.repo.name) || "Welcome to Roast My Code"}
-              queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
+              repo={this.state.repo}
+              defaultBranch={this.getDefaultPath()}
+              // title={(this.state.repo && this.state.repo.nameWithOwner) || "Welcome to Roast My Code"}
+              // path: "master:app"
+              queryVariables={{
+                path: "", 
+                repoName: this.state.repo.name, 
+                repoOwner: this.state.repo.owner.login
+              }}
+              // queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
               loadFileHandler={this.LoadFileBlob}/>
+            }
             <DocumentHeader 
               documentName={this.state.file.fileName} 
               commentsCount={this.state.comments.length}/>
@@ -196,6 +210,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
               comments={this.state.comments}
               onSubmitComment={this.submitCommentHandler}
               onEditComment={this.editCommentHandler}/> 
+            
             <h3>Document End</h3>
             </div>
             </ApolloProvider>
@@ -225,5 +240,16 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
     // when a repository is selected from the repository searcher
     private LoadRepo = (repo: Repository) => {
       this.setState({repo});
+    }
+
+    // need a default path to get the initial files in the repository
+    // this is based on default branch plus a colon
+    // todo 
+    private getDefaultPath(): string {
+      if (this.state.repo && this.state.repo.defaultBranchRef) {
+        return this.state.repo.defaultBranchRef.name;
+        // return `${this.state.repo.defaultBranchRef.name}:`;
+      } 
+      return "master:";
     }
 }

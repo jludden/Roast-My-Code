@@ -11,7 +11,8 @@ import {
   FaSearch,
   FaCodeBranch,
   FaGithub,
-  FaExclamationCircle
+  FaExclamationCircle,
+  FaStar
 } from "react-icons/fa";
 import {
   Section,
@@ -52,46 +53,6 @@ export interface Data {
     // edges: Array<{ node: IGithubRepo2 }>;
   };
 }
-
-// interface IGithubRepoNode {
-//   node: IGithubRepo2
-// }
-
-// todo use Repository from graphql.tsx
-// todo combine with other github repo interface, obviously
-export interface IGithubRepo2 {
-  // todo ID or other key field?
-  name: string;
-  databaseId: number;
-  url: string; // "https://github.com/freeCodeCamp/freeCodeCamp"
-  createdAt: string; //"2014-12-24T17:49:19Z"
-  updatedAt: string;
-  descriptionHTML: string;
-  //forks
-
-  languages: {
-    nodes: Array<{ name: string }>;
-  };
-  primaryLanguage: {
-    color: string; //"#f1e05a"
-    name: string;
-  };
-  stargazers: {
-    totalCount: number;
-  };
-}
-
-// const searchAPI = ((text: string) => <RepoSearchResults queryVariables={{
-//   queryString: text,
-//   first:5
-//   }}/>);
-
-// const searchAPI = ((text:string) => {
-//   setState
-// };
-
-// const searchAPIDebounced = AwesomeDebouncePromise(searchAPI, 500);
-
 
 export default class RepoSearch extends React.Component<IGithubQueryProps, IRepoSearchState> {
   public state: IRepoSearchState = {
@@ -142,12 +103,12 @@ public render() {
                         <Panel.Icon>
                           <FaCodeBranch />
                         </Panel.Icon>                        
-                        {repo.node.name}: last updated at {repo.node.updatedAt}, more
+                        {repo.node.nameWithOwner}: last updated at {repo.node.updatedAt}, more
                         here:<a href={repo.node.url} target="_blank" rel="noopener noreferrer">{repo.node.url}</a>
                         { repo.node.primaryLanguage &&
                           <Tag.Group>
                             <Tag rounded> {repo.node.primaryLanguage.name} </Tag>
-                            <Tag rounded> {repo.node.stargazers.totalCount} Stars</Tag>
+                            <Tag rounded><Panel.Icon><FaStar /></Panel.Icon>{repo.node.stargazers.totalCount}</Tag>
                           </Tag.Group>
                         }
                       </Panel.Block>
@@ -247,11 +208,22 @@ const REPO_SEARCH_QUERY = gql`
       edges {
         node {
           ... on Repository {
+            nameWithOwner
             name
             id
             databaseId
             createdAt
+            descriptionHTML
             url
+            resourcePath
+            updatedAt
+            defaultBranchRef {
+              name
+            }
+            owner {
+              id
+              login
+            }
             primaryLanguage {
               name
               color
@@ -269,7 +241,7 @@ const REPO_SEARCH_QUERY = gql`
             forks {
               totalCount
             }
-            updatedAt
+           
           }
         }
       }

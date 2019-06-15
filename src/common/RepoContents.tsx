@@ -2,7 +2,7 @@ import * as React from "react";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { Query } from "react-apollo";
 import { gql } from "apollo-boost";
-import { Blob } from '../generated/graphql';
+import { Blob, Repository } from '../generated/graphql';
 
 import {
   FaBeer,
@@ -12,12 +12,14 @@ import {
   FaEllipsisH,
   FaCodeBranch,
   FaGithub,
-  FaExclamationCircle
+  FaExclamationCircle,
+  FaAngleDown
 } from "react-icons/fa";
 import {
   Section,
   Title,
   Tag,
+  Dropdown,
   Breadcrumb,
   Container,
   Input,
@@ -33,7 +35,9 @@ import {
 } from "rbx";
 
 export interface IRepoContentsProps {
-  title: string,
+  repo: Repository,
+  defaultBranch: string,
+  // title: string,
   queryVariables: IGithubQueryVariables,
   loadFileHandler: (fileName: string, blob: Blob) => void // when a file is selected
 }
@@ -44,7 +48,9 @@ interface IRepoContentsState {
 
 // to be included in the graphQL query
 export interface IGithubQueryVariables {
-  path: string; // path to this directory
+  path: string, // path to this directory
+  repoName: string,
+  repoOwner: string
 }
 
 // todo use types from generated graphql.tsx
@@ -71,18 +77,20 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
     queryVariables: this.props.queryVariables
   };
 
-  searchAPI = ((text: string) => {
-    this.setState({queryVariables: {path: text}});
-  });
+  // searchAPI = ((text: string) => {
+  //   const queryVariables = this.state.queryVariables;
+  //   queryVariables.path = text;
+  //   this.setState({queryVariables});
+  // });
   
-  searchAPIDebounced = AwesomeDebouncePromise(this.searchAPI, 500);
+  // searchAPIDebounced = AwesomeDebouncePromise(this.searchAPI, 500);
 
   // todo handle this search box? or disable it
-  handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {
-    const query = event.currentTarget.value; // todo debounce and instantly search?
-    // this.searchAPIDebounced(query);
-    // this.setState({queryVariables: {queryString: query, first: 5}});
-  }
+  // handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {
+  //   const query = event.currentTarget.value; 
+  //   // this.searchAPIDebounced(query);
+  //   // this.setState({queryVariables: {queryString: query, first: 5}});
+  // }
 
   handleLineClicked = (line: Line) => { // todo if no selection also allow adding comment?
     // if line is a file, load file into the commentable code container
@@ -91,13 +99,13 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
     }
     else if (line && line.name) {  // if line is a folder, load directory
       const queryVariables = this.state.queryVariables;
-      queryVariables.path = `${queryVariables.path}/${line.name}`;
+      queryVariables.path = `${queryVariables.path}${line.name}/`;
       this.setState({queryVariables});
     }
   }
 
   inParentDirectory() {
-    return this.state.queryVariables.path === "master:app";
+    return this.state.queryVariables.path === (this.props.defaultBranch+':');
   }
 
   // props.queryVariables.path will look something like:
@@ -117,19 +125,49 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
     return this.state.queryVariables.path.split("/");
   }
 
+  // todo reconsider
+  getQueryVariables(): IGithubQueryVariables {
+    const vars = this.state.queryVariables;
+    vars.path = this.props.defaultBranch+':'+vars.path;
+    return vars;
+  }
+
 
   public render() {
+    const title= (this.props.repo && this.props.repo.nameWithOwner) || "Welcome to Roast My Code";
+
     return (
-          <Panel>
-            <Panel.Heading>{this.props.title}</Panel.Heading>
-            <Panel.Block>
+          <Panel>            
+            <Panel.Heading>
+              {title}
+              <Dropdown style={{align: 'left'}}>
+                <Dropdown.Trigger>
+                  <Button>
+                    <span>{this.props.defaultBranch}</span>
+                    <FaAngleDown/>
+                  </Button>
+                </Dropdown.Trigger>
+                <Dropdown.Menu>
+                  <Dropdown.Content>
+                    <Dropdown.Item>Dropdown item</Dropdown.Item>
+                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
+                    <Dropdown.Item active>Active dropdown item</Dropdown.Item>
+                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item>With a divider</Dropdown.Item>
+                  </Dropdown.Content>
+                </Dropdown.Menu>
+              </Dropdown>            
+            </Panel.Heading>
+
+            {/* <Panel.Block>
               <Control iconLeft>
                 <Input size="small" type="text" placeholder="search" onChange={this.handleQueryChange} />
                 <Icon size="small" align="left">
                   <FaSearch />
                 </Icon>
               </Control>
-            </Panel.Block>
+            </Panel.Block> */}
             {/* <Panel.Tab.Group>
               <Panel.Tab active>files</Panel.Tab>
               <Panel.Tab>commits</Panel.Tab>
@@ -152,13 +190,16 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
             </Panel.Block>
             }
 
-            <Query<Data, IGithubQueryVariables> query={REPO_EXPLORER_QUERY} variables={this.state.queryVariables}>
+            <Query<Data, IGithubQueryVariables> query={REPO_EXPLORER_QUERY} variables={this.getQueryVariables()}>
               {({ loading, error, data }) => {
                 if (loading) return <PanelWarningLine text="Loading..."/>;
-                if (error || !data || !data.repository) return <PanelWarningLine text="Error :(" color="danger"/>;
+                if (error || !data || !data.repository || !data.repository.folder
+                  || !data.repository.folder.entries) return <PanelWarningLine text="Error :(" color="danger"/>;
                 // if (data.search.repositoryCount < 1) return <PanelWarningLine text="No Results" color="warning"/>;
 
+                // todo for path - automatically go into the directory with most comments!
                 // todo add Tags for number of comments if > 0
+                //  todo - aggregate comments to folder level
                 return (
                     data.repository.folder.entries.map(file => (
                       <Panel.Block active key={file.oid} onClick={() => this.handleLineClicked(file)}>
@@ -201,14 +242,27 @@ export const PanelWarningLine: React.SFC<IWarningText> = props => {
 
 
 // {"path": "master:app/src/main/java/me/jludden/reeflifesurvey"}
+//    repository(name: "ReefLifeSurvey---Species-Explorer", owner: "jludden") {
+//     repository(name: "react", owner: "facebook") {
+
+
 
 const REPO_EXPLORER_QUERY = gql`
-  query($path: String!) {
-    repository(name: "ReefLifeSurvey---Species-Explorer", owner: "jludden") {
-    folder: object(expression: $path) {
+  query($path: String!, $repoName: String!, $repoOwner: String!) {
+    repository(name: $repoName, owner: $repoOwner) {
+
+      refs(refPrefix:"refs/heads/", first: 100) {
+        nodes {
+          name
+        }
+      }
+
+      folder: object(expression: $path) {
       ... on Tree {
         entries {
           oid
+          name
+
           object {
             ... on Blob {
               id 
@@ -218,8 +272,7 @@ const REPO_EXPLORER_QUERY = gql`
               isTruncated
               text
             }
-          }
-          name
+          }          
         }
       }
     }
