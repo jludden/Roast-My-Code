@@ -35,7 +35,7 @@ import {
 export interface IRepoContentsProps {
   title: string,
   queryVariables: IGithubQueryVariables,
-  loadFileHandler: (file: Blob) => void // when a file is selected
+  loadFileHandler: (fileName: string, blob: Blob) => void // when a file is selected
 }
 
 interface IRepoContentsState {
@@ -87,7 +87,7 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
   handleLineClicked = (line: Line) => { // todo if no selection also allow adding comment?
     // if line is a file, load file into the commentable code container
     if (line && line.name && line.object && line.object.oid) {
-      this.props.loadFileHandler(line.object); 
+      this.props.loadFileHandler(line.name, line.object); 
     }
     else if (line && line.name) {  // if line is a folder, load directory
       const queryVariables = this.state.queryVariables;

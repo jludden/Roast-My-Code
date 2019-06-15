@@ -32,7 +32,7 @@ import {
 
 export interface IGithubQueryProps {
   queryVariables: IGithubQueryVariables
-  // onEditComment: ((details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>) 
+  loadRepoHandler: (repo: Repository) => void // when a repository is selected
 }
 
 interface IRepoSearchState {
@@ -138,7 +138,7 @@ public render() {
 
                 return (
                     data.search.edges.map(repo => (
-                      <Panel.Block active key={repo.node.id}>
+                      <Panel.Block active key={repo.node.id} onClick={() => this.props.loadRepoHandler(repo.node)}>
                         <Panel.Icon>
                           <FaCodeBranch />
                         </Panel.Icon>                        

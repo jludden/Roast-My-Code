@@ -10,7 +10,7 @@ import { ApolloProvider, QueryResult } from "react-apollo";
 import ApolloClient from "apollo-boost";
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 // import schema from '../api/github.schema.json';
-import IntrospectionResultData, { Blob } from '../generated/graphql';
+import IntrospectionResultData, { Blob, Repository } from '../generated/graphql';
 import RepoSearchContainer from "./RepoSearch/RepoSearchContainer";
 import RepoContents from "./RepoContents";
 
@@ -50,9 +50,17 @@ export enum SubmitCommentResponse {
   Error
 }
 
+// todo new interface:
+// export interface IFileDetails
+// name, content, comments, etc
+
 interface ICCState {
-  comments: RoastComment[];
-  repo: IGithubData,
+  comments: RoastComment[],
+  repo?: Repository,
+  file: {
+    fileName: string,
+    fileContents: string
+  },
   loading: boolean,
   msg: string
 }
@@ -60,14 +68,11 @@ interface ICCState {
 export default class CommentableCode extends React.Component<ICCProps, ICCState> {
     public state: ICCState = {
         comments: [],
-        repo: 
-        {
-            data: 
-            {
-                content: "",
-                name: ""
-            }      
+        file: {
+          fileName: "Hello World",
+          fileContents: ""
         },
+        repo: undefined,
         loading: true,
         msg: ""
     }
@@ -177,17 +182,17 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             <data/>
             <h3>Document Begin:</h3>
             <RepoSearchContainer
-              loadFileHandler={this.LoadFileBlob}/>
+              loadRepoHandler={this.LoadRepo}/>
             <RepoContents 
-              title={this.state.repo.data.name}
+              title={(this.state.repo && this.state.repo.name) || "Welcome to Roast My Code"}
               queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
               loadFileHandler={this.LoadFileBlob}/>
             <DocumentHeader 
-              documentName={this.state.repo.data.name} 
+              documentName={this.state.file.fileName} 
               commentsCount={this.state.comments.length}/>
             <DocumentBody 
-              name={this.state.repo.data.name}
-              content={this.state.repo.data.content}
+              name={this.state.file.fileName}
+              content={this.state.file.fileContents}
               comments={this.state.comments}
               onSubmitComment={this.submitCommentHandler}
               onEditComment={this.editCommentHandler}/> 
@@ -206,14 +211,19 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
           .then(json => this.setState({ loading: false, msg: json.msg }));
     }
 
-    // when a file is selected in the repository explorer, load it into view
-    private LoadFileBlob = (file: Blob) => {
+    // when a file is selected in the repository contents explorer, load it into view
+    private LoadFileBlob = (fileName: string, blob: Blob) => {
       // todo load item into commentable code
-      var repo = this.state.repo;
-      if (file.text){
-        repo.data.content = file.text;
-      }
-      // content={this.state.repo.data.content}
+      var file = this.state.file;
+      if (blob.text) {
+        file.fileContents = blob.text;
+        file.fileName = fileName;
+        this.setState({file});
+      } 
+    }
+
+    // when a repository is selected from the repository searcher
+    private LoadRepo = (repo: Repository) => {
       this.setState({repo});
     }
 }

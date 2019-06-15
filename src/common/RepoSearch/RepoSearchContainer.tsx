@@ -6,10 +6,10 @@ import RepoSearch from "./RepoSearch";
 import RepoExplorer from "../RepoContents";
 import "rbx/index.css";
 import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, Delete, Field, Panel, Checkbox, Icon } from "rbx";
-import IntrospectionResultData, { Blob } from '../../generated/graphql';
+import IntrospectionResultData, { Repository } from '../../generated/graphql';
 
 export interface IRepoSearchContainerProps {
-    loadFileHandler: (file: Blob) => void // when a file is selected
+    loadRepoHandler: (repo: Repository) => void // when a repository is selected
 }
 
 // color: Variables["colors"]
@@ -46,10 +46,13 @@ export default class RepoSearchContainer extends React.Component<IRepoSearchCont
 
                     {/* <RepoSearch/> */}
 
-                    <RepoSearch queryVariables={{
-                        queryString: "language:JavaScript stars:>10000",
-                        first: 5
-                        }}/>
+                    <RepoSearch 
+                        loadRepoHandler={this.props.loadRepoHandler}
+                        queryVariables={{                        
+                            queryString: "language:JavaScript stars:>10000",
+                            first: 5
+                        }}
+                    />
                         
                     {/* <RepoExplorer 
                         queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
