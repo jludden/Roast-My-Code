@@ -1,4 +1,5 @@
 import * as React from "react";
+import "../App.css";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { Query } from "react-apollo";
 import { gql } from "apollo-boost";
@@ -138,6 +139,7 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
     if (folder) { // remove everything after the folder name (e.g. java+/)
       queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(folder) + folder.length + 1);
     } else {
+      if (this.inParentDirectory()) return;
       const parts = this.paths(); // last real folder (e.g. "reeflifesurvey") will be in [length - 2]
       queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(parts[parts.length - 2]));
     }
@@ -176,13 +178,9 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
               <Panel.Tab>forks</Panel.Tab>
             </Panel.Tab.Group> */}
 
-            {/* top line will be for navigating up the file path todo - can disable/enable based on inParentDir?*/}
-            <Panel.Block>
-              { !this.inParentDirectory() &&
-              <Panel.Icon onClick={() => this.handleNavTo()}>
-                <FaEllipsisH color={'blue'}/>
-              </Panel.Icon>
-              }
+          {/*  Top line of the panel will show controls for the branch and file path  */}
+          <Panel.Block>
+
               <Dropdown style={{padding: '0 15px 0 0'}}>
                 <Dropdown.Trigger>
                   <Button>
@@ -201,8 +199,11 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
                   </Dropdown.Content>
                 </Dropdown.Menu>
               </Dropdown> 
+              
+              {/* size="small" align="left" */}
               <Breadcrumb align="centered">
-                { this.paths().map( path => (
+                <Breadcrumb.Item><Icon color={this.inParentDirectory() ? "dark" : "info"} onClick={() => this.handleNavTo()} align="right"><FaEllipsisH/></Icon></Breadcrumb.Item>                              
+                {this.paths().map( path => (
                   <Breadcrumb.Item onClick={() => this.handleNavTo(path)} key={path}> {path} </Breadcrumb.Item>
                 ))}     
               </Breadcrumb>
