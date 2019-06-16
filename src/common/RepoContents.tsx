@@ -36,19 +36,21 @@ import {
 
 export interface IRepoContentsProps {
   repo: Repository,
-  defaultBranch: string,
+  // defaultBranch: string,
   // title: string,
-  queryVariables: IGithubQueryVariables,
+  // queryVariables: IGithubQueryVariables,
   loadFileHandler: (fileName: string, blob: Blob) => void // when a file is selected
 }
 
 interface IRepoContentsState {
+  // filePath: string, 
+  branch: string,
   queryVariables: IGithubQueryVariables
 }
 
 // to be included in the graphQL query
 export interface IGithubQueryVariables {
-  path: string, // path to this directory
+  path: string, // path to this directory in form {branch:filePath}
   repoName: string,
   repoOwner: string
 }
@@ -73,9 +75,25 @@ interface Line {
 }
 
 export default class RepoExplorer extends React.Component<IRepoContentsProps, IRepoContentsState> {
-  public state: IRepoContentsState = {
-    queryVariables: this.props.queryVariables
-  };
+  constructor(props: IRepoContentsProps) {
+    super(props);
+    this.state = this.initState(props);
+  }
+  public componentWillReceiveProps(nextProps: IRepoContentsProps) {
+    if (this.props.repo.nameWithOwner !== nextProps.repo.nameWithOwner) this.setState(this.initState(nextProps));
+  }
+
+    // todo reconsider
+  initState(props: IRepoContentsProps): IRepoContentsState {
+    const branch = (props.repo.defaultBranchRef ? props.repo.defaultBranchRef.name : "master");
+    const filePath = "";
+    const queryVariables: IGithubQueryVariables = {
+      path: `${branch}:${filePath}`,
+      repoName: props.repo.name,
+      repoOwner: props.repo.owner.login
+    };    
+    return {branch, queryVariables};
+  }
 
   // searchAPI = ((text: string) => {
   //   const queryVariables = this.state.queryVariables;
@@ -105,33 +123,33 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
   }
 
   inParentDirectory() {
-    return this.state.queryVariables.path === (this.props.defaultBranch+':');
+    return this.state.queryVariables.path === (this.state.branch+':');
   }
 
   // props.queryVariables.path will look something like:
-  //  "master:app/src/main/java/me/jludden/reeflifesurvey"
+  //  "master:app/src/main/java/me/jludden/reeflifesurvey/"
   // pass in a folder name (e.g. "java") to go up to that level
   //  "master:app/src/main/java/"
   // or pass in nothing to just go up one level
-  handleNavTo = (folder: string = "/") => {
-    const offset = (folder === "/") ? 0 : folder.length; // preserve the ending slash
+  handleNavTo = (folder?: string) => {
     const queryVariables = this.state.queryVariables;
     var tempPath = queryVariables.path;
-    queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(folder) + offset);
+
+    if (folder) { // remove everything after the folder name (e.g. java+/)
+      queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(folder) + folder.length + 1);
+    } else {
+      const parts = this.paths(); // last real folder (e.g. "reeflifesurvey") will be in [length - 2]
+      queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(parts[parts.length - 2]));
+    }
     this.setState({queryVariables});
   }
 
+  // split the paths on both colon and forward slash
   paths(): string[] {
-    return this.state.queryVariables.path.split("/");
+    // return this.state.queryVariables.path.split(":").join("/").split("/");
+    const parts = this.state.queryVariables.path.split(":"); // remove branch
+    return parts[1].split("/");
   }
-
-  // todo reconsider
-  getQueryVariables(): IGithubQueryVariables {
-    const vars = this.state.queryVariables;
-    vars.path = this.props.defaultBranch+':'+vars.path;
-    return vars;
-  }
-
 
   public render() {
     const title= (this.props.repo && this.props.repo.nameWithOwner) || "Welcome to Roast My Code";
@@ -139,25 +157,7 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
     return (
           <Panel>            
             <Panel.Heading>
-              {title}
-              <Dropdown style={{align: 'left'}}>
-                <Dropdown.Trigger>
-                  <Button>
-                    <span>{this.props.defaultBranch}</span>
-                    <FaAngleDown/>
-                  </Button>
-                </Dropdown.Trigger>
-                <Dropdown.Menu>
-                  <Dropdown.Content>
-                    <Dropdown.Item>Dropdown item</Dropdown.Item>
-                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
-                    <Dropdown.Item active>Active dropdown item</Dropdown.Item>
-                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item>With a divider</Dropdown.Item>
-                  </Dropdown.Content>
-                </Dropdown.Menu>
-              </Dropdown>            
+              {title}           
             </Panel.Heading>
 
             {/* <Panel.Block>
@@ -176,21 +176,40 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
               <Panel.Tab>forks</Panel.Tab>
             </Panel.Tab.Group> */}
 
-            {/* top line will be for navigating up the file path*/}
-            { !this.inParentDirectory() &&
-              <Panel.Block>
+            {/* top line will be for navigating up the file path todo - can disable/enable based on inParentDir?*/}
+            <Panel.Block>
+              { !this.inParentDirectory() &&
               <Panel.Icon onClick={() => this.handleNavTo()}>
-                <FaEllipsisH />
+                <FaEllipsisH color={'blue'}/>
               </Panel.Icon>
+              }
+              <Dropdown style={{padding: '0 15px 0 0'}}>
+                <Dropdown.Trigger>
+                  <Button>
+                    <span>{this.state.branch}</span>
+                    <FaAngleDown/>
+                  </Button>
+                </Dropdown.Trigger>
+                <Dropdown.Menu>
+                  <Dropdown.Content>
+                    <Dropdown.Item>Dropdown item</Dropdown.Item>
+                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
+                    <Dropdown.Item active>Active dropdown item</Dropdown.Item>
+                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item>With a divider</Dropdown.Item>
+                  </Dropdown.Content>
+                </Dropdown.Menu>
+              </Dropdown> 
               <Breadcrumb align="centered">
                 { this.paths().map( path => (
                   <Breadcrumb.Item onClick={() => this.handleNavTo(path)} key={path}> {path} </Breadcrumb.Item>
                 ))}     
               </Breadcrumb>
             </Panel.Block>
-            }
+            
 
-            <Query<Data, IGithubQueryVariables> query={REPO_EXPLORER_QUERY} variables={this.getQueryVariables()}>
+            <Query<Data, IGithubQueryVariables> query={REPO_EXPLORER_QUERY} variables={this.state.queryVariables}>
               {({ loading, error, data }) => {
                 if (loading) return <PanelWarningLine text="Loading..."/>;
                 if (error || !data || !data.repository || !data.repository.folder

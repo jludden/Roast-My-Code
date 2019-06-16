@@ -190,14 +190,14 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             { this.state.repo && 
             <RepoContents 
               repo={this.state.repo}
-              defaultBranch={this.getDefaultPath()}
+              // defaultBranch={this.getDefaultPath()}
               // title={(this.state.repo && this.state.repo.nameWithOwner) || "Welcome to Roast My Code"}
               // path: "master:app"
-              queryVariables={{
-                path: "", 
-                repoName: this.state.repo.name, 
-                repoOwner: this.state.repo.owner.login
-              }}
+              // queryVariables={{
+              //   path: "", 
+              //   repoName: this.state.repo.name, 
+              //   repoOwner: this.state.repo.owner.login
+              // }}
               // queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
               loadFileHandler={this.LoadFileBlob}/>
             }
@@ -250,6 +250,6 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
         return this.state.repo.defaultBranchRef.name;
         // return `${this.state.repo.defaultBranchRef.name}:`;
       } 
-      return "master:";
+      return "master";
     }
 }
