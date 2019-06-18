@@ -44,12 +44,14 @@ export default class RepoSearchContainer extends React.Component<IRepoSearchCont
                         <Tag delete> just deletes </Tag>
                     </Tag.Group>
 
-                    {/* <RepoSearch/> */}
-
+                    {/*  queryVariables={{                        
+                            queryString: "language:JavaScript stars:>10000",
+                            first: 5
+                        }} */}
                     <RepoSearch 
                         loadRepoHandler={this.props.loadRepoHandler}
                         queryVariables={{                        
-                            queryString: "language:JavaScript stars:>10000",
+                            queryString: "reeflifesurvey",
                             first: 5
                         }}
                     />

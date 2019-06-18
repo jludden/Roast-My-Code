@@ -5,6 +5,7 @@ import SingleCommentView from './SingleCommentView';
 import "rbx/index.css";
 import { Container, Card, Content, Heading, Message, Icon, Delete } from "rbx";
 import { FaAngleDown } from 'react-icons/fa';
+import { Collapse } from 'react-collapse';
 
 
 export interface ICommentContainerProps {
@@ -14,6 +15,7 @@ export interface ICommentContainerProps {
   }
   
 interface ICommentContainerState {
+    expanded: boolean,
     isEditOn: boolean,
     styles: React.CSSProperties
 }
@@ -22,12 +24,19 @@ export default class CommentContainer extends React.Component<ICommentContainerP
   constructor(props: ICommentContainerProps) {
     super(props);
     this.state = {
+      expanded: true,
       isEditOn: false,
       styles: {
         top: 0,
         right: 0,
       }
     };
+  }
+  
+  private onMinimizeClicked = () => {
+    // this.setState({expanded:false});
+
+    this.setState({expanded:!this.state.expanded});
   }
 
   public componentWillReceiveProps(nextProps: ICommentContainerProps) {
@@ -43,44 +52,46 @@ export default class CommentContainer extends React.Component<ICommentContainerP
   public render() {
     const comments = this.props.comments;
     return (
+
       <Card style={this.state.styles} size="large">
         <Card.Header> 
           <Card.Header.Title>
             [{this.props.comments[0].data.lineNumber}] comments: {this.props.comments.length}
           </Card.Header.Title>
-          <Card.Header.Icon>
+          <Card.Header.Icon onClick={this.onMinimizeClicked}>
             <Icon>
               <FaAngleDown />
             </Icon>
           </Card.Header.Icon>
         </Card.Header>
-
-        <Card.Content> 
-          <Content>
-          <Heading>
-              [{this.props.comments[0].data.lineNumber}] comments: {this.props.comments.length}
-              <Delete />
-          </Heading>
-            {comments.map(comment => (
-              <SingleCommentView 
-                key={comment.id}
-                comment={comment}
-                onEditComment={this.props.onEditComment}
-              />
-            ))}
-          </Content>
-        </Card.Content>
-        <Card.Footer>
-          <Card.Footer.Item as="a" href="#">
-            Save
-          </Card.Footer.Item>
-          <Card.Footer.Item as="a" href="#">
-            Edit
-          </Card.Footer.Item>
-          <Card.Footer.Item as="a" href="#">
-            Delete
-          </Card.Footer.Item>
-        </Card.Footer>
+        <Collapse isOpened={this.state.expanded}>
+          <Card.Content> 
+            <Content>
+            <Heading>
+                [{this.props.comments[0].data.lineNumber}] comments: {this.props.comments.length}
+                <Delete />
+            </Heading>
+              {comments.map(comment => (
+                <SingleCommentView 
+                  key={comment.id}
+                  comment={comment}
+                  onEditComment={this.props.onEditComment}
+                />
+              ))}
+            </Content>
+          </Card.Content>
+          <Card.Footer>
+            <Card.Footer.Item as="a" href="#">
+              Save
+            </Card.Footer.Item>
+            <Card.Footer.Item as="a" href="#">
+              Edit
+            </Card.Footer.Item>
+            <Card.Footer.Item as="a" href="#">
+              Delete
+            </Card.Footer.Item>
+          </Card.Footer>
+        </Collapse>
       </Card>
 
 
@@ -116,6 +127,7 @@ export default class CommentContainer extends React.Component<ICommentContainerP
         </Message.Body>
       </Message>
 */
+
 
   // get the top offset of the associated line of code
   public computeTopOffset(ref: HTMLDivElement): string {
