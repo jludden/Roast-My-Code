@@ -32,8 +32,9 @@ import {
 } from "rbx";
 
 export interface IGithubQueryProps {
-  queryVariables: IGithubQueryVariables
-  loadRepoHandler: (repo: Repository) => void // when a repository is selected
+  queryVariables: IGithubQueryVariables,
+  loadRepoHandler: (repo: Repository) => void, // when a repository is selected
+  loadRecommendedRepo: () => void
 }
 
 interface IRepoSearchState {
@@ -86,7 +87,7 @@ public render() {
             </Panel.Block>
             <Panel.Tab.Group>
               <Panel.Tab active>all</Panel.Tab>
-              <Panel.Tab>recommended</Panel.Tab>
+              <Panel.Tab onClick={() => this.props.loadRecommendedRepo()}>recommended</Panel.Tab>
               <Panel.Tab>most commented</Panel.Tab>
               <Panel.Tab>starred</Panel.Tab>
               <Panel.Tab>personal</Panel.Tab>

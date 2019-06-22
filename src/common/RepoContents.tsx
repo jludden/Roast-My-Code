@@ -37,6 +37,8 @@ import {
 
 export interface IRepoContentsProps {
   repo: Repository,
+  defaultFilePath?: string,
+  defaultFileName?: string,
   // defaultBranch: string,
   // title: string,
   // queryVariables: IGithubQueryVariables,
@@ -87,7 +89,7 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
     // todo reconsider
   initState(props: IRepoContentsProps): IRepoContentsState {
     const branch = (props.repo.defaultBranchRef ? props.repo.defaultBranchRef.name : "master");
-    const filePath = "";
+    const filePath = (props.defaultFilePath) || "";
     const queryVariables: IGithubQueryVariables = {
       path: `${branch}:${filePath}`,
       repoName: props.repo.name,
@@ -216,6 +218,14 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
                 if (error || !data || !data.repository || !data.repository.folder
                   || !data.repository.folder.entries) return <PanelWarningLine text="Error :(" color="danger"/>;
                 // if (data.search.repositoryCount < 1) return <PanelWarningLine text="No Results" color="warning"/>;
+
+                // try to load a default file by filename
+                // if (this.props.defaultFileName) {
+                //   const file = data.repository.folder.entries.find(f => f.name === this.props.defaultFileName);
+                //    if(file){
+                //     this.handleLineClicked(file);
+                //    }
+                //   }
 
                 // todo for path - automatically go into the directory with most comments!
                 // todo add Tags for number of comments if > 0

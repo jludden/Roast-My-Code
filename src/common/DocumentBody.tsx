@@ -2,6 +2,8 @@ import * as React from "react";
 // import  '../../node_modules/color-themes-for-google-code-prettify/dist/themes/github.min.css'
 import "../App.css";
 
+
+
 // import '../google-code-prettify/prettify';
 
 // import '../prettifyTypes';
@@ -14,7 +16,7 @@ import { github } from "react-syntax-highlighter/dist/styles/hljs";
 
 import { SubmitCommentResponse } from "./CommentableCode";
 import RoastComment from "./RoastComment";
-import DocumentCommentsView from "./DocumentCommentsView";
+import DocumentCommentsView, {IUnsubmittedComment} from "./DocumentCommentsView";
 import SubmitComment from "./SubmitCommentForm";
 
 import "rbx/index.css";
@@ -22,6 +24,7 @@ import { Column, Container, Section } from "rbx";
 
 
 // import { LineRenderer } from './SyntaxRenderer';
+import SyntaxLine from './SyntaxRenderer';
 
 // import myRenderer from './SyntaxRenderer' todo delete that whole class, have function local
 // import IGithubData from './CommentableCode';
@@ -41,6 +44,7 @@ interface IDocumentBodyState {
   selectedLine: number;
   selectedText: string;
   lineRefs: HTMLDivElement[]; 
+  inProgressComment?: IUnsubmittedComment;
 }
 
 export default class DocumentBody extends React.Component<
@@ -67,6 +71,7 @@ export default class DocumentBody extends React.Component<
   public render() {
     // const decoded = atob(this.props.content);
     const decoded = this.props.content; // todo figure out how we're getting the raw file from github
+
     return (
       <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
         {/* <button type="button" onClick={this.handleButtonPress}>Add Click</button>
@@ -79,6 +84,9 @@ export default class DocumentBody extends React.Component<
           onSubmitComment={this.props.onSubmitComment}
         />
         <pre> comments selected: {this.getComments()}</pre> */}
+
+
+      
 
         <Section backgroundColor = "primary" gradient="warning">
                 <Container color="primary">
@@ -99,7 +107,9 @@ export default class DocumentBody extends React.Component<
             <DocumentCommentsView
               lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
               onEditComment={this.props.onEditComment}
-              lineRefs={this.state.lineRefs}/>
+              onSubmitComment={this.props.onSubmitComment}
+              lineRefs={this.state.lineRefs}
+              inProgressComment={this.state.inProgressComment}/>
           </Column>
         </Column.Group>
         </Container>
@@ -140,7 +150,7 @@ export default class DocumentBody extends React.Component<
     );
   }
 
-      // Group comments into Comment Containers based their associated line number TODO this could be state or something
+  // Group comments into Comment Containers based their associated line number TODO this could be state or something
   private groupCommentsByLineNumber = (comments: RoastComment[]) =>
   {
         const lineNumberMap = new Map<number|undefined, RoastComment[]>();
@@ -182,7 +192,7 @@ export default class DocumentBody extends React.Component<
     return rows.map((node: any, i: number) =>       
       <div key={i} data-index={i} onClick={this.handleLineClicked} ref={this.setLineRef}>
       {/* todo!!! don't know about passing this state down here... is it causing a re-render for every line? */}
-        <SubmitComment
+        {/* <SubmitComment
           comment={this.props.comments[this.props.comments.length-1]}
           isCurrentlySelected={this.state.selectedLine === i}
           onSubmitComment={this.props.onSubmitComment}
@@ -193,7 +203,19 @@ export default class DocumentBody extends React.Component<
           node,
           stylesheet,
           useInlineStyles
-        })}
+        })} */}
+        <SyntaxLine 
+          lineNumber={i}
+          handleCommentAdd={this.handleCommentAdd}
+          >
+          {createElement({
+            key: `code-segement${i}`,
+            node,
+            stylesheet,
+            useInlineStyles
+          })}
+        </SyntaxLine>
+
       </div>
     );
   };
@@ -233,6 +255,18 @@ export default class DocumentBody extends React.Component<
 
   private onDoubleClick = (event: React.SyntheticEvent<EventTarget>) => {
     this.checkTextSelected();
+  };
+
+  private handleCommentAdd = (lineNumber: number) => {
+    const selectedText = this.state.currentlySelected ? this.state.selectedText : "";
+    const author = "zuozhe";
+
+    this.setState({inProgressComment: { 
+      lineRef: this.state.lineRefs[lineNumber],
+      lineNumber,
+      selectedText,
+      author
+    }})
   };
 
   private checkTextSelected = () => {

@@ -10,7 +10,8 @@ import { ApolloProvider, QueryResult } from "react-apollo";
 import ApolloClient from "apollo-boost";
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 // import schema from '../api/github.schema.json';
-import IntrospectionResultData, { Blob, Repository } from '../generated/graphql';
+import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../generated/graphql';
+import {RepositoryOwner, StargazerConnection, Language} from '../generated/graphql'; // todo shouldnt really need
 import RepoSearchContainer from "./RepoSearch/RepoSearchContainer";
 import RepoContents from "./RepoContents";
 
@@ -57,6 +58,8 @@ export enum SubmitCommentResponse {
 interface ICCState {
   comments: RoastComment[],
   repo?: Repository,
+  defaultFilePath: string,
+  defaultFileName?: string,
   file: {
     fileName: string,
     fileContents: string
@@ -68,6 +71,7 @@ interface ICCState {
 export default class CommentableCode extends React.Component<ICCProps, ICCState> {
     public state: ICCState = {
         comments: [],
+        defaultFilePath: "",
         file: {
           fileName: "Hello World",
           fileContents: ""
@@ -184,12 +188,15 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
 
             {/* Repo Search */}
             <RepoSearchContainer
-              loadRepoHandler={this.LoadRepo}/>
+              loadRepoHandler={this.LoadRepo}
+              loadRecommendedRepo={this.loadRecommendedRepo}/>
 
             {/* todo extract below to own component - nothing here unless repo is non null */}    
             { this.state.repo && 
             <RepoContents 
               repo={this.state.repo}
+              defaultFilePath={this.state.defaultFilePath || ""}
+              defaultFileName={this.state.defaultFileName}
               // defaultBranch={this.getDefaultPath()}
               // title={(this.state.repo && this.state.repo.nameWithOwner) || "Welcome to Roast My Code"}
               // path: "master:app"
@@ -239,8 +246,10 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
 
     // when a repository is selected from the repository searcher
     private LoadRepo = (repo: Repository) => {
-      this.setState({repo});
+      this.setState({repo, defaultFilePath: ""});
     }
+
+    
 
     // need a default path to get the initial files in the repository
     // this is based on default branch plus a colon
@@ -252,4 +261,45 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
       } 
       return "master";
     }
+
+
+
+    // **********************
+    // DANGER silly stuff below
+    // **********************
+
+    loadRecommendedRepo = () => {
+      this.setState({
+        defaultFilePath: "app/src/main/java/me/jludden/reeflifesurvey/",
+        defaultFileName: "MainActivity.java",
+        repo: {
+          createdAt: "2017-12-29T12:52:31Z",
+          databaseId: 115722259,
+          defaultBranchRef: null,
+          descriptionHTML: "<div>Android application for browsing fish species and survey site locations based on data from ReefLifeSurvey.com</div>",
+          forks: {
+            totalCount: 1
+          } as RepositoryConnection,
+          id: "MDEwOlJlcG9zaXRvcnkxMTU3MjIyNTk=",
+          languages: null,
+          name: "ReefLifeSurvey---Species-Explorer",
+          nameWithOwner: "jludden/ReefLifeSurvey---Species-Explorer",
+          owner: {
+            id: "MDQ6VXNlcjQ5NTk2MDA=",
+            login: "jludden"
+          } as RepositoryOwner,
+          primaryLanguage: {
+            color: "#b07219",
+            name: "Java"
+          } as Language,
+          resourcePath: "/jludden/ReefLifeSurvey---Species-Explorer",
+          stargazers: {
+            totalCount: 1
+          } as StargazerConnection,
+          updateAt: "2018-05-23T02:57:18Z",
+          url: "https://github.com/jludden/ReefLifeSurvey---Species-Explorer"
+        } as unknown as Repository      
+      });
+    }
+
 }

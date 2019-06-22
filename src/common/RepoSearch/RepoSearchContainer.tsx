@@ -9,7 +9,8 @@ import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, De
 import IntrospectionResultData, { Repository } from '../../generated/graphql';
 
 export interface IRepoSearchContainerProps {
-    loadRepoHandler: (repo: Repository) => void // when a repository is selected
+    loadRepoHandler: (repo: Repository) => void, // when a repository is selected
+    loadRecommendedRepo: () => void
 }
 
 // color: Variables["colors"]
@@ -50,6 +51,7 @@ export default class RepoSearchContainer extends React.Component<IRepoSearchCont
                         }} */}
                     <RepoSearch 
                         loadRepoHandler={this.props.loadRepoHandler}
+                        loadRecommendedRepo={this.props.loadRecommendedRepo}
                         queryVariables={{                        
                             queryString: "reeflifesurvey",
                             first: 5

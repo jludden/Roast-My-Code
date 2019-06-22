@@ -9,10 +9,11 @@ import { Collapse } from 'react-collapse';
 
 
 export interface ICommentContainerProps {
-    comments: RoastComment[]; // comments belonging to this line number
-    lineRef: HTMLDivElement;  // div of the (top) line of code associated with these comments
-    onEditComment: ((details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>) 
-  }
+  comments: RoastComment[]; // comments belonging to this line number
+  lineRef: HTMLDivElement;  // div of the (top) line of code associated with these comments
+  onEditComment: ((details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>);
+  inProgress: boolean 
+}
   
 interface ICommentContainerState {
     expanded: boolean,

@@ -2,7 +2,9 @@ import * as React from "react";
 // import { createElement } from 'react-syntax-highlighter';
 // import * as rsh from 'react-syntax-highlighter';
 import RoastComment from './RoastComment'
-
+import useHover from 'react-use/lib/useHover'
+import { Button, Icon } from "rbx";
+import { FaPlusCircle, FaPlus, FaPlusSquare, FaRegPlusSquare, FaGooglePlus, FaSearchPlus } from "react-icons/fa";
 import { SubmitCommentResponse } from './CommentableCode';
 import SubmitComment from './SubmitCommentForm';
 
@@ -37,6 +39,44 @@ export const LineRenderer: React.FunctionComponent<IRenderProps> = ({ rows, styl
   ));
 }
 
+
+interface IAppProps {
+  lineNumber: number,
+  handleCommentAdd: (lineNumber: number) => void
+}
+
+const SyntaxLine: React.FunctionComponent<IAppProps> = (props) => {
+  // const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
+  const element = (hovered: boolean) =>
+    <div>
+        {hovered &&        
+          <Button size="small" rounded onClick={() => props.handleCommentAdd(props.lineNumber)}>
+            <Icon size="small">
+              <FaPlus />
+            </Icon>
+          </Button>}
+          {props.children}      
+      {/* Hover me! {hovered && 'Thanks!'} */}
+    </div>;
+  const [hoverable, hovered] = useHover(element);
+
+  return (
+    <div>
+
+      {hoverable}
+      {/* <div>{hovered ? 'HOVERED' : ''}</div>
+      {hovered &&
+      <SubmitComment 
+        isCurrentlySelected={true}
+        comment={new RoastComment({data: {lineNumber: props.lineNumber}})}
+        onSubmitComment={submitCommentHandler} 
+        selectedText="HELLO I AM DOG"
+      />} */}
+    </div>
+  );
+};
+
+export default SyntaxLine;
 
 
 
