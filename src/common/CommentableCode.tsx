@@ -108,7 +108,9 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
       return await(API.deleteComment(comment))
         .then(response => {
           var comments = this.state.comments;
-          comments.splice(comments.indexOf(response), 1);
+          // const indexOf = comments.indexOf(response);
+          const indexOf = comments.indexOf(comment);
+          comments.splice(indexOf, 1);
           this.setState({comments});
           return SubmitCommentResponse.Success;
         });

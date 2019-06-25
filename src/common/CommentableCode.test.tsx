@@ -5,8 +5,11 @@ import * as React from "react";
 import API from "../api/API";
 import CommentableCode from "./CommentableCode";
 import DocumentHeader from "./DocumentHeader";
+import DocumentBody from "./DocumentBody";
 import RoastComment from "./RoastComment";
 import Axios from "axios";
+import { ClipLoader } from 'react-spinners'; // todo try bulma progress bar
+
 
 enzyme.configure({ adapter: new Adapter() });
 
@@ -41,7 +44,7 @@ describe("<CommentableCode />", () => {
 
     const shallowWrapper = shallow(<CommentableCode document="" />);
     const containsSpinner = shallowWrapper.containsMatchingElement(
-      <DocumentHeader documentName={""} commentsCount={0} />
+      <ClipLoader/>
     );
 
     expect(containsSpinner).toBe(true);
@@ -67,12 +70,16 @@ describe("<CommentableCode />", () => {
     // const shallowWrapper = shallow(<CommentableCode document="" />);
     const shallowWrapper = enzyme.mount(<CommentableCode document="" />);
 
-    const containsHeaderComponent = shallowWrapper.containsMatchingElement(
-      <DocumentHeader documentName={""} commentsCount={0} />
-    );
+    const containsHeaderComponent = shallowWrapper.find(DocumentHeader);
+    const containsBodyComponent = shallowWrapper.find(DocumentBody);
 
-    expect(containsHeaderComponent).toBe(true);
-    // expect(containsBodyComponent).toBe(true);
+    // const containsHeaderComponent = shallowWrapper.containsMatchingElement(
+    //   <DocumentHeader/>
+    // );
+
+    expect(containsHeaderComponent.length).toBe(1);
+    // expect(containsHeaderComponent).toBe(true);
+    expect(containsBodyComponent.length).toBe(1);
 
     expect(
       shallowWrapper.containsMatchingElement(

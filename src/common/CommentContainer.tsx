@@ -12,12 +12,13 @@ export interface ICommentContainerProps {
   comments: RoastComment[]; // comments belonging to this line number
   lineRef: HTMLDivElement;  // div of the (top) line of code associated with these comments
   onEditComment: ((details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>);
-  inProgress: boolean 
+  onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
+  inProgress: boolean // flag for a new, unsubmitted comment
 }
   
 interface ICommentContainerState {
     expanded: boolean,
-    isEditOn: boolean,
+    editMode: boolean,  // flag for an existing comment in editMode
     styles: React.CSSProperties
 }
 
@@ -26,7 +27,7 @@ export default class CommentContainer extends React.Component<ICommentContainerP
     super(props);
     this.state = {
       expanded: true,
-      isEditOn: false,
+      editMode: false,
       styles: {
         top: 0,
         right: 0,
@@ -81,16 +82,44 @@ export default class CommentContainer extends React.Component<ICommentContainerP
               ))}
             </Content>
           </Card.Content>
+
           <Card.Footer>
-            <Card.Footer.Item as="a" href="#">
-              Save
-            </Card.Footer.Item>
-            <Card.Footer.Item as="a" href="#">
-              Edit
-            </Card.Footer.Item>
-            <Card.Footer.Item as="a" href="#">
-              Delete
-            </Card.Footer.Item>
+            {this.props.inProgress && 
+              <React.Fragment>
+                <Card.Footer.Item as="a" >
+                  Cancel
+                </Card.Footer.Item>
+                <Card.Footer.Item as="a" onClick={() => this.props.onSubmitComment(comments[0])}>
+                  Submit
+                </Card.Footer.Item>
+              </React.Fragment>
+            }
+            {!this.props.inProgress && !this.state.editMode &&
+              <React.Fragment>
+                <Card.Footer.Item as="a" onClick={() => this.setState({editMode: true})}>
+                  Edit
+                </Card.Footer.Item>
+                <Card.Footer.Item as="a" >
+                  Reply
+                </Card.Footer.Item>
+              </React.Fragment>
+            }            
+            {!this.props.inProgress && this.state.editMode &&
+              <React.Fragment>
+              <Card.Footer.Item as="a" onClick={() => this.props.onEditComment(comments[0], true)}>
+                Delete All
+              </Card.Footer.Item>
+              <Card.Footer.Item as="a" >
+                Reply
+              </Card.Footer.Item>
+              <Card.Footer.Item as="a" >
+                Cancel
+              </Card.Footer.Item>
+              <Card.Footer.Item as="a" onClick={() => this.props.onEditComment(comments[0], false)}>
+                Save
+              </Card.Footer.Item>
+              </React.Fragment>
+            }
           </Card.Footer>
         </Collapse>
       </Card>
