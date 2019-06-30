@@ -4,6 +4,9 @@
   "private": true,
   "dependencies": {
     "@graphql-codegen/introspection": "^1.2.0",
+    "@reach/dialog": "^0.2.9",
+    "@reach/tabs": "^0.1.6",
+    "@reach/visually-hidden": "^0.1.4",
     "@types/aws-lambda": "^8.10.25",
     "@types/jest": "^24.0.13",
     "@types/react-collapse": "^4.0.2",
@@ -31,6 +34,7 @@
     "react-dom": "16.8.0",
     "react-icons": "^3.7.0",
     "react-motion": "^0.5.2",
+    "react-netlify-identity-widget": "^0.1.4",
     "react-scripts": "^3.0.1",
     "react-spinners": "^0.5.4",
     "react-syntax-highlighter": "^10.2.1",
@@ -82,5 +86,8 @@
     "watchPathIgnorePatterns": [
       "node_modules"
     ]
+  },
+  "resolutions": {
+    "jest": "24.7.1"
   }
 }
