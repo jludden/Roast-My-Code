@@ -7,7 +7,6 @@ import { Container, Card, Content, Heading, Message, Icon, Delete } from "rbx";
 import { FaAngleDown } from 'react-icons/fa';
 import { Collapse } from 'react-collapse';
 
-
 export interface ICommentContainerProps {
   comments: RoastComment[]; // comments belonging to this line number
   lineRef: HTMLDivElement;  // div of the (top) line of code associated with these comments
@@ -22,7 +21,7 @@ interface ICommentContainerState {
     styles: React.CSSProperties
 }
 
-export default class CommentContainer extends React.Component<ICommentContainerProps, ICommentContainerState> {
+export default class CommentContainer extends React.PureComponent<ICommentContainerProps, ICommentContainerState> {
   constructor(props: ICommentContainerProps) {
     super(props);
     this.state = {

@@ -9,20 +9,25 @@ import Avatar from './Avatar';
 
 
 export interface IAppProps {
+  showImmediately?: boolean
 }
 
 const IdentityModal = React.lazy(() => import("react-netlify-identity-widget"));
 
+export default function AuthStatusView (props: IAppProps = { showImmediately: false }) {
+  const [dialog, setDialog] = React.useState(props.showImmediately || false);
+  React.useEffect(() => {
+    setDialog(props.showImmediately || false);
+  }, [props.showImmediately]);
 
-export default function AuthStatusView (props: IAppProps) {
-  const identity = useIdentityContext()
-  const [dialog, setDialog] = React.useState(false)
+  const identity = useIdentityContext();
   const name =
-    (identity && identity.user && identity.user.user_metadata && identity.user.user_metadata.name) || "NoName"
-  const isLoggedIn = identity && identity.isLoggedIn
+    (identity && identity.user && identity.user.user_metadata && identity.user.user_metadata.name) || "NoName";
+  const isLoggedIn = identity && identity.isLoggedIn;
+
   return (
     <>
-      <Avatar />
+      <Avatar isLoggedIn={isLoggedIn} name={name}/>
       <Button onClick={() => setDialog(true)}>
         {isLoggedIn ? `Hello ${name}, Log out here!` : "Log In"}
       </Button>      

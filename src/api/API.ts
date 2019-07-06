@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import RoastComment from "../common/RoastComment";
+import RoastComment from "../components/RoastComment";
 
 class API {
   public axiosInstance: AxiosInstance;

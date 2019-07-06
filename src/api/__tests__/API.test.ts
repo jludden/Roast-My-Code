@@ -2,7 +2,7 @@ import * as enzyme from "enzyme";
 // import API from "../API";
 // import API from "../__mocks__/API";
 import Adapter from "enzyme-adapter-react-16";
-import RoastComment from "../../common/RoastComment";
+import RoastComment from "../../components/RoastComment";
 import mockAPI from "../API";
 import Axios from "axios";
 

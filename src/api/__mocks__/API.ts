@@ -1,5 +1,5 @@
 import API from "../API";
-import RoastComment from "../../common/RoastComment";
+import RoastComment from "../../components/RoastComment";
 
 // working implementation - do we want to mock it at all times?
 const mockAPI = jest.spyOn(API, "getComments");

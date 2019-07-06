@@ -14,6 +14,8 @@ import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from 
 import {RepositoryOwner, StargazerConnection, Language} from '../generated/graphql'; // todo shouldnt really need
 import RepoSearchContainer from "./RepoSearch/RepoSearchContainer";
 import RepoContents from "./RepoContents";
+import AuthStatusView from "./AuthStatusView";
+import { useIdentityContext } from "react-netlify-identity-widget";
 
 
 // import { generateGithubSchema } from "../api/generateGithubSchema";
@@ -37,7 +39,8 @@ const client = new ApolloClient({
 
 // todo type instead of interface? is this being used?
 export interface ICCProps {
-  document: string;
+  userIsLoggedIn?: boolean;
+  userName?: string;
 }
 
 export interface IComment {
@@ -48,7 +51,8 @@ export interface IComment {
 
 export enum SubmitCommentResponse {
   Success,
-  Error
+  Error,
+  NotLoggedIn
 }
 
 // todo new interface:
@@ -65,6 +69,7 @@ interface ICCState {
     fileContents: string
   },
   loading: boolean,
+  triggerLogin: boolean,
   msg: string
 }
 
@@ -78,6 +83,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
         },
         repo: undefined,
         loading: true,
+        triggerLogin: false,
         msg: ""
     }
 
@@ -85,6 +91,14 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
   public submitCommentHandler = async (
     comment: RoastComment
   ): Promise<SubmitCommentResponse> => {
+
+    if (!this.props.userIsLoggedIn) {
+      this.setState({triggerLogin: true});
+      return SubmitCommentResponse.NotLoggedIn; // todo retry 
+    }
+
+
+
     return await API.postComment(comment)
       .then(response => {
         // use immutability-helper to easily update the state
@@ -159,7 +173,6 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
   }
 
     public render() {
-        const {document} = this.props;
         const comments = this.state.comments;
         return (
           <ApolloProvider client={client}>
@@ -167,9 +180,12 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             <h1>
                Hello welcome to the Jason's Annotateable Code Sample
             </h1>
-
+            <AuthStatusView showImmediately={this.state.triggerLogin}/>
+            <p>Commentable code props. user name: {this.props.userName || ""} logged in: {this.props.userIsLoggedIn || false}</p>
             {/* todo consider removing this for a bulma loading... */}
             <ClipLoader loading={this.state.loading}/> 
+
+            
             <p>
                 lambda functions
                 <button onClick={() => this.handleClick("async-dadjoke")}>{this.state.loading ? "Loading..." : "Call Async dadjoke"}</button>
@@ -178,10 +194,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
                 <button onClick={() => this.handleClick("hello-world")}>{this.state.loading ? "Loading..." : "Call hello-world"}</button>
                 <br></br>
                 <span>{this.state.msg}</span>
-            </p>
-            <h2>
-                My props: {document}
-            </h2>    
+            </p>      
             <p className="text-xs-right">
                 custom class
             </p>
