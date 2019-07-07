@@ -3,6 +3,7 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { Query } from "react-apollo";
 import { gql } from "apollo-boost";
 import { Repository } from '../../generated/graphql';
+import RepoContents, {UseUrlQuery} from "../RepoContents";
 
 
 import {
@@ -76,6 +77,7 @@ export default class RepoSearch extends React.Component<IGithubQueryProps, IRepo
 public render() {
   return (
           <Panel>
+            <UseUrlQuery url={this.state.queryVariables.queryString} />
             <Panel.Heading>Search Repositories</Panel.Heading>
             <Panel.Block>
               <Control iconLeft>

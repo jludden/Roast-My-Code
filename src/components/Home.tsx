@@ -15,7 +15,7 @@ import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemo
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../generated/graphql';
 import {RepositoryOwner, StargazerConnection, Language} from '../generated/graphql'; // todo shouldnt really need
 import RepoSearchContainer from "./RepoSearch/RepoSearchContainer";
-import RepoContents from "./RepoContents";
+import RepoContents, {UseUrlQuery} from "./RepoContents";
 import AuthStatusView from "./AuthStatusView";
 import { useIdentityContext } from "react-netlify-identity-widget";
 import update from "immutability-helper";

@@ -1,9 +1,10 @@
-import * as React from "react";
+import React, {useEffect} from "react";
 import "../App.css";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { Query } from "react-apollo";
 import { gql } from "apollo-boost";
 import { Blob, Repository } from '../generated/graphql';
+import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 
 import {
   FaBeer,
@@ -34,6 +35,7 @@ import {
   Checkbox,
   Icon
 } from "rbx";
+import { url } from "inspector";
 
 export interface IRepoContentsProps {
   repo: Repository,
@@ -77,6 +79,48 @@ interface Line {
   // }
 }
 
+// HOC Injector to wrap a class component with the query params hooks API
+// TODO maybe it makes more sense for the class component to wrap the hook function
+// export function useUrlQuery<P extends IRepoContentsProps>(Component: React.ComponentType<P>) {
+//   return function WrappedComponent(props: P) {
+//     const [url, setUrl] = useQueryParam('url', StringParam);
+//     return <Component {...props} url={url} setUrl={setUrl}  />;
+//   }
+// }
+
+// const useUrlQuery = (p: string) => (useQueryParam('url', StringParam))
+// function urlQuery (url) {
+//   const [url, setUrl] = useQueryParam('url', StringParam);  
+//   useEffect(() => { setUrl(url) });
+//   return url;
+// }
+
+// function useUrlQuery({ url, children }) {
+//   let url = urlQuery(url);
+//   return children(url);
+// }
+
+interface IUrlQueryProps {
+  url: string
+}
+export function UseUrlQuery (props: IUrlQueryProps) {
+  const [url, setUrl] = useQueryParam('q', StringParam);  
+
+  useEffect(
+    () => {
+      if (url !== props.url) {
+        setUrl(props.url);
+      }
+    }, [props.url]
+  );
+
+  return (<></>);
+}
+
+
+
+
+// class that takes care of everything except for rewriting the URL
 export default class RepoExplorer extends React.Component<IRepoContentsProps, IRepoContentsState> {
   constructor(props: IRepoContentsProps) {
     super(props);
@@ -164,6 +208,9 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
               {title}           
             </Panel.Heading>
 
+            {/* update the URL with the current search state */}
+            <UseUrlQuery url={this.state.queryVariables.path} />
+
             {/* <Panel.Block>
               <Control iconLeft>
                 <Input size="small" type="text" placeholder="search" onChange={this.handleQueryChange} />
@@ -212,7 +259,6 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
               </Breadcrumb>
             </Panel.Block>
             
-
             <Query<Data, IGithubQueryVariables> query={REPO_EXPLORER_QUERY} variables={this.state.queryVariables}>
               {({ loading, error, data }) => {
                 if (loading) return <PanelWarningLine text="Loading..."/>;
