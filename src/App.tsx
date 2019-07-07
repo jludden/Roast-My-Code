@@ -1,48 +1,93 @@
 import * as React from 'react';
 import './App.css';
 import CommentableCode from './components/CommentableCode';
-import { Container, Hero, Title, Section, Button } from "rbx";
+import { Home } from './components/Home';
+import { Container, Hero, Title, Section, Button, Footer, Content } from "rbx";
 import "rbx/index.css";
 import { IdentityContextProvider } from "react-netlify-identity-widget";
 import "react-netlify-identity-widget/styles.css";
 import { AuthWrapper } from "./components/AuthWrapper";
 import { BrowserRouter as Router, Switch, Route, Link, RouteComponentProps  } from "react-router-dom";
-
+import { QueryParamProvider } from 'use-query-params';
+import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from './generated/graphql';
+import { ApolloProvider, QueryResult } from "react-apollo";
+import ApolloClient from "apollo-boost";
+import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 // import logo from './' './logo.svg';
 
 
-class App extends React.Component {
-  public render() {
-    return (
-      <Router>
-        <Hero color="primary" size="medium" gradient>
-        <Hero.Body>
-          <Container>
-            <Title>
-              Welcome to Roast My Code!
-            </Title>
-          </Container>
-        </Hero.Body>
-        </Hero>
-        <Switch>
 
-          <Route path="/" exact component={Index} />
-          <Route path="/about/" component={About} />
-          <Route path="/repo/" component={CommentableCodePage} />
-      </Switch>
+// import { generateGithubSchema } from "../api/generateGithubSchema";
+// todo move apollo setup to new file
+//"https://48p1r2roz4.sse.codesandbox.io"/
+// https://github.com/nuxt-community/apollo-module/issues/70
+// introspectionQueryResultData: (schema as any)
 
-   
-      </Router>
-    );
-  }
-}
+const fragmentMatcher = new IntrospectionFragmentMatcher({
+  introspectionQueryResultData: IntrospectionResultData
+})
+const cache = new InMemoryCache({ fragmentMatcher });
+const client = new ApolloClient({
+  cache,
+  uri:  "https://api.github.com/graphql",
+  headers: {
+    Authorization: `bearer ${process.env.REACT_APP_GITHUB_PAT}`,
+  } 
+});
 
-// AuthWrapper
-//  Router
+
+
+//  Router && QueryParamProvider
+  // AuthWrapper && ApolloProvider?
 //    Home
 //      Repo Explorer -> Link to Commentable Code
 //    CommentableCode
 //      Dir Explorer, Doc Header + Body
+
+// Home - search q?repo="reeflife"
+
+// Code - /repo/jludden/ReefLifeSurvey---Species-Explorer
+
+class App extends React.Component {
+  
+
+  public render() {
+    return (
+      <ApolloProvider client={client}>
+
+        <Router>
+          <QueryParamProvider ReactRouterRoute={Route}>
+
+            <Hero color="primary" size="medium" gradient>
+            <Hero.Body>
+              <Container>
+                <Title>
+                  Welcome to Roast My Code!
+                </Title>
+              </Container>
+            </Hero.Body>
+            </Hero>
+            <Switch>
+              <Route path="/" exact component={Home} />
+              <Route path="/about/" component={About} />
+              <Route path="/repo/" component={CommentableCodePage} />
+            </Switch>
+
+          </QueryParamProvider>
+        </Router>
+        <Footer>
+        <Content textAlign="centered">
+          <p>
+            <strong>Roast My Code</strong> by <a href="https://github.com/jludden">Jason Ludden</a>.
+          </p>
+        </Content>
+      </Footer>
+      </ApolloProvider>
+    );
+  }
+}
+
+
 //
 //
 

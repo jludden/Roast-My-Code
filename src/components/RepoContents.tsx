@@ -172,13 +172,14 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
                 </Icon>
               </Control>
             </Panel.Block> */}
-            {/* <Panel.Tab.Group>
+            {/* TODO Add comment view! similar view to files, but expandable to see all comments under each file */}
+            <Panel.Tab.Group>
               <Panel.Tab active>files</Panel.Tab>
-              <Panel.Tab>commits</Panel.Tab>
-              <Panel.Tab>private</Panel.Tab>
+              <Panel.Tab>comments</Panel.Tab>
+              {/* <Panel.Tab>private</Panel.Tab>
               <Panel.Tab>sources</Panel.Tab>
-              <Panel.Tab>forks</Panel.Tab>
-            </Panel.Tab.Group> */}
+              <Panel.Tab>forks</Panel.Tab> */}
+            </Panel.Tab.Group>
 
           {/*  Top line of the panel will show controls for the branch and file path  */}
           <Panel.Block>

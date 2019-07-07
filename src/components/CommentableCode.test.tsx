@@ -8,7 +8,7 @@ import DocumentHeader from "./DocumentHeader";
 import DocumentBody from "./DocumentBody";
 import RoastComment from "./RoastComment";
 import Axios from "axios";
-import { ClipLoader } from 'react-spinners'; // todo try bulma progress bar
+import { Progress } from "rbx";
 
 
 enzyme.configure({ adapter: new Adapter() });
@@ -44,7 +44,7 @@ describe("<CommentableCode />", () => {
 
     const shallowWrapper = shallow(<CommentableCode document="" />);
     const containsSpinner = shallowWrapper.containsMatchingElement(
-      <ClipLoader/>
+      <Progress/>
     );
 
     expect(containsSpinner).toBe(true);

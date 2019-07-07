@@ -5,10 +5,6 @@ import API, { IGithubData } from "../api/API";
 import DocumentBody from "./DocumentBody";
 import DocumentHeader from "./DocumentHeader";
 import RoastComment from "./RoastComment";
-import { ClipLoader } from 'react-spinners'; // todo try bulma progress bar
-import { ApolloProvider, QueryResult } from "react-apollo";
-import ApolloClient from "apollo-boost";
-import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 // import schema from '../api/github.schema.json';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../generated/graphql';
 import {RepositoryOwner, StargazerConnection, Language} from '../generated/graphql'; // todo shouldnt really need
@@ -16,25 +12,8 @@ import RepoSearchContainer from "./RepoSearch/RepoSearchContainer";
 import RepoContents from "./RepoContents";
 import AuthStatusView from "./AuthStatusView";
 import { useIdentityContext } from "react-netlify-identity-widget";
-
-
-// import { generateGithubSchema } from "../api/generateGithubSchema";
-// todo move apollo setup to new file
-//"https://48p1r2roz4.sse.codesandbox.io"/
-// https://github.com/nuxt-community/apollo-module/issues/70
-// introspectionQueryResultData: (schema as any)
-
-const fragmentMatcher = new IntrospectionFragmentMatcher({
-  introspectionQueryResultData: IntrospectionResultData
-})
-const cache = new InMemoryCache({ fragmentMatcher });
-const client = new ApolloClient({
-  cache,
-  uri:  "https://api.github.com/graphql",
-  headers: {
-    Authorization: `bearer ${process.env.REACT_APP_GITHUB_PAT}`,
-  } 
-});
+import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
+import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, Delete, Field, Panel, Checkbox, Icon, Progress } from "rbx";
 
 
 // todo type instead of interface? is this being used?
@@ -173,70 +152,67 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
   }
 
     public render() {
-        const comments = this.state.comments;
-        return (
-          <ApolloProvider client={client}>
-            <div>
-            <h1>
-               Hello welcome to the Jason's Annotateable Code Sample
-            </h1>
-            <AuthStatusView showImmediately={this.state.triggerLogin}/>
-            <p>Commentable code props. user name: {this.props.userName || ""} logged in: {this.props.userIsLoggedIn || false}</p>
-            {/* todo consider removing this for a bulma loading... */}
-            <ClipLoader loading={this.state.loading}/> 
+      return (
+        <>
+          <h1>
+              Hello welcome to the Jason's Annotateable Code Sample
+          </h1>
+          <AuthStatusView showImmediately={this.state.triggerLogin}/>
+          <p>Commentable code props. user name: {this.props.userName || ""} logged in: {this.props.userIsLoggedIn || false}</p>
+          <p> Repo {this.state.repo && this.state.repo.resourcePath} total comments: {this.state.comments && this.state.comments.length} </p>
+          <Button badge={this.state.comments && this.state.comments.length} badgeColor="danger" badgeOutlined color="danger" outlined><FaCommentAlt /></Button>
+          {this.state.loading && <Progress color="info"/>}
+          
+          <p>
+              lambda functions
+              <button onClick={() => this.handleClick("async-dadjoke")}>{this.state.loading ? "Loading..." : "Call Async dadjoke"}</button>
+              <button onClick={() => this.handleClick("fauna-crud")}>{this.state.loading ? "Loading..." : "Call fauna crud"}</button>
+              <button onClick={() => this.handleClick("getRepo")}>{this.state.loading ? "Loading..." : "Call getRepo"}</button>
+              <button onClick={() => this.handleClick("hello-world")}>{this.state.loading ? "Loading..." : "Call hello-world"}</button>
+              <br></br>
+              <span>{this.state.msg}</span>
+          </p>      
+          <p className="text-xs-right">
+              custom class
+          </p>
+          <data/>
+          <h3>Document Begin:</h3>
 
-            
-            <p>
-                lambda functions
-                <button onClick={() => this.handleClick("async-dadjoke")}>{this.state.loading ? "Loading..." : "Call Async dadjoke"}</button>
-                <button onClick={() => this.handleClick("fauna-crud")}>{this.state.loading ? "Loading..." : "Call fauna crud"}</button>
-                <button onClick={() => this.handleClick("getRepo")}>{this.state.loading ? "Loading..." : "Call getRepo"}</button>
-                <button onClick={() => this.handleClick("hello-world")}>{this.state.loading ? "Loading..." : "Call hello-world"}</button>
-                <br></br>
-                <span>{this.state.msg}</span>
-            </p>      
-            <p className="text-xs-right">
-                custom class
-            </p>
-            <data/>
-            <h3>Document Begin:</h3>
+          {/* Repo Search todo remove - add repo load from url to enable repo contents below*/}
+          <RepoSearchContainer
+            loadRepoHandler={this.LoadRepo}
+            loadRecommendedRepo={this.loadRecommendedRepo}/>
 
-            {/* Repo Search */}
-            <RepoSearchContainer
-              loadRepoHandler={this.LoadRepo}
-              loadRecommendedRepo={this.loadRecommendedRepo}/>
-
-            {/* todo extract below to own component - nothing here unless repo is non null */}    
-            { this.state.repo && 
-            <RepoContents 
-              repo={this.state.repo}
-              defaultFilePath={this.state.defaultFilePath || ""}
-              defaultFileName={this.state.defaultFileName}
-              // defaultBranch={this.getDefaultPath()}
-              // title={(this.state.repo && this.state.repo.nameWithOwner) || "Welcome to Roast My Code"}
-              // path: "master:app"
-              // queryVariables={{
-              //   path: "", 
-              //   repoName: this.state.repo.name, 
-              //   repoOwner: this.state.repo.owner.login
-              // }}
-              // queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
-              loadFileHandler={this.LoadFileBlob}/>
-            }
-            <DocumentHeader 
-              documentName={this.state.file.fileName} 
-              commentsCount={this.state.comments.length}/>
-            <DocumentBody 
-              name={this.state.file.fileName}
-              content={this.state.file.fileContents}
-              comments={this.state.comments}
-              onSubmitComment={this.submitCommentHandler}
-              onEditComment={this.editCommentHandler}/> 
-            
-            <h3>Document End</h3>
-            </div>
-            </ApolloProvider>
-        );
+          {/* todo extract below to own component - nothing here unless repo is non null */}    
+          { this.state.repo && 
+          <RepoContents 
+            repo={this.state.repo}
+            defaultFilePath={this.state.defaultFilePath || ""}
+            defaultFileName={this.state.defaultFileName}
+            // defaultBranch={this.getDefaultPath()}
+            // title={(this.state.repo && this.state.repo.nameWithOwner) || "Welcome to Roast My Code"}
+            // path: "master:app"
+            // queryVariables={{
+            //   path: "", 
+            //   repoName: this.state.repo.name, 
+            //   repoOwner: this.state.repo.owner.login
+            // }}
+            // queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
+            loadFileHandler={this.LoadFileBlob}/>
+          }
+          <DocumentHeader 
+            documentName={this.state.file.fileName} 
+            commentsCount={this.state.comments.length}/>
+          <DocumentBody 
+            name={this.state.file.fileName}
+            content={this.state.file.fileContents}
+            comments={this.state.comments}
+            onSubmitComment={this.submitCommentHandler}
+            onEditComment={this.editCommentHandler}/> 
+          
+          <h3>Document End</h3>
+          </>
+      );
     }
 
     // temp todo call lambda functions from API
