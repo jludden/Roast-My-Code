@@ -2,11 +2,11 @@ import * as enzyme from "enzyme";
 import { shallow, ShallowWrapper } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
-import API from "../api/API";
+import API from "../../api/API";
 import CommentableCode from "./CommentableCode";
-import DocumentHeader from "./DocumentHeader";
-import DocumentBody from "./DocumentBody";
-import RoastComment from "./RoastComment";
+import DocumentHeader from "../CommentableDocument/DocumentHeader";
+import DocumentBody from "../CommentableDocument/DocumentBody";
+import RoastComment from "../RoastComment";
 import Axios from "axios";
 import { Progress } from "rbx";
 

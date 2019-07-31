@@ -1,5 +1,5 @@
 import { Calculator } from './calculator';
-import CommentableCode from './CommentableCode';
+import CommentableCode from './CommentableCodePage/CommentableCode';
 import { Greeter } from './main'; 
 
 

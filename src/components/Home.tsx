@@ -5,10 +5,9 @@ import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 
 
 import API, { IGithubData } from "../api/API";
-import DocumentBody from "./DocumentBody";
-import DocumentHeader from "./DocumentHeader";
+import DocumentBody from "./CommentableDocument/DocumentBody";
+import DocumentHeader from "./CommentableDocument/DocumentHeader";
 import RoastComment from "./RoastComment";
-import { ApolloProvider, QueryResult } from "react-apollo";
 import ApolloClient from "apollo-boost";
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 // import schema from '../api/github.schema.json';

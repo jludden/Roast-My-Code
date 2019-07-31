@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './App.css';
-import CommentableCode from './components/CommentableCode';
+import CommentableCode from './components/CommentableCodePage/CommentableCode';
 import { Home } from './components/Home';
 import { Container, Hero, Title, Section, Button, Footer, Content } from "rbx";
 import "rbx/index.css";
@@ -11,6 +11,7 @@ import { BrowserRouter as Router, Switch, Route, Link, RouteComponentProps  } fr
 import { QueryParamProvider } from 'use-query-params';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from './generated/graphql';
 import { ApolloProvider, QueryResult } from "react-apollo";
+import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
 import ApolloClient from "apollo-boost";
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 // import logo from './' './logo.svg';
@@ -53,36 +54,40 @@ class App extends React.Component {
 
   public render() {
     return (
+    // <div className="App_Background">
       <ApolloProvider client={client}>
+        <ApolloHooksProvider client={client}>
+          <Router>
+            <QueryParamProvider ReactRouterRoute={Route}>
+              <Hero color="primary" size="medium" gradient>
+              <Hero.Body>
+                <Container>
+                  <Title>
+                    Welcome to Roast My Code!
+                  </Title>
+                </Container>
+              </Hero.Body>
+              </Hero>
+              <Section color="light"> 
+                <Switch>
+                  <Route path="/" exact component={Home} />
+                  <Route path="/about/" component={About} />
+                  <Route path="/repo/" component={CommentableCodePage} />
+                </Switch>
+              </Section>
 
-        <Router>
-          <QueryParamProvider ReactRouterRoute={Route}>
-
-            <Hero color="primary" size="medium" gradient>
-            <Hero.Body>
-              <Container>
-                <Title>
-                  Welcome to Roast My Code!
-                </Title>
-              </Container>
-            </Hero.Body>
-            </Hero>
-            <Switch>
-              <Route path="/" exact component={Home} />
-              <Route path="/about/" component={About} />
-              <Route path="/repo/" component={CommentableCodePage} />
-            </Switch>
-
-          </QueryParamProvider>
-        </Router>
-        <Footer>
-        <Content textAlign="centered">
-          <p>
-            <strong>Roast My Code</strong> by <a href="https://github.com/jludden">Jason Ludden</a>.
-          </p>
-        </Content>
-      </Footer>
-      </ApolloProvider>
+            </QueryParamProvider>
+          </Router>
+          <Footer>
+          <Content textAlign="centered">
+            <p>
+              <strong>Roast My Code</strong> by <a href="https://github.com/jludden">Jason Ludden</a>.
+            </p>
+          </Content>
+        </Footer>
+      </ApolloHooksProvider>
+    </ApolloProvider>
+    // </div>
     );
   }
 }

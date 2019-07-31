@@ -5,7 +5,7 @@ import RoastComment from './RoastComment'
 import useHover from 'react-use/lib/useHover'
 import { Button, Icon } from "rbx";
 import { FaPlusCircle, FaPlus, FaPlusSquare, FaRegPlusSquare, FaGooglePlus, FaSearchPlus } from "react-icons/fa";
-import { SubmitCommentResponse } from './CommentableCode';
+import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
 import SubmitComment from './SubmitCommentForm';
 
 // todo delete this whole thing

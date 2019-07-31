@@ -1,10 +1,10 @@
 import * as React from "react";
-import '../App.css';
-import API, { IGithubSearchResults } from "../api/API";
+import '../../App.css';
+import API, { IGithubSearchResults } from "../../api/API";
 import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub } from 'react-icons/fa';
 // import RepoSearch from "./RepoSearch/RepoSearch";
 // import RepoExplorer from "./RepoSearch/RepoExplorer";
-import { Blob } from '../generated/graphql';
+import { Blob } from '../../generated/graphql';
 // import ICCProps from './CommentableCode';
 import "rbx/index.css";
 import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, Delete, Field, Panel, Checkbox, Icon } from "rbx";

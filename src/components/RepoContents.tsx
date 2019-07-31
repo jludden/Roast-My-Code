@@ -39,18 +39,20 @@ import { url } from "inspector";
 
 export interface IRepoContentsProps {
   repo: Repository,
+  initialFile: string,
   defaultFilePath?: string,
   defaultFileName?: string,
   // defaultBranch: string,
   // title: string,
   // queryVariables: IGithubQueryVariables,
-  loadFileHandler: (fileName: string, blob: Blob) => void // when a file is selected
+  loadFileHandler: (fileName: string, filePath: string) => void // when a file is selected
 }
 
 interface IRepoContentsState {
   // filePath: string, 
   branch: string,
-  queryVariables: IGithubQueryVariables
+  queryVariables: IGithubQueryVariables,
+  fileSelected?: string
 }
 
 // to be included in the graphQL query
@@ -88,23 +90,17 @@ interface Line {
 //   }
 // }
 
-// const useUrlQuery = (p: string) => (useQueryParam('url', StringParam))
-// function urlQuery (url) {
-//   const [url, setUrl] = useQueryParam('url', StringParam);  
-//   useEffect(() => { setUrl(url) });
-//   return url;
-// }
 
-// function useUrlQuery({ url, children }) {
-//   let url = urlQuery(url);
-//   return children(url);
-// }
+// Function component to wrap use query param hook api
+
+
 
 interface IUrlQueryProps {
-  url: string
+  url: string,
+  name: string
 }
 export function UseUrlQuery (props: IUrlQueryProps) {
-  const [url, setUrl] = useQueryParam('q', StringParam);  
+  const [url, setUrl] = useQueryParam(props.name, StringParam);  
 
   useEffect(
     () => {
@@ -139,8 +135,26 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
       repoName: props.repo.name,
       repoOwner: props.repo.owner.login
     };    
+
+    // file=MainActivity.java
+    
+    const loadFile = props.initialFile;
+
+
+    // using the full url , determine if we need to load a file
+    // const path = window.location.pathname;
+    // const indexOf = path.indexOf("filepath");
+    // const fileName = path.substring((indexOf+10), path.length);
+
+    // loadFileHandler: (fileName: string, blob: Blob) => void // when a file is selected
+    // this.props.loadFileHandler(line.name, line.object); 
+
     return {branch, queryVariables};
   }
+
+  // public async componentDidMount(){
+  //   if(this.props.repo.)
+  // }
 
   // searchAPI = ((text: string) => {
   //   const queryVariables = this.state.queryVariables;
@@ -159,8 +173,13 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
 
   handleLineClicked = (line: Line) => { // todo if no selection also allow adding comment?
     // if line is a file, load file into the commentable code container
+
+    const filePath = this.state.queryVariables.path;
+
     if (line && line.name && line.object && line.object.oid) {
-      this.props.loadFileHandler(line.name, line.object); 
+      // this.props.loadFileHandler(line.name, line.object); // todo no
+      this.props.loadFileHandler(line.name, filePath); // trigger update
+      this.setState({fileSelected: line.name})  // yes
     }
     else if (line && line.name) {  // if line is a folder, load directory
       const queryVariables = this.state.queryVariables;
@@ -200,7 +219,7 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
   }
 
   public render() {
-    const title= (this.props.repo && this.props.repo.nameWithOwner) || "Welcome to Roast My Code";
+    const title = (this.props.repo && this.props.repo.nameWithOwner) || "Welcome to Roast My Code";
 
     return (
           <Panel>            
@@ -209,7 +228,8 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
             </Panel.Heading>
 
             {/* update the URL with the current search state */}
-            <UseUrlQuery url={this.state.queryVariables.path} />
+            <UseUrlQuery url={this.state.queryVariables.path} name={"path"}/>
+            {this.state.fileSelected && <UseUrlQuery url={this.state.fileSelected} name={"file"}/>}
 
             {/* <Panel.Block>
               <Control iconLeft>
@@ -259,7 +279,7 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
               </Breadcrumb>
             </Panel.Block>
             
-            <Query<Data, IGithubQueryVariables> query={REPO_EXPLORER_QUERY} variables={this.state.queryVariables}>
+            <Query<Data, IGithubQueryVariables> query={REPO_CONTENTS_QUERY} variables={this.state.queryVariables}>
               {({ loading, error, data }) => {
                 if (loading) return <PanelWarningLine text="Loading..."/>;
                 if (error || !data || !data.repository || !data.repository.folder
@@ -278,7 +298,7 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
                 // todo add Tags for number of comments if > 0
                 //  todo - aggregate comments to folder level
                 return (
-                    data.repository.folder.entries.map(file => (
+                    data.repository.folder.entries.map(file => (                                           
                       <Panel.Block active key={file.oid} onClick={() => this.handleLineClicked(file)}>
                         { file.object.text &&
                           <Panel.Icon>
@@ -291,6 +311,8 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
                           <FaFolder />
                         </Panel.Icon>
                         }
+                         {/* { file.name == this.props.initialFile
+                          && this.handleLineClicked(file)} */}
                        {file.name} 
                       </Panel.Block>
                     ))
@@ -324,7 +346,7 @@ export const PanelWarningLine: React.SFC<IWarningText> = props => {
 
 
 
-const REPO_EXPLORER_QUERY = gql`
+export const REPO_CONTENTS_QUERY = gql`
   query($path: String!, $repoName: String!, $repoOwner: String!) {
     repository(name: $repoName, owner: $repoOwner) {
 
@@ -357,7 +379,7 @@ const REPO_EXPLORER_QUERY = gql`
 }
 `;
 
-// const REPO_EXPLORER_QUERY = gql`
+// const REPO_CONTENTS_QUERY = gql`
 //   query($path: String!) {
 //     repository(name: "ReefLifeSurvey---Species-Explorer", owner: "jludden") {
 //     folder: object(expression: $path) {

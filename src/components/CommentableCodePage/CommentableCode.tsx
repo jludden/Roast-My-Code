@@ -1,16 +1,15 @@
 import update from "immutability-helper";
 import * as React from "react";
-import "../App.css";
-import API, { IGithubData } from "../api/API";
-import DocumentBody from "./DocumentBody";
-import DocumentHeader from "./DocumentHeader";
-import RoastComment from "./RoastComment";
+import "../../App.css";
+import API, { IGithubData } from "../../api/API";
+import Document from '../CommentableDocument/Document';
+import RoastComment from "../RoastComment";
 // import schema from '../api/github.schema.json';
-import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../generated/graphql';
-import {RepositoryOwner, StargazerConnection, Language} from '../generated/graphql'; // todo shouldnt really need
-import RepoSearchContainer from "./RepoSearch/RepoSearchContainer";
-import RepoContents from "./RepoContents";
-import AuthStatusView from "./AuthStatusView";
+import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../../generated/graphql';
+import {RepositoryOwner, StargazerConnection, Language} from '../../generated/graphql'; // todo shouldnt really need
+import RepoSearchContainer from "../RepoSearch/RepoSearchContainer";
+import RepoContents from "../RepoContents";
+import AuthStatusView from "../AuthStatusView";
 import { useIdentityContext } from "react-netlify-identity-widget";
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, Delete, Field, Panel, Checkbox, Icon, Progress } from "rbx";
@@ -49,7 +48,9 @@ interface ICCState {
   },
   loading: boolean,
   triggerLogin: boolean,
-  msg: string
+  msg: string,
+  loadFileName?: string,
+  loadFilePath?: string
 }
 
 export default class CommentableCode extends React.Component<ICCProps, ICCState> {
@@ -139,15 +140,13 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
     console.log(repo);
     const loading = false;
 
-    // todo remove: just adding some fake comments until I fix the REST endpoints
-   /* comments[0] = new RoastComment({id: 12398897945, data: {lineNumber: 10, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
-    comments[1] = new RoastComment({id: 129879875, data: {lineNumber: 40, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
-    comments[2] = new RoastComment({id: 4387862, data: {lineNumber: 90, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
-    comments[3] = new RoastComment({id: 9879876, data: {lineNumber: 100, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
-*/
+      // todo load repo on startup   file=MainActivity.java
 
-    // todo load repo on startup
-    this.setState({ comments, loading });
+      const path = window.location.pathname;
+      const indexOf = path.indexOf("file");
+      const loadFileName = path.substring((indexOf+5), path.length); // todo length
+      const loadFilePath = "master/app/src/main/java/me/jludden/reeflifesurvey/fishcards/CardViewFragment.java";
+      this.setState({ comments, loadFileName, loadFilePath, loading });
   // this.setState({ comments, repo, loading });
   }
 
@@ -187,8 +186,10 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
           { this.state.repo && 
           <RepoContents 
             repo={this.state.repo}
+            initialFile={this.state.loadFileName || ""}
             defaultFilePath={this.state.defaultFilePath || ""}
             defaultFileName={this.state.defaultFileName}
+
             // defaultBranch={this.getDefaultPath()}
             // title={(this.state.repo && this.state.repo.nameWithOwner) || "Welcome to Roast My Code"}
             // path: "master:app"
@@ -200,10 +201,10 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
             // queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
             loadFileHandler={this.LoadFileBlob}/>
           }
-          <DocumentHeader 
+
+          <Document
             documentName={this.state.file.fileName} 
-            commentsCount={this.state.comments.length}/>
-          <DocumentBody 
+            commentsCount={this.state.comments.length}
             name={this.state.file.fileName}
             content={this.state.file.fileContents}
             comments={this.state.comments}
@@ -225,14 +226,20 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
     }
 
     // when a file is selected in the repository contents explorer, load it into view
-    private LoadFileBlob = (fileName: string, blob: Blob) => {
+    private LoadFileBlob = (fileName: string, blob: string) => {
       // todo load item into commentable code
-      var file = this.state.file;
-      if (blob.text) {
-        file.fileContents = blob.text;
-        file.fileName = fileName;
-        this.setState({file});
-      } 
+      // todo don't update file from here - just note URL updated
+
+      // var file = this.state.file;
+      // if (blob.text) {
+      //   file.fileContents = blob.text;
+      //   file.fileName = fileName;
+      //   this.setState({file});
+      // } 
+
+      
+
+      this.setState({loadFileName: fileName, loadFilePath: blob})
     }
 
     // when a repository is selected from the repository searcher

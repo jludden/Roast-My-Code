@@ -1,7 +1,7 @@
 import * as React from "react";
-import { SubmitCommentResponse } from './CommentableCode';
-import RoastComment from "./RoastComment";
-import CommentContainer from './CommentContainer';
+import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
+import RoastComment from "../RoastComment";
+import CommentContainer from '../CommentContainer';
 
 export interface ICommentsViewProps {
   lineNumberMap: Map<number|undefined, RoastComment[]>

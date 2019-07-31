@@ -1,6 +1,7 @@
 .App {
   text-align: center;
 }
+/* tab-size: 4; -- todo would be cool to reduce tab size */
 
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
@@ -12,6 +13,10 @@
   height: 150px;
   padding: 20px;
   color: white;
+}
+
+.App_Background {
+  background-color: "lightgrey";
 }
 /* 
 .App-body {

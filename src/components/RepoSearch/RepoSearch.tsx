@@ -77,7 +77,7 @@ export default class RepoSearch extends React.Component<IGithubQueryProps, IRepo
 public render() {
   return (
           <Panel>
-            <UseUrlQuery url={this.state.queryVariables.queryString} />
+            <UseUrlQuery url={this.state.queryVariables.queryString} name={"q"}/>
             <Panel.Heading>Search Repositories</Panel.Heading>
             <Panel.Block>
               <Control iconLeft>

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import '../App.css';
-import CommentableCode from './CommentableCode';
 import { Container, Hero, Title, Section, Button } from "rbx";
 import "rbx/index.css";
 import { useIdentityContext } from "react-netlify-identity-widget";

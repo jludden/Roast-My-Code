@@ -1,30 +1,17 @@
 import * as React from "react";
-// import  '../../node_modules/color-themes-for-google-code-prettify/dist/themes/github.min.css'
-import "../App.css";
-
-
-
-// import '../google-code-prettify/prettify';
-
-// import '../prettifyTypes';
-// import * as prettify from './google-code-prettify/prettify';
-// import * as prettify from '../google-code-prettify/prettify.js';
-// import * as prettify from 'code-prettify'
+import "../../App.css";
 import SyntaxHighlighter from "react-syntax-highlighter";
-// import { kotlin } from 'react-syntax-highlighter/dist/languages/hljs'
+// import { kotlin } from 'react-syntax-highlighter/dist/languages/hljs' TODO
 import { github } from "react-syntax-highlighter/dist/styles/hljs";
 
-import { SubmitCommentResponse } from "./CommentableCode";
-import RoastComment from "./RoastComment";
+import { SubmitCommentResponse } from "../CommentableCodePage/CommentableCode";
+import RoastComment from "../RoastComment";
 import DocumentCommentsView, {IUnsubmittedComment} from "./DocumentCommentsView";
-import SubmitComment from "./SubmitCommentForm";
+import SubmitComment from "../SubmitCommentForm";
 
 import "rbx/index.css";
 import { Column, Container, Section } from "rbx";
-
-
-// import { LineRenderer } from './SyntaxRenderer';
-import SyntaxLine from './SyntaxRenderer';
+import SyntaxLine from '../SyntaxRenderer';
 
 // import myRenderer from './SyntaxRenderer' todo delete that whole class, have function local
 // import IGithubData from './CommentableCode';

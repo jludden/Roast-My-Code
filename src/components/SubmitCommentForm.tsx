@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SubmitCommentResponse } from './CommentableCode';
+import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
 import RoastComment from './RoastComment'
 
 // TODO UNUSED? DELETE?
