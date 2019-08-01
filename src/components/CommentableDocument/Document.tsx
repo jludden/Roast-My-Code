@@ -35,6 +35,11 @@ const GET_CONTENT = gql`
   }
 `;
 
+// http://localhost:8888/repo/jludden/ReefLifeSurvey---Species-Explorer?
+// file=MainActivity.java
+// &path=master%3Aapp%2Fsrc%2Fmain%2Fjava%2Fme%2Fjludden%2Freeflifesurvey%2F
+// &q=reeflifesurvey
+
 const Document = (props: IDocumentProps) => {
     const { data, error, loading } = useQuery(GET_CONTENT);
   
