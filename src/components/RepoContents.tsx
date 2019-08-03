@@ -92,9 +92,6 @@ interface Line {
 
 
 // Function component to wrap use query param hook api
-
-
-
 interface IUrlQueryProps {
   url: string,
   name: string
@@ -248,9 +245,8 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
               <Panel.Tab>forks</Panel.Tab> */}
             </Panel.Tab.Group>
 
-          {/*  Top line of the panel will show controls for the branch and file path  */}
-          <Panel.Block>
-
+            {/*  Top line of the panel will show controls for the branch and file path  */}
+            <Panel.Block>
               <Dropdown style={{padding: '0 15px 0 0'}}>
                 <Dropdown.Trigger>
                   <Button>

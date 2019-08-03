@@ -66,7 +66,7 @@ const RepoSearch = (props: IGithubQueryProps) => {
   return (
     <>
     { data && data.search.edges.map(repo => (
-        <Panel.Block active key={repo.node.id} onClick={() => props.loadRepoHandler(repo.node)}>
+        <Panel.Block key={repo.node.id} onClick={() => props.loadRepoHandler(repo.node)}>
           <Panel.Icon>
             <FaCodeBranch />
           </Panel.Icon>                        
