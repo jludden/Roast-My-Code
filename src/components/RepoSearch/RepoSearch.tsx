@@ -37,16 +37,12 @@ export interface IGithubQueryProps {
   queryVariables: IGithubQueryVariables,
   loadRepoHandler: (repo: Repository) => void, // when a repository is selected
 }
-interface IRepoSearchState {
-  queryVariables: IGithubQueryVariables
-}
-
 // to be included in the graphQL query
 export interface IGithubQueryVariables {
   queryString: string; // filters
   first: number; // first X results
 }
-export interface Data {
+export interface IGithubQueryResponse {
   search: {
     repositoryCount: number;
     edges: Array<{ node: Repository }>;
@@ -54,7 +50,7 @@ export interface Data {
 }
 
 const RepoSearch = (props: IGithubQueryProps) => {
-  const { data, error, loading, refetch } = useQuery<Data, IGithubQueryVariables>(REPO_SEARCH_QUERY, {
+  const { data, error, loading, refetch } = useQuery<IGithubQueryResponse, IGithubQueryVariables>(REPO_SEARCH_QUERY, {
     variables: props.queryVariables,
     suspend: false,
   });

@@ -40,8 +40,8 @@ export enum SubmitCommentResponse {
 interface ICCState {
   comments: RoastComment[],
   repo?: Repository,
-  defaultFilePath: string,
-  defaultFileName?: string,
+  defaultFilePath: string, // todo del
+  defaultFileName?: string, // todo del
   file: {
     fileName: string,
     fileContents: string
@@ -151,6 +151,13 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
   }
 
     public render() {
+
+      const currentDocVars = {
+        owner: this.state.repo ? this.state.repo.owner.login : "",
+        name: this.state.repo ? this.state.repo.name : "",  
+        path: (this.state.loadFilePath||"") + this.state.loadFileName
+      };
+
       return (
         <>
           <h1>
@@ -203,6 +210,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
           }
 
           <Document
+            queryVariables={currentDocVars}
             documentName={this.state.file.fileName} 
             commentsCount={this.state.comments.length}
             name={this.state.file.fileName}

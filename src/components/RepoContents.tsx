@@ -40,8 +40,8 @@ import { url } from "inspector";
 export interface IRepoContentsProps {
   repo: Repository,
   initialFile: string,
-  defaultFilePath?: string,
-  defaultFileName?: string,
+  defaultFilePath?: string, // todo del
+  defaultFileName?: string, // todo del
   // defaultBranch: string,
   // title: string,
   // queryVariables: IGithubQueryVariables,
@@ -345,7 +345,7 @@ export const PanelWarningLine: React.SFC<IWarningText> = props => {
 //     repository(name: "react", owner: "facebook") {
 
 
-
+// can also load file contents here: repo -> folder: object -> Tree -> object -> Blob -> text 
 export const REPO_CONTENTS_QUERY = gql`
   query($path: String!, $repoName: String!, $repoOwner: String!) {
     repository(name: $repoName, owner: $repoOwner) {
@@ -357,26 +357,25 @@ export const REPO_CONTENTS_QUERY = gql`
       }
 
       folder: object(expression: $path) {
-      ... on Tree {
-        entries {
-          oid
-          name
+        ... on Tree {
+          entries {
+            oid
+            name
 
-          object {
-            ... on Blob {
-              id 
-              oid 
-              commitResourcePath
-              commitUrl 
-              isTruncated
-              text
-            }
-          }          
+            object {
+              ... on Blob {
+                id 
+                oid 
+                commitResourcePath
+                commitUrl 
+                isTruncated
+              }
+            }          
+          }
         }
       }
     }
   }
-}
 `;
 
 // const REPO_CONTENTS_QUERY = gql`

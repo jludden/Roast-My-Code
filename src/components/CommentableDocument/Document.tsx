@@ -10,9 +10,10 @@ import { Query } from "react-apollo";
 import { gql } from "apollo-boost";
 import { useQuery } from 'react-apollo-hooks';
 import { Blob, Repository } from '../../generated/graphql';
-import { Message } from "rbx";
+import { Container, Message, Progress } from "rbx";
 
 export interface IDocumentProps {
+    queryVariables: IGithubDocQueryVariables,
     documentName: string,
     commentsCount: number,
     name: string; // github data - refactor to new interface
@@ -22,66 +23,78 @@ export interface IDocumentProps {
     onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>
 }
 
-
-const GET_CONTENT = gql`
-  {
-    repository(owner: "jludden", name: "ReefLifeSurvey---Species-Explorer") {
-      object(expression: "master:app/src/main/java/me/jludden/reeflifesurvey/fishcards/CardViewFragment.java") {
+const GITHUB_DOCUMENT_QUERY = gql`
+  query Document($owner: String!, $name: String!, $path: String!) {
+    repository(owner: $owner, name: $name) {
+      object(expression: $path) {
         ... on Blob {
           text
         }
       }
     }
-  }
+  } 
 `;
 
-// http://localhost:8888/repo/jludden/ReefLifeSurvey---Species-Explorer?
-// file=MainActivity.java
-// &path=master%3Aapp%2Fsrc%2Fmain%2Fjava%2Fme%2Fjludden%2Freeflifesurvey%2F
-// &q=reeflifesurvey
+interface IGithubDocResponse {
+  repository: {
+      object: {
+          text: string;
+      }
+  }
+}
+
+/*{
+  "owner": "jludden",
+  "name": "ReefLifeSurvey---Species-Explorer",
+  "path": "master:app/src/main/java/me/jludden/reeflifesurvey/fishcards/CardViewFragment.java"
+}*/
+interface IGithubDocQueryVariables {
+    owner: string, 
+    name: string,  
+    path: string, 
+}
 
 const Document = (props: IDocumentProps) => {
-    const { data, error, loading } = useQuery(GET_CONTENT);
+    const { data, error, loading } = useQuery<IGithubDocResponse, IGithubDocQueryVariables>(GITHUB_DOCUMENT_QUERY, {
+        variables: props.queryVariables,
+        suspend: false,
+    });
   
     if (loading) {
-      return <div>Loading...</div>;
+      return <Progress color="info" />;
     }
   
     if (error || !data || !data.repository || !data.repository.object || !data.repository.object.text) {
-      return <div>ERROR</div>;
+      return <ErrorMessage />;
     }  
     return (
-        <>
-            <DocumentHeader 
-                documentName={props.documentName} 
-                commentsCount={props.commentsCount}/>
-            <DocumentBody 
-                name={props.name}
-                content={data.repository.object.text}
-                comments={props.comments}
-                onSubmitComment={props.onSubmitComment}
-                onEditComment={props.onEditComment}/>  
-        </>
+      <>
+        <DocumentHeader 
+            documentName={props.documentName} 
+            commentsCount={props.commentsCount}/>
+        <DocumentBody 
+            name={props.name}
+            content={data.repository.object.text}
+            comments={props.comments}
+            onSubmitComment={props.onSubmitComment}
+            onEditComment={props.onEditComment}/>  
+      </>
     );
 };
-
-
-
-
  
-
- 
-// function ErrorMessage(props: IDocumentProps) {
-//     return (
-//         <Message color="danger">
-//             <Message.Header>
-//             <p>Unexpected Error</p>
-//             </Message.Header>
-//             <Message.Body>
-//                 Failed to load document...
-//             </Message.Body>
-//         </Message>
-//     );
-// }
+function ErrorMessage() {
+    return (
+      <Container>
+        <Message color="danger">
+            <Message.Header>
+              Unexpected Error
+            </Message.Header>
+            <Message.Body>
+              Failed to load document
+            </Message.Body>
+        </Message>
+      </Container>
+    );
+}
 
 export default Document;
