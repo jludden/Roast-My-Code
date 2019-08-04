@@ -271,7 +271,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
 
 
     // **********************
-    // DANGER silly stuff below
+    // DANGER silly stuff below todo del
     // **********************
 
     loadRecommendedRepo = () => {

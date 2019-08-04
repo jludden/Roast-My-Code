@@ -15,7 +15,8 @@ import {
   FaCodeBranch,
   FaGithub,
   FaExclamationCircle,
-  FaAngleDown
+  FaAngleDown,
+  FaImage
 } from "react-icons/fa";
 import {
   Section,
@@ -282,35 +283,12 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
                   || !data.repository.folder.entries) return <PanelWarningLine text="Error :(" color="danger"/>;
                 // if (data.search.repositoryCount < 1) return <PanelWarningLine text="No Results" color="warning"/>;
 
-                // try to load a default file by filename
-                // if (this.props.defaultFileName) {
-                //   const file = data.repository.folder.entries.find(f => f.name === this.props.defaultFileName);
-                //    if(file){
-                //     this.handleLineClicked(file);
-                //    }
-                //   }
-
                 // todo for path - automatically go into the directory with most comments!
                 // todo add Tags for number of comments if > 0
                 //  todo - aggregate comments to folder level
                 return (
-                    data.repository.folder.entries.map(file => (                                           
-                      <Panel.Block active key={file.oid} onClick={() => this.handleLineClicked(file)}>
-                        { file.object.text &&
-                          <Panel.Icon>
-                          <FaBook />
-                        </Panel.Icon> 
-                        }
-                        {/* todo this will cause .png to appear as folder */}
-                        { !file.object.text &&
-                        <Panel.Icon>
-                          <FaFolder />
-                        </Panel.Icon>
-                        }
-                         {/* { file.name == this.props.initialFile
-                          && this.handleLineClicked(file)} */}
-                       {file.name} 
-                      </Panel.Block>
+                    data.repository.folder.entries.map(file => (
+                      <PanelLine key={file.oid} file={file} onLineClicked={this.handleLineClicked} />                                          
                     ))
                 )}} 
              </Query>
@@ -319,22 +297,50 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
       }
 }
 
+interface IPanelLineProps { 
+  file: Line,
+  onLineClicked: (file: Line) => void 
+}
+
+const PanelLine: React.SFC<IPanelLineProps> = props => {
+  const file = props.file;
+  const fileType = file.name.substring(file.name.lastIndexOf('.'));
+
+  if ([".jpg", ".png", ".gif", ".ico", ".mp4", ".avi"].includes(fileType)) {
+    return (
+      <Panel.Block>
+        <Panel.Icon>
+          <FaImage />
+        </Panel.Icon>
+        {file.name} 
+      </Panel.Block>
+    );
+  }
+
+  return (
+    <Panel.Block active onClick={() => props.onLineClicked(file)}>
+      <Panel.Icon>
+        {(file.object.__typename === "Tree") ? <FaFolder /> : <FaBook />}
+      </Panel.Icon>
+      {file.name} 
+    </Panel.Block>
+)};
+
 
 interface IWarningText { 
   text: string, 
   color?: "primary" | "link" | "success" | "info" | "warning" | "danger" | undefined,
 }
-export const PanelWarningLine: React.SFC<IWarningText> = props => {
+const PanelWarningLine: React.SFC<IWarningText> = props => {
   return (
-  <Panel.Block backgroundColor={props.color||undefined}>
-    <Panel.Icon>
-      <FaExclamationCircle />
-    </Panel.Icon>
-    {props.text}
-  </Panel.Block>
-  )};
-
-
+    <Panel.Block backgroundColor={props.color||undefined}>
+      <Panel.Icon>
+        <FaExclamationCircle />
+      </Panel.Icon>
+      {props.text}
+    </Panel.Block>
+  )
+};
 
 // {"path": "master:app/src/main/java/me/jludden/reeflifesurvey"}
 //    repository(name: "ReefLifeSurvey---Species-Explorer", owner: "jludden") {
