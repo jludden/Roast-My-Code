@@ -82,7 +82,7 @@ const Document = (props: IDocumentProps) => {
     );
 };
  
-function ErrorMessage() {
+export function ErrorMessage() {
     return (
       <Container>
         <Message color="danger">

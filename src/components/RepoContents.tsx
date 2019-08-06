@@ -34,15 +34,17 @@ import {
   Field,
   Panel,
   Checkbox,
-  Icon
+  Icon,
+  Progress
 } from "rbx";
 import { url } from "inspector";
 
 export interface IRepoContentsProps {
+  repoPath: string,
   repo: Repository,
-  initialFile: string,
-  defaultFilePath?: string, // todo del
-  defaultFileName?: string, // todo del
+  // initialFile: string,
+  // defaultFilePath?: string, // todo del
+  // defaultFileName?: string, // todo del
   // defaultBranch: string,
   // title: string,
   // queryVariables: IGithubQueryVariables,
@@ -112,6 +114,22 @@ export function UseUrlQuery (props: IUrlQueryProps) {
 }
 
 
+const RepoExplorerContainer = (props: IRepoContentsProps) => {
+
+  const [queryString, setQueryString] = useQueryParam("q", StringParam);  
+  const queryVariables = {
+      queryString: queryString || "",
+      first: 5
+  }
+    /* update the URL with the current search state */
+    // <UseUrlQuery url={this.state.queryVariables.path} name={"path"}/>
+    // {this.state.fileSelected && <UseUrlQuery url={this.state.fileSelected} name={"file"}/>}
+
+    // <RepoExplorer />
+
+  return (<></>);
+}
+
 
 
 // class that takes care of everything except for rewriting the URL
@@ -127,7 +145,7 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
     // todo reconsider
   initState(props: IRepoContentsProps): IRepoContentsState {
     const branch = (props.repo.defaultBranchRef ? props.repo.defaultBranchRef.name : "master");
-    const filePath = (props.defaultFilePath) || "";
+    const filePath = "";
     const queryVariables: IGithubQueryVariables = {
       path: `${branch}:${filePath}`,
       repoName: props.repo.name,
@@ -136,8 +154,6 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
 
     // file=MainActivity.java
     
-    const loadFile = props.initialFile;
-
 
     // using the full url , determine if we need to load a file
     // const path = window.location.pathname;
@@ -278,7 +294,11 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
             
             <Query<Data, IGithubQueryVariables> query={REPO_CONTENTS_QUERY} variables={this.state.queryVariables}>
               {({ loading, error, data }) => {
-                if (loading) return <PanelWarningLine text="Loading..."/>;
+                if (loading) return (
+                  <Panel.Block>
+                    <Progress color="info" />
+                  </Panel.Block>
+                );
                 if (error || !data || !data.repository || !data.repository.folder
                   || !data.repository.folder.entries) return <PanelWarningLine text="Error :(" color="danger"/>;
                 // if (data.search.repositoryCount < 1) return <PanelWarningLine text="No Results" color="warning"/>;

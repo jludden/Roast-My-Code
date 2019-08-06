@@ -2,7 +2,7 @@ import update from "immutability-helper";
 import * as React from "react";
 import "../../App.css";
 import API, { IGithubData } from "../../api/API";
-import Document from '../CommentableDocument/Document';
+import Document, { ErrorMessage } from '../CommentableDocument/Document';
 import RoastComment from "../RoastComment";
 // import schema from '../api/github.schema.json';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../../generated/graphql';
@@ -13,10 +13,18 @@ import AuthStatusView from "../AuthStatusView";
 import { useIdentityContext } from "react-netlify-identity-widget";
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, Delete, Field, Panel, Checkbox, Icon, Progress } from "rbx";
+import { gql } from "apollo-boost";
+import { useQuery } from 'react-apollo-hooks';
 
 
 // todo type instead of interface? is this being used?
 export interface ICCProps {
+  userIsLoggedIn?: boolean;
+  userName?: string;
+  repo: Repository,
+}
+
+export interface CCContainerProps {
   userIsLoggedIn?: boolean;
   userName?: string;
 }
@@ -33,13 +41,8 @@ export enum SubmitCommentResponse {
   NotLoggedIn
 }
 
-// todo new interface:
-// export interface IFileDetails
-// name, content, comments, etc
-
 interface ICCState {
   comments: RoastComment[],
-  repo?: Repository,
   defaultFilePath: string, // todo del
   defaultFileName?: string, // todo del
   file: {
@@ -53,7 +56,42 @@ interface ICCState {
   loadFilePath?: string
 }
 
-export default class CommentableCode extends React.Component<ICCProps, ICCState> {
+export interface IGithubRepoVars {
+  owner: string; 
+  name: string;
+}
+export interface IGithubRepoResponse {
+  repository: Repository
+}
+
+
+  // "owner": "jludden",
+  // "name": "ReefLifeSurvey---Species-Explorer"
+const CommentableCode = (props: CCContainerProps) => {
+  const repoPath = window.location.pathname;
+  const owner = repoPath.slice(repoPath.lastIndexOf('repo/') + 5, repoPath.lastIndexOf('/'));
+  const name = repoPath.slice(repoPath.lastIndexOf('/') + 1);
+
+  const { data, error, loading, refetch } = useQuery<IGithubRepoResponse, IGithubRepoVars>(LOAD_REPO_QUERY, {
+    variables: { owner, name },
+    suspend: false,
+  });
+
+  if (loading) return <Progress color="info" />;
+  if (error || !data || !data.repository) return <div>Error</div>; // ErrorMessage
+
+  return (
+    <CommentableCodeInner 
+      userIsLoggedIn={props.userIsLoggedIn}
+      userName={props.userName}
+      repo={data.repository}
+    />
+  );
+}
+
+
+
+class CommentableCodeInner extends React.Component<ICCProps, ICCState> {
     public state: ICCState = {
         comments: [],
         defaultFilePath: "",
@@ -61,7 +99,6 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
           fileName: "Hello World",
           fileContents: ""
         },
-        repo: undefined,
         loading: true,
         triggerLogin: false,
         msg: ""
@@ -134,27 +171,21 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
   }
 
   public async componentDidMount() {
-    const [comments, repo] = await API.getRepoAndComments();
+    const repoPath = window.location.pathname;
+    const comments = await API.getComments(repoPath);
+    // const [comments, repo] = await API.getRepoAndComments(repoPath);
 
-    // tslint:disable-next-line:no-console
-    console.log(repo);
-    const loading = false;
+    this.setState({ comments, loading: false });
 
-      // todo load repo on startup   file=MainActivity.java
-
-      const path = window.location.pathname;
-      const indexOf = path.indexOf("file");
-      const loadFileName = path.substring((indexOf+5), path.length); // todo length
-      const loadFilePath = "master/app/src/main/java/me/jludden/reeflifesurvey/fishcards/CardViewFragment.java";
-      this.setState({ comments, loadFileName, loadFilePath, loading });
-  // this.setState({ comments, repo, loading });
+    console.log(repoPath);
+    console.log(comments);
   }
 
     public render() {
 
       const currentDocVars = {
-        owner: this.state.repo ? this.state.repo.owner.login : "",
-        name: this.state.repo ? this.state.repo.name : "",  
+        owner: this.props.repo ? this.props.repo.owner.login : "",
+        name: this.props.repo ? this.props.repo.name : "",  
         path: (this.state.loadFilePath||"") + this.state.loadFileName
       };
 
@@ -165,7 +196,7 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
           </h1>
           <AuthStatusView showImmediately={this.state.triggerLogin}/>
           <p>Commentable code props. user name: {this.props.userName || ""} logged in: {this.props.userIsLoggedIn || false}</p>
-          <p> Repo {this.state.repo && this.state.repo.resourcePath} total comments: {this.state.comments && this.state.comments.length} </p>
+          <p> Repo {this.props.repo && this.props.repo.resourcePath} total comments: {this.state.comments && this.state.comments.length} </p>
           <Button badge={this.state.comments && this.state.comments.length} badgeColor="danger" badgeOutlined color="danger" outlined><FaCommentAlt /></Button>
           {this.state.loading && <Progress color="info"/>}
           
@@ -184,30 +215,11 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
           <data/>
           <h3>Document Begin:</h3>
 
-          {/* Repo Search todo remove - add repo load from url to enable repo contents below*/}
-          <RepoSearchContainer
-            loadRepoHandler={this.LoadRepo}
-            loadRecommendedRepo={this.loadRecommendedRepo}/>
-
-          {/* todo extract below to own component - nothing here unless repo is non null */}    
-          { this.state.repo && 
+         
           <RepoContents 
-            repo={this.state.repo}
-            initialFile={this.state.loadFileName || ""}
-            defaultFilePath={this.state.defaultFilePath || ""}
-            defaultFileName={this.state.defaultFileName}
-
-            // defaultBranch={this.getDefaultPath()}
-            // title={(this.state.repo && this.state.repo.nameWithOwner) || "Welcome to Roast My Code"}
-            // path: "master:app"
-            // queryVariables={{
-            //   path: "", 
-            //   repoName: this.state.repo.name, 
-            //   repoOwner: this.state.repo.owner.login
-            // }}
-            // queryVariables={{path: "master:app/src/main/java/me/jludden/reeflifesurvey"}}
+            repo={this.props.repo}
+            repoPath={window.location.pathname}
             loadFileHandler={this.LoadFileBlob}/>
-          }
 
           <Document
             queryVariables={currentDocVars}
@@ -250,62 +262,55 @@ export default class CommentableCode extends React.Component<ICCProps, ICCState>
       this.setState({loadFileName: fileName, loadFilePath: blob})
     }
 
-    // when a repository is selected from the repository searcher
-    private LoadRepo = (repo: Repository) => {
-      this.setState({repo, defaultFilePath: ""});
-    }
 
     
 
     // need a default path to get the initial files in the repository
     // this is based on default branch plus a colon
     // todo 
-    private getDefaultPath(): string {
-      if (this.state.repo && this.state.repo.defaultBranchRef) {
-        return this.state.repo.defaultBranchRef.name;
-        // return `${this.state.repo.defaultBranchRef.name}:`;
-      } 
-      return "master";
-    }
+    // private getDefaultPath(): string {
+    //   if (this.state.repo && this.state.repo.defaultBranchRef) {
+    //     return this.state.repo.defaultBranchRef.name;
+    //     // return `${this.state.repo.defaultBranchRef.name}:`;
+    //   } 
+    //   return "master";
+    // }
 
 
-
-    // **********************
-    // DANGER silly stuff below todo del
-    // **********************
-
-    loadRecommendedRepo = () => {
-      this.setState({
-        defaultFilePath: "app/src/main/java/me/jludden/reeflifesurvey/",
-        defaultFileName: "MainActivity.java",
-        repo: {
-          createdAt: "2017-12-29T12:52:31Z",
-          databaseId: 115722259,
-          defaultBranchRef: null,
-          descriptionHTML: "<div>Android application for browsing fish species and survey site locations based on data from ReefLifeSurvey.com</div>",
-          forks: {
-            totalCount: 1
-          } as RepositoryConnection,
-          id: "MDEwOlJlcG9zaXRvcnkxMTU3MjIyNTk=",
-          languages: null,
-          name: "ReefLifeSurvey---Species-Explorer",
-          nameWithOwner: "jludden/ReefLifeSurvey---Species-Explorer",
-          owner: {
-            id: "MDQ6VXNlcjQ5NTk2MDA=",
-            login: "jludden"
-          } as RepositoryOwner,
-          primaryLanguage: {
-            color: "#b07219",
-            name: "Java"
-          } as Language,
-          resourcePath: "/jludden/ReefLifeSurvey---Species-Explorer",
-          stargazers: {
-            totalCount: 1
-          } as StargazerConnection,
-          updateAt: "2018-05-23T02:57:18Z",
-          url: "https://github.com/jludden/ReefLifeSurvey---Species-Explorer"
-        } as unknown as Repository      
-      });
-    }
 
 }
+
+
+const LOAD_REPO_QUERY = gql`
+query LoadRepo($owner: String!, $name: String!) {
+  repository(owner: $owner, name: $name) {
+    name
+    createdAt
+    url
+    resourcePath
+    updatedAt
+    nameWithOwner
+    owner {
+      login
+    }
+    primaryLanguage {
+      name
+      color
+    }
+    languages(first: 5) {
+      nodes {
+        name
+      }
+    }
+    descriptionHTML
+    stargazers {
+      totalCount
+    }
+    forks {
+      totalCount
+    }
+  }
+}
+`;
+
+export default CommentableCode;

@@ -1,5 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import RoastComment from "../components/RoastComment";
+import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../generated/graphql';
+
 
 class API {
   public axiosInstance: AxiosInstance;
@@ -26,15 +28,17 @@ class API {
     return data;
   }
 
-  public async getRepoAndComments(): Promise<[RoastComment[], IGithubData]> {
+  // todo unused
+  public async getRepoAndComments(repoPath: string): Promise<[RoastComment[], Repository]> {
     const [comments, repo] = await Promise.all([
-      this.getComments(),
-      this.getRepo()
+      this.getComments(repoPath),
+      this.getRepo(repoPath)
     ]);
     return [comments, repo];
   }
 
-  public async getComments(): Promise<RoastComment[]> {
+  // todo use repoPath to get comments for repo
+  public async getComments(repoPath: string): Promise<RoastComment[]> {
     const result = await this.axiosInstance.get("/.netlify/functions/comments");
     // const { data } = await this.axiosInstance.get("/.netlify/functions/comments");
     const data = result.data;
@@ -56,8 +60,8 @@ class API {
   //   return todo.ref['@ref'].id
   // }
 
-  // todo handle errors obviously
-  public async getRepo(): Promise<IGithubData> {
+  // todo handle errors obviously todo does this do anything anymore
+  public async getRepo(repoPath: string): Promise<Repository> {
     // return await this.axiosInstance.get(
     //   "https://api.github.com/repos/jludden/ReefLifeSurvey---Species-Explorer/contents/app/src/main/java/me/jludden/reeflifesurvey/detailed/DetailsActivity.kt"
     //      "http://localhost:34567/.netlify/functions/getRepo"
@@ -73,13 +77,14 @@ class API {
   // }
 }
 
+// todo this should just be Repository
 export interface IGithubRepo {
   name: string;
   content: string;
 }
 
 export interface IGithubData {
-  data: IGithubRepo;
+  data: Repository;
 }
 
 export interface IGithubSearchResults {

@@ -5,6 +5,7 @@ import { gql } from "apollo-boost";
 import { Repository } from '../../generated/graphql';
 import RepoContents, {UseUrlQuery} from "../RepoContents";
 import { useQuery } from 'react-apollo-hooks';
+import { Progress } from "rbx";
 
 
 import {
@@ -59,7 +60,18 @@ const RepoSearch = (props: IGithubQueryProps) => {
     refetch(props.queryVariables);
   }, [props.queryVariables]);
 
-  if (loading) return <PanelWarningLine text="Loading..."/>;
+
+  // todo if loading 
+  // if (loading) {
+  //   return <Progress color="info" />;
+  // }
+  if (loading) return (
+    <Panel.Block>
+      <Progress color="info" />
+    </Panel.Block>    
+  );
+
+  // if (loading) return <PanelWarningLine text="Loading..."/>; 
   if (error || !data || !data.search) return <PanelWarningLine text="Error :(" color="danger"/>;
   if (data.search.repositoryCount < 1) return <PanelWarningLine text="No Results" color="warning"/>;
 
