@@ -13,7 +13,8 @@ import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from 
 import { ApolloProvider, QueryResult } from "react-apollo";
 import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
 import ApolloClient from "apollo-boost";
-import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
+import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
+import CCNavBar from './components/Navbar';
 // import logo from './' './logo.svg';
 
 
@@ -51,10 +52,11 @@ const client = new ApolloClient({
 
 class App extends React.Component {
   
-
+// // <div className="App_Background">
   public render() {
     return (
-    // <div className="App_Background">
+      <>
+      <CCNavBar />
       <ApolloProvider client={client}>
         <ApolloHooksProvider client={client}>
           <Router>
@@ -87,7 +89,7 @@ class App extends React.Component {
         </Footer>
       </ApolloHooksProvider>
     </ApolloProvider>
-    // </div>
+    </>
     );
   }
 }

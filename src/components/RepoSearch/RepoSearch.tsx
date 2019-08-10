@@ -82,8 +82,8 @@ const RepoSearch = (props: IGithubQueryProps) => {
           <Panel.Icon>
             <FaCodeBranch />
           </Panel.Icon>                        
-          {repo.node.nameWithOwner}: last updated at {repo.node.updatedAt}, more
-          here:<a href={repo.node.url} target="_blank" rel="noopener noreferrer">{repo.node.url}</a>
+          <a>{repo.node.nameWithOwner}: last updated at {repo.node.updatedAt}</a>
+          <a href={repo.node.url} target="_blank" rel="noopener noreferrer">{repo.node.url}</a>
           { repo.node.primaryLanguage &&
             <Tag.Group>
               <Tag rounded> {repo.node.primaryLanguage.name} </Tag>

@@ -342,7 +342,7 @@ const PanelLine: React.SFC<IPanelLineProps> = props => {
       <Panel.Icon>
         {(file.object.__typename === "Tree") ? <FaFolder /> : <FaBook />}
       </Panel.Icon>
-      {file.name} 
+      <a>{file.name}</a>
     </Panel.Block>
 )};
 
