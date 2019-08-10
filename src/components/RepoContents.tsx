@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import "../App.css";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { Query } from "react-apollo";
+import { useQuery } from '@apollo/react-hooks';
 import { gql } from "apollo-boost";
 import { Blob, Repository } from '../generated/graphql';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
@@ -42,24 +42,17 @@ import { url } from "inspector";
 export interface IRepoContentsProps {
   repoPath: string,
   repo: Repository,
-  // initialFile: string,
-  // defaultFilePath?: string, // todo del
-  // defaultFileName?: string, // todo del
-  // defaultBranch: string,
-  // title: string,
-  // queryVariables: IGithubQueryVariables,
   loadFileHandler: (fileName: string, filePath: string) => void // when a file is selected
 }
 
 interface IRepoContentsState {
-  // filePath: string, 
   branch: string,
-  queryVariables: IGithubQueryVariables,
+  queryVariables: IGithubRepoContentsVars,
   fileSelected?: string
 }
 
 // to be included in the graphQL query
-export interface IGithubQueryVariables {
+export interface IGithubRepoContentsVars {
   path: string, // path to this directory in form {branch:filePath}
   repoName: string,
   repoOwner: string
@@ -78,20 +71,7 @@ interface Line {
   oid: string, 
   name: string, 
   object: Blob
-  // object: {
-  //   oid: string,
-  //   text: string
-  // }
 }
-
-// HOC Injector to wrap a class component with the query params hooks API
-// TODO maybe it makes more sense for the class component to wrap the hook function
-// export function useUrlQuery<P extends IRepoContentsProps>(Component: React.ComponentType<P>) {
-//   return function WrappedComponent(props: P) {
-//     const [url, setUrl] = useQueryParam('url', StringParam);
-//     return <Component {...props} url={url} setUrl={setUrl}  />;
-//   }
-// }
 
 
 // Function component to wrap use query param hook api
@@ -112,7 +92,6 @@ export function UseUrlQuery (props: IUrlQueryProps) {
 
   return (<></>);
 }
-
 
 const RepoExplorerContainer = (props: IRepoContentsProps) => {
 
@@ -146,7 +125,7 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
   initState(props: IRepoContentsProps): IRepoContentsState {
     const branch = (props.repo.defaultBranchRef ? props.repo.defaultBranchRef.name : "master");
     const filePath = "";
-    const queryVariables: IGithubQueryVariables = {
+    const queryVariables: IGithubRepoContentsVars = {
       path: `${branch}:${filePath}`,
       repoName: props.repo.name,
       repoOwner: props.repo.owner.login
@@ -292,36 +271,59 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
               </Breadcrumb>
             </Panel.Block>
             
-            <Query<Data, IGithubQueryVariables> query={REPO_CONTENTS_QUERY} variables={this.state.queryVariables}>
-              {({ loading, error, data }) => {
-                if (loading) return (
-                  <Panel.Block>
-                    <Progress color="info" />
-                  </Panel.Block>
-                );
-                if (error || !data || !data.repository || !data.repository.folder
-                  || !data.repository.folder.entries) return <PanelWarningLine text="Error :(" color="danger"/>;
-                // if (data.search.repositoryCount < 1) return <PanelWarningLine text="No Results" color="warning"/>;
-
-                // todo for path - automatically go into the directory with most comments!
-                // todo add Tags for number of comments if > 0
-                //  todo - aggregate comments to folder level
-                return (
-                    data.repository.folder.entries.map(file => (
-                      <PanelLine key={file.oid} file={file} onLineClicked={this.handleLineClicked} />                                          
-                    ))
-                )}} 
-             </Query>
+            <RepoContentsInner
+              variables={this.state.queryVariables}
+              onLineClicked={this.handleLineClicked}
+              />
           </Panel>
         );
       }
+}
+
+
+    // todo for path - automatically go into the directory with most comments!
+    // todo add Tags for number of comments if > 0
+    //  todo - aggregate comments to folder level
+
+interface IRepoContentsInner {
+  variables: IGithubRepoContentsVars,
+  onLineClicked: (line: Line) => void
+}
+const RepoContentsInner = (props: IRepoContentsInner) => {
+  const { data, error, loading, refetch } = useQuery<Data, IGithubRepoContentsVars>(REPO_CONTENTS_QUERY, {
+    variables: props.variables
+  });
+
+  useEffect(() => {
+    refetch(props.variables);
+  }); // TODO NO SHIP useeffect even without props.var change + url params will trigger many re-renders
+// }, [props.variables]);
+
+  if (loading) return (
+    <Panel.Block>
+      <Progress color="info" />
+    </Panel.Block>
+  );
+  
+  if (error || !data || !data.repository || !data.repository.folder|| !data.repository.folder.entries) {
+    return (
+      <PanelWarningLine text="Error :(" color="danger"/>
+    );
+  }
+
+  return (
+    <>
+    {data.repository.folder.entries.map(file => (
+        <PanelLine key={file.oid} file={file} onLineClicked={props.onLineClicked} />                                          
+    ))}
+    </>
+  );
 }
 
 interface IPanelLineProps { 
   file: Line,
   onLineClicked: (file: Line) => void 
 }
-
 const PanelLine: React.SFC<IPanelLineProps> = props => {
   const file = props.file;
   const fileType = file.name.substring(file.name.lastIndexOf('.'));

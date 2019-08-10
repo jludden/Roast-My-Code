@@ -3,12 +3,9 @@ import RoastComment from "../RoastComment";
 import DocumentBody from "./DocumentBody";
 import DocumentHeader from "./DocumentHeader";
 import * as React from "react";
-import * as ReactApollo from "react-apollo";
-import * as ReactApolloHooks from "react-apollo-hooks";
 import "../../App.css";
-import { Query } from "react-apollo";
 import { gql } from "apollo-boost";
-import { useQuery } from 'react-apollo-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { Blob, Repository } from '../../generated/graphql';
 import { Container, Message, Progress } from "rbx";
 
@@ -56,8 +53,7 @@ interface IGithubDocQueryVariables {
 
 const Document = (props: IDocumentProps) => {
     const { data, error, loading } = useQuery<IGithubDocResponse, IGithubDocQueryVariables>(GITHUB_DOCUMENT_QUERY, {
-        variables: props.queryVariables,
-        suspend: false,
+        variables: props.queryVariables
     });
   
     if (loading) {

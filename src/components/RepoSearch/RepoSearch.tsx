@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { Query } from "react-apollo";
 import { gql } from "apollo-boost";
 import { Repository } from '../../generated/graphql';
 import RepoContents, {UseUrlQuery} from "../RepoContents";
-import { useQuery } from 'react-apollo-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { Progress } from "rbx";
 
 
@@ -52,8 +51,7 @@ export interface IGithubQueryResponse {
 
 const RepoSearch = (props: IGithubQueryProps) => {
   const { data, error, loading, refetch } = useQuery<IGithubQueryResponse, IGithubQueryVariables>(REPO_SEARCH_QUERY, {
-    variables: props.queryVariables,
-    suspend: false,
+    variables: props.queryVariables
   });
 
   useEffect(() => {
@@ -112,7 +110,7 @@ export const PanelWarningLine: React.SFC<IWarningText> = props => {
 
 
 // search(query: $queryString, type: REPOSITORY, first: 10)
-const REPO_SEARCH_QUERY = gql`
+export const REPO_SEARCH_QUERY = gql`
   query SearchMostTop10Star($queryString: String!, $first: Int) {
     search(query: $queryString, type: REPOSITORY, first: $first) {
       repositoryCount

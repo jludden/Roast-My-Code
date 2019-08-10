@@ -10,8 +10,7 @@ import { AuthWrapper } from "./components/AuthWrapper";
 import { BrowserRouter as Router, Switch, Route, Link, RouteComponentProps  } from "react-router-dom";
 import { QueryParamProvider } from 'use-query-params';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from './generated/graphql';
-import { ApolloProvider, QueryResult } from "react-apollo";
-import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
+import { ApolloProvider } from '@apollo/react-hooks';
 import ApolloClient from "apollo-boost";
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import CCNavBar from './components/Navbar';
@@ -58,7 +57,6 @@ class App extends React.Component {
       <>
       <CCNavBar />
       <ApolloProvider client={client}>
-        <ApolloHooksProvider client={client}>
           <Router>
             <QueryParamProvider ReactRouterRoute={Route}>
               <Hero color="primary" size="medium" gradient>
@@ -87,7 +85,6 @@ class App extends React.Component {
             </p>
           </Content>
         </Footer>
-      </ApolloHooksProvider>
     </ApolloProvider>
     </>
     );

@@ -14,7 +14,7 @@ import { useIdentityContext } from "react-netlify-identity-widget";
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, Delete, Field, Panel, Checkbox, Icon, Progress } from "rbx";
 import { gql } from "apollo-boost";
-import { useQuery } from 'react-apollo-hooks';
+import { useQuery } from '@apollo/react-hooks';
 
 
 // todo type instead of interface? is this being used?
@@ -73,8 +73,7 @@ const CommentableCode = (props: CCContainerProps) => {
   const name = repoPath.slice(repoPath.lastIndexOf('/') + 1);
 
   const { data, error, loading, refetch } = useQuery<IGithubRepoResponse, IGithubRepoVars>(LOAD_REPO_QUERY, {
-    variables: { owner, name },
-    suspend: false,
+    variables: { owner, name }
   });
 
   if (loading) return <Progress color="info" />;
