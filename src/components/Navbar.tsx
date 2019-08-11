@@ -2,6 +2,8 @@ import * as React from "react";
 import "../App.css";
 import "rbx/index.css";
 import { Navbar, Button } from "rbx";
+import { BrowserRouter as Router, Switch, Route, Link, RouteComponentProps  } from "react-router-dom";
+import AuthStatusView from "./AuthStatusView";
 
 export interface INavbarProps { }
 
@@ -22,8 +24,12 @@ const CCNavbar = (props: INavbarProps) => {
       </Navbar.Brand>
       <Navbar.Menu>
         <Navbar.Segment align="start">
-          <Navbar.Item>Home</Navbar.Item>
-          <Navbar.Item>Documentation</Navbar.Item>
+          <Navbar.Item>              
+            <Link to="/">Search</Link>
+          </Navbar.Item>
+          <Navbar.Item> Documentation
+            {/* <Link to="/repo/">Repo</Link> */}
+          </Navbar.Item>
 
           <Navbar.Item dropdown>
             <Navbar.Link>More</Navbar.Link>
@@ -40,6 +46,8 @@ const CCNavbar = (props: INavbarProps) => {
         <Navbar.Segment align="end">
           <Navbar.Item>
             <Button.Group>
+              <AuthStatusView />
+
               <Button color="primary">
                 <strong>Sign up</strong>
               </Button>

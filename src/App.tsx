@@ -52,13 +52,19 @@ export const client = new ApolloClient({
 class App extends React.Component {
   
 // // <div className="App_Background">
+
   public render() {
+    const url = "https://jludden-react.netlify.com/";
+
     return (
       <>
-      <CCNavBar />
       <ApolloProvider client={client}>
+       <IdentityContextProvider url={url}>
           <Router>
             <QueryParamProvider ReactRouterRoute={Route}>
+              <CCNavBar />
+
+
               <Hero color="primary" size="medium" gradient>
               <Hero.Body>
                 <Container>
@@ -85,6 +91,7 @@ class App extends React.Component {
             </p>
           </Content>
         </Footer>
+        </IdentityContextProvider>
     </ApolloProvider>
     </>
     );
@@ -104,14 +111,12 @@ function HomePage() {
 
 
 function CommentableCodePage() {
-  const url = "https://jludden-react.netlify.com/";
   return <div className="App">
       {/* <header className="App-header">
         * <img src={logo} className="App-logo" alt="logo" /> }
         <h1 className="App-title">Welcome to React</h1>
       </header> */}
      
-      <IdentityContextProvider url={url}>
           <Section>
             <Container>
               <AuthWrapper >
@@ -119,7 +124,6 @@ function CommentableCodePage() {
               </AuthWrapper> 
             </Container>
           </Section>
-      </IdentityContextProvider>
     </div>;
 }
 

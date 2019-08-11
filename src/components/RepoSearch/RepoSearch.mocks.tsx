@@ -2,8 +2,8 @@ import RepoSearch, { REPO_SEARCH_QUERY, PanelWarningLine, IGithubQueryVariables,
 import { Repository } from '../../generated/graphql';
 import { GraphQLError } from "graphql";
 
-
-const mockRepo: Repository = {
+// const mockRepo: Repository = {
+const mockRepo = {
     nameWithOwner: "facebook/react",
     name: "react",
     id: "MDEwOlJlcG9zaXRvcnkxMDI3MDI1MA==",
@@ -56,7 +56,8 @@ const mockRepo: Repository = {
     queryString: "react",
     first: 1
   };
-  const resp: IGithubQueryResponse = {
+  //   const resp: IGithubQueryResponse = {
+  const resp = {
     search: {
       repositoryCount: 1,
       edges: [{ node: mockRepo }]
