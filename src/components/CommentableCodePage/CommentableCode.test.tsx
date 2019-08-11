@@ -16,7 +16,7 @@ enzyme.configure({ adapter: new Adapter() });
 describe("<CommentableCode />", () => {
   xit("fetches data on componentDidMount", () => {
     const codeComponent = shallow<ShallowWrapper>(
-      <CommentableCode document="hello" />
+      <CommentableCode />
     );
     try {
       const instance = codeComponent.instance;
@@ -42,7 +42,7 @@ describe("<CommentableCode />", () => {
     // const shallowWrapper = shallow(<CommentableCode loadData={mockedCallback} />);
     // const mockedCallback = () => Promise.resolve(data);
 
-    const shallowWrapper = shallow(<CommentableCode document="" />);
+    const shallowWrapper = shallow(<CommentableCode  />);
     const containsSpinner = shallowWrapper.containsMatchingElement(
       <Progress/>
     );
@@ -68,7 +68,7 @@ describe("<CommentableCode />", () => {
 
 
     // const shallowWrapper = shallow(<CommentableCode document="" />);
-    const shallowWrapper = enzyme.mount(<CommentableCode document="" />);
+    const shallowWrapper = enzyme.mount(<CommentableCode/>);
 
     const containsHeaderComponent = shallowWrapper.find(DocumentHeader);
     const containsBodyComponent = shallowWrapper.find(DocumentBody);

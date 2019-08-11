@@ -54,22 +54,16 @@ const RepoSearch = (props: IGithubQueryProps) => {
     variables: props.queryVariables
   });
 
-  useEffect(() => {
-    refetch(props.queryVariables);
-  }, [props.queryVariables]);
+  // useEffect(() => {
+  //   refetch(props.queryVariables);
+  // }, [props.queryVariables]);
 
-
-  // todo if loading 
-  // if (loading) {
-  //   return <Progress color="info" />;
-  // }
   if (loading) return (
     <Panel.Block>
       <Progress color="info" />
     </Panel.Block>    
   );
 
-  // if (loading) return <PanelWarningLine text="Loading..."/>; 
   if (error || !data || !data.search) return <PanelWarningLine text="Error :(" color="danger"/>;
   if (data.search.repositoryCount < 1) return <PanelWarningLine text="No Results" color="warning"/>;
 

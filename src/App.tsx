@@ -27,8 +27,8 @@ import CCNavBar from './components/Navbar';
 const fragmentMatcher = new IntrospectionFragmentMatcher({
   introspectionQueryResultData: IntrospectionResultData
 })
-const cache = new InMemoryCache({ fragmentMatcher });
-const client = new ApolloClient({
+export const cache = new InMemoryCache({ fragmentMatcher });
+export const client = new ApolloClient({
   cache,
   uri:  "https://api.github.com/graphql",
   headers: {
