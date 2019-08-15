@@ -10,9 +10,18 @@ import { queryVars, resultMock, errorMock, graphQLErrorMock } from "./RepoSearch
 // import { cache } from "../../App";
 import { act } from 'react-dom/test-utils';
 
+// suppress error messages - there are many for apollo
+console.log = jest.fn();
+console.error = jest.fn();
+console.warn = jest.fn();
+
+//https://github.com/testing-library/react-testing-library#suppressing-unnecessary-warnings-on-react-dom-168
+//https://reactjs.org/docs/testing-recipes.html
+//https://blog.logrocket.com/a-quick-guide-to-testing-react-hooks-fa584c415407/
 
 enzyme.configure({ adapter: new Adapter() });
 describe("RepoSearch", () => {
+
     it("will render data", async () => {
       const wrapper = mount(
         <MockedProvider mocks={resultMock} addTypename={false}>

@@ -46,15 +46,6 @@ export function Home (props: IHomeProps) {
                 (shouldRedirect.length > 0) && <Redirect to={`/repo${shouldRedirect}`} push />
             }
 
-            <div>
-                <h1>num is {num}</h1>
-                <button onClick={() => setNum(Math.random())}>Change</button>
-                <h1>foo is {foo}</h1>
-                <button onClick={() => setFoo(`str${Math.random()}`)}>Change</button>
-                <h1> link to repo </h1>
-                <Link to="/repo/">Commentable Code</Link>
-            </div>
-
             {/* <AuthStatusView showImmediately={false}/> */}
 
             {/* {todo use a RBX-Page Loader for this part...} */}

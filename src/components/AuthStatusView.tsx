@@ -26,9 +26,11 @@ export default function AuthStatusView (props: IAppProps = { showImmediately: fa
 
   return (
     <>
-      <Avatar isLoggedIn={isLoggedIn} name={name}/>
-      <Button onClick={() => setDialog(true)}>
-        {isLoggedIn ? `Hello ${name}, Log out here!` : "Log In"}
+      {isLoggedIn && 
+        <Avatar isLoggedIn={isLoggedIn} name={name}/>
+      }
+      <Button color="primary" onClick={() => setDialog(true)}>
+        {isLoggedIn ? `Hello ${name}, Log out here!` : <strong>Log in</strong>}
       </Button>      
       <React.Suspense fallback="loading...">
         <IdentityModal showDialog={dialog} onCloseDialog={() => setDialog(false)} />
