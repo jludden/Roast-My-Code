@@ -41,7 +41,7 @@
     "react-router-dom": "^5.0.1",
     "react-scripts": "^3.0.1",
     "react-syntax-highlighter": "^10.2.1",
-    "react-use": "^9.7.0",
+    "react-use": "^10.6.2",
     "use-query-params": "^0.3.3"
   },
   "scripts": {
@@ -91,6 +91,6 @@
     ]
   },
   "resolutions": {
-    "jest": "24.7.1"
+    "jest": "24.8.0"
   }
 }
