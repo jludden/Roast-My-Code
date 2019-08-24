@@ -34,7 +34,7 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
     return (
         <Section>
         <Container>
-            <Panel>
+            <Panel hoverable> 
                 <Panel.Heading>Github Repositories</Panel.Heading>
                 <Panel.Tab.Group>
                     <Panel.Tab active>search all</Panel.Tab>

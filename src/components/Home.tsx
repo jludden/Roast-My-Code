@@ -19,13 +19,13 @@ import AuthStatusView from "./AuthStatusView";
 import { useIdentityContext } from "react-netlify-identity-widget";
 import update from "immutability-helper";
 import { BrowserRouter as Router, Switch, Route, Redirect, Link, RouteComponentProps  } from "react-router-dom";
+import { Container, Message, Progress, Table   } from "rbx";
 
 
 export interface IHomeProps {
     bar: string,
     foo: number,
     children: React.ReactElement
-
 }
 
 
@@ -36,8 +36,6 @@ export interface IHomeProps {
 
 export function Home (props: IHomeProps) {
 
-    const [num, setNum] = useQueryParam('x', NumberParam);
-    const [foo, setFoo] = useQueryParam('foo', StringParam);
     const [shouldRedirect, setShouldRedirect] = React.useState("");
 
     return (
@@ -55,6 +53,75 @@ export function Home (props: IHomeProps) {
             <RepoSearchContainer
               loadRepoHandler={(repo: Repository) => setShouldRedirect(repo.resourcePath)}
               loadRecommendedRepo={() => setShouldRedirect("/jludden/ReefLifeSurvey---Species-Explorer")} />
+
+            <div>
+                Search
+                    Personal Repositories -> Login prompt
+                    Your starred Repos -> Login prompt
+
+                Hide everything below / translucent below when searching?
+            </div>
+
+
+            <div >
+                Grid - Recommended
+                Recent 
+                Top Roasted
+                Top Roasters
+            </div>
+
+            <div>
+                Recent -> fresh
+
+                Popularity Scale:
+                
+                toasted
+                roasted
+                burnt
+
+                Add fuel to the fire
+            </div>
+
+
+            {/* <Columns>
+                <Columns.Column>First Column</Columns.Column>
+                <Columns.Column>Second Column</Columns.Column>
+                <Columns.Column> */}
+                <div>
+                {/* <Table hoverable>
+                <Table.Head>
+                    <Table.Row>
+                    <Table.Heading>One</Table.Heading>
+                    <Table.Heading>Two</Table.Heading>
+                    </Table.Row>
+                </Table.Head>
+                <Table.Body>
+                    {[
+                    ['Three', 'Four'],
+                    ['Five', 'Six'],
+                    ['Seven', 'Eight'],
+                    ['Nine', 'Ten'],
+                    ['Eleven', 'Twelve'],
+                    ].map(([v1, v2], i) => (
+                    <Table.Row key={i}>
+                        <Table.Cell>{v1}</Table.Cell>
+                        <Table.Cell>{v2}</Table.Cell>
+                    </Table.Row>
+                    ))}
+                </Table.Body>
+            </Table> */}
+                {/* </Columns.Column>
+            </Columns> */}
+
+            </div>
+           
+
+
+            <h1 >
+                Sample `img` of Code + comments w/ roasties
+            </h1>
+
+
 
             {/* {React.cloneElement(props.children, { isLoggedIn })} */}
             {props.children && React.cloneElement(props.children)}

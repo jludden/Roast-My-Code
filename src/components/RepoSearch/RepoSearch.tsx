@@ -14,7 +14,8 @@ import {
   FaCodeBranch,
   FaGithub,
   FaExclamationCircle,
-  FaStar
+  FaStar,
+  FaExternalLinkAlt
 } from "react-icons/fa";
 import {
   Section,
@@ -54,9 +55,13 @@ const RepoSearch = (props: IGithubQueryProps) => {
     variables: props.queryVariables
   });
 
+  // const [hasSearched, setHasSearched] = useState(false);
+
   // useEffect(() => {
   //   refetch(props.queryVariables);
   // }, [props.queryVariables]);
+
+  // if (loading && !hasSearched) setHasSearched(true);
 
   if (loading) return (
     <Panel.Block>
@@ -65,17 +70,18 @@ const RepoSearch = (props: IGithubQueryProps) => {
   );
 
   if (error || !data || !data.search) return <PanelWarningLine text="Error :(" color="danger"/>;
+  if (props.queryVariables.queryString === "") return <Panel.Block><span>Try searching "React" or "language:JavaScript stars:>10000"...</span></Panel.Block>
   if (data.search.repositoryCount < 1) return <PanelWarningLine text="No Results" color="warning"/>;
 
   return (
     <>
     { data && data.search.edges.map(repo => (
-        <Panel.Block key={repo.node.id} onClick={() => props.loadRepoHandler(repo.node)}>
+        <Panel.Block key={repo.node.id} onClick={() => props.loadRepoHandler(repo.node)} hover >
           <Panel.Icon>
             <FaCodeBranch />
           </Panel.Icon>                        
           <a>{repo.node.nameWithOwner}: last updated at {repo.node.updatedAt}</a>
-          <a href={repo.node.url} target="_blank" rel="noopener noreferrer">{repo.node.url}</a>
+          <a href={repo.node.url} target="_blank" rel="noopener noreferrer"><FaExternalLinkAlt /></a>
           { repo.node.primaryLanguage &&
             <Tag.Group>
               <Tag rounded> {repo.node.primaryLanguage.name} </Tag>

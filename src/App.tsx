@@ -64,7 +64,7 @@ class App extends React.Component {
             <QueryParamProvider ReactRouterRoute={Route}>
               <CCNavBar />
 
-
+{/* 
               <Hero color="primary" size="medium" gradient>
               <Hero.Body>
                 <Container>
@@ -73,8 +73,8 @@ class App extends React.Component {
                   </Title>
                 </Container>
               </Hero.Body>
-              </Hero>
-              <Section color="light"> 
+              </Hero> */}
+              <Section color="dark"> 
                 <Switch>
                   <Route path="/" exact component={Home} />
                   <Route path="/about/" component={About} />
@@ -88,6 +88,9 @@ class App extends React.Component {
           <Content textAlign="centered">
             <p>
               <strong>Roast My Code</strong> by <a href="https://github.com/jludden">Jason Ludden</a>.
+              github link
+              subreddit link
+              twitter/slack/discord
             </p>
           </Content>
         </Footer>
