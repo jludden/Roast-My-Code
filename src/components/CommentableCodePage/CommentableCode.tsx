@@ -15,6 +15,7 @@ import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGit
 import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, Delete, Field, Panel, Checkbox, Icon, Progress } from "rbx";
 import { gql } from "apollo-boost";
 import { useQuery } from '@apollo/react-hooks';
+import ApolloClient from "apollo-boost";
 
 
 // todo type instead of interface? is this being used?
@@ -64,6 +65,9 @@ export interface IGithubRepoResponse {
   repository: Repository
 }
 
+export interface IRepoCommentsResponse {
+
+}
 
   // "owner": "jludden",
   // "name": "ReefLifeSurvey---Species-Explorer"
@@ -72,6 +76,7 @@ const CommentableCode = (props: CCContainerProps) => {
   const owner = repoPath.slice(repoPath.lastIndexOf('repo/') + 5, repoPath.lastIndexOf('/'));
   const name = repoPath.slice(repoPath.lastIndexOf('/') + 1);
 
+  // Load Repo
   const { data, error, loading, refetch } = useQuery<IGithubRepoResponse, IGithubRepoVars>(LOAD_REPO_QUERY, {
     variables: { owner, name }
   });
@@ -79,13 +84,63 @@ const CommentableCode = (props: CCContainerProps) => {
   if (loading) return <Progress color="info" />;
   if (error || !data || !data.repository) return <div>Error</div>; // ErrorMessage
 
+
   return (
+    <>
+    <LoadCommentsTestContainer />
     <CommentableCodeInner 
       userIsLoggedIn={props.userIsLoggedIn}
       userName={props.userName}
       repo={data.repository}
     />
+    </>
   );
+}
+
+const LoadCommentsTestContainer = () => {
+  const [active, setActive] = React.useState(false);
+
+  if (!active) {
+    return (
+      <Button onClick={() => {setActive(true)}} />
+    );
+  }
+
+  return (
+    <LoadCommentsTest />
+  );
+}
+
+const LOAD_COMMENTS_QUERY = gql`
+query getcomments {
+  allTodos {
+    data {
+      title
+      completed
+    }
+  }
+}
+`
+
+const faunaDbClient = new ApolloClient({
+ uri: "/.netlify/functions/repo_comments"
+});
+
+const LoadCommentsTest = () => {
+
+  const { data, error, loading, refetch } = useQuery(LOAD_COMMENTS_QUERY, {
+    client: faunaDbClient
+  });
+  
+
+  if (loading) return <Progress color="info" />;
+  if (error || !data ) return <div>Error</div>; // ErrorMessage
+  if (data) {
+    console.log(data);
+  }
+  return (
+    <div>Hello it worked</div>
+  )
 }
 
 
