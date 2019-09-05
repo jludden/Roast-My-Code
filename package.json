@@ -54,7 +54,8 @@
     "build:test": "set CI=true&&yarn test a --watchAll=false",
     "test": "react-scripts test --env=jsdom",
     "eject": "cross-env NODE_PATH=src react-scripts eject",
-    "generate": "graphql-codegen --config codegen.yml"
+    "generate": "graphql-codegen --config codegen.yml",
+    "generateFauna": "graphql-codegen --config codegen.FaunaDB.yml"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.3.3",

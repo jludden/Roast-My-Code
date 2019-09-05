@@ -14,7 +14,7 @@ import { useIdentityContext } from "react-netlify-identity-widget";
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, Delete, Field, Panel, Checkbox, Icon, Progress } from "rbx";
 import { gql } from "apollo-boost";
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import ApolloClient from "apollo-boost";
 
 
@@ -66,8 +66,16 @@ export interface IGithubRepoResponse {
 }
 
 export interface IRepoCommentsResponse {
-
+  allTodos: {
+    data: [
+      {
+        title: string,
+        completed: boolean
+      }
+    ]
+  }
 }
+
 
   // "owner": "jludden",
   // "name": "ReefLifeSurvey---Species-Explorer"
@@ -120,7 +128,19 @@ query getcomments {
     }
   }
 }
-`
+`;
+
+const ADD_COMMENT = gql`
+mutation CreateATodo {
+  createTodo(data: {
+  title: "Build an awesome app!"
+  completed: false
+  }) {
+      title
+      completed
+  }
+}
+`;
 
 const faunaDbClient = new ApolloClient({
  uri: "/.netlify/functions/repo_comments"
@@ -128,7 +148,7 @@ const faunaDbClient = new ApolloClient({
 
 const LoadCommentsTest = () => {
 
-  const { data, error, loading, refetch } = useQuery(LOAD_COMMENTS_QUERY, {
+  const { data, error, loading, refetch } = useQuery<IRepoCommentsResponse>(LOAD_COMMENTS_QUERY, {
     client: faunaDbClient
   });
   
@@ -139,11 +159,60 @@ const LoadCommentsTest = () => {
     console.log(data);
   }
   return (
-    <div>Hello it worked</div>
+    <div><span>Hello it worked</span>
+    <ul>
+      {data.allTodos.data.map(todo => (
+        <li>
+          <b>title: {todo.title}</b><p>completed: {todo.completed ? "true" : "false"}</p> 
+        </li>
+      ))}
+    </ul>  
+    <h3>Add comment: </h3>  
+    <AddComment />
+    <br/><br/>
+    </div>
   )
 }
 
+function AddComment() {
+  let input: HTMLInputElement|null;
+  // const [addTodo, { data }] = useMutation(ADD_COMMENT);
+  const [addTodo] = useMutation( //todo set client: faunaDbClient 
+    ADD_COMMENT,
+    
+    {
+      update(cache, { data: { addTodo } }) {
+        const { todos } : any = cache.readQuery({ query: LOAD_COMMENTS_QUERY   }) || { todos: [] };
+        cache.writeQuery({
+          query: LOAD_COMMENTS_QUERY,
+          data: { todos: todos.concat([addTodo]) },
+        });
+      }
+    }
+  );
 
+
+  return (
+    <div>
+      <form
+        onSubmit={e => {
+          const val = input ? input.value : '';
+          console.log("comment submission attempted. value: "+val)
+          e.preventDefault();
+          addTodo({ variables: { type: val } });
+          if(input) input.value = '';
+        }}
+      >
+        <input
+          ref={node => {
+            input = node;
+          }}
+        />
+        <button type="submit">Add Todo</button>
+      </form>
+    </div>
+  );
+}
 
 class CommentableCodeInner extends React.Component<ICCProps, ICCState> {
     public state: ICCState = {

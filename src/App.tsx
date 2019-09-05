@@ -30,12 +30,22 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
 export const cache = new InMemoryCache({ fragmentMatcher });
 export const client = new ApolloClient({
   cache,
-  uri:  "https://api.github.com/graphql",
-  headers: {
-    Authorization: `bearer ${process.env.REACT_APP_GITHUB_PAT}`,
-  } 
-});
+  uri: "/.netlify/functions/repo_github"
+})
 
+// export const client = new ApolloClient({
+//   cache,
+//   uri:  "https://api.github.com/graphql",
+//   headers: {
+//     Authorization: `bearer ${process.env.REACT_APP_GITHUB_PAT}`,
+//   } 
+// });
+
+/*
+const faunaDbClient = new ApolloClient({
+ uri: "/.netlify/functions/repo_comments"
+});
+*/
 
 
 //  Router && QueryParamProvider
