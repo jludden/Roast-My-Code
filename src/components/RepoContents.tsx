@@ -5,7 +5,6 @@ import { useQuery } from '@apollo/react-hooks';
 import { gql } from "apollo-boost";
 import { Blob, Repository } from '../generated/graphql';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
-
 import {
   FaBeer,
   FaBook,
@@ -38,6 +37,9 @@ import {
   Progress
 } from "rbx";
 import { url } from "inspector";
+import { cache, github_client } from '../App';
+import ApolloClient from "apollo-boost";
+
 
 export interface IRepoContentsProps {
   repoPath: string,
@@ -289,11 +291,17 @@ interface IRepoContentsInner {
   variables: IGithubRepoContentsVars,
   onLineClicked: (line: Line) => void
 }
+
+// const github_client = new ApolloClient({
+//   //cache,
+//   uri: "/.netlify/functions/repo_github"
+// });
+
 const RepoContentsInner = (props: IRepoContentsInner) => {
   const { data, error, loading, refetch } = useQuery<Data, IGithubRepoContentsVars>(REPO_CONTENTS_QUERY, {
-    variables: props.variables
+    variables: props.variables,
+    client: github_client
   });
-
   useEffect(() => {
     refetch(props.variables);
   }); // TODO NO SHIP useeffect even without props.var change + url params will trigger many re-renders

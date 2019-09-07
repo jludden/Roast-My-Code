@@ -5,7 +5,8 @@ import { Repository } from '../../generated/graphql';
 import RepoContents, {UseUrlQuery} from "../RepoContents";
 import { useQuery } from '@apollo/react-hooks';
 import { Progress } from "rbx";
-
+import '../../App.css';
+import {github_client} from '../../App';
 
 import {
   FaBeer,
@@ -52,7 +53,8 @@ export interface IGithubQueryResponse {
 
 const RepoSearch = (props: IGithubQueryProps) => {
   const { data, error, loading, refetch } = useQuery<IGithubQueryResponse, IGithubQueryVariables>(REPO_SEARCH_QUERY, {
-    variables: props.queryVariables
+    variables: props.queryVariables,
+    client: github_client
   });
 
   // const [hasSearched, setHasSearched] = useState(false);

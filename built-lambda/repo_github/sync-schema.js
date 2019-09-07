@@ -22,7 +22,7 @@ function createFaunaGraphQL() {
   //   process.env.FAUNADB_SERVER_SECRET + ":"
   // ).toString("base64");
 
-  // { Authorization: `bearer ${process.env.REACT_APP_FAUNA_CLIENT}`}
+  // { Authorization: `bearer ${process.env.RMC_FAUNA_CLIENT}`}
   // const headers = Buffer.from(
   //   process.env.FAUNADB_SERVER_SECRET + ":"
   // ).toString("base64");

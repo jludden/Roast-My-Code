@@ -7,14 +7,14 @@ const {
 } = require("graphql-tools");
 
 exports.handler = async function(event, context) {
-  console.log("github secret: "+process.env.REACT_APP_GITHUB_PAT);
+  console.log("github secret: "+process.env.RMC_GITHUB_PAT);
 
   /*
     export const client = new ApolloClient({
       cache,
       uri:  "https://api.github.com/graphql",
       headers: {
-        Authorization: `bearer ${process.env.REACT_APP_GITHUB_PAT}`,
+        Authorization: `bearer ${process.env.RMC_GITHUB_PAT}`,
       } 
     });
   */
@@ -22,8 +22,8 @@ exports.handler = async function(event, context) {
 
 
   /** required for github auth */ 
-  if (!process.env.REACT_APP_GITHUB_PAT) {
-    const msg = `   REACT_APP_GITHUB_PAT missing.  `;
+  if (!process.env.RMC_GITHUB_PAT) {
+    const msg = `   RMC_GITHUB_PAT missing.  `;
     console.error(msg);
     return {
       statusCode: 500,
@@ -31,10 +31,10 @@ exports.handler = async function(event, context) {
     };
   }
   const b64encodedSecret = Buffer.from(
-    process.env.REACT_APP_GITHUB_PAT + ":" // weird but they
+    process.env.RMC_GITHUB_PAT + ":" // weird but they
   ).toString("base64");
   // const headers = { Authorization: `Basic ${b64encodedSecret}` };
-  const headers = { Authorization: `bearer ${process.env.REACT_APP_GITHUB_PAT}` };
+  const headers = { Authorization: `bearer ${process.env.RMC_GITHUB_PAT}` };
 
 
   /** standard creation of apollo-server executable schema */

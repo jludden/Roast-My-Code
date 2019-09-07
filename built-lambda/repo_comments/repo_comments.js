@@ -7,7 +7,11 @@ const {
 } = require("graphql-tools");
 
 exports.handler = async function(event, context) {
-  console.log("secret: "+process.env.FAUNADB_SERVER_SECRET);
+  console.log("admin secret: "+process.env.FAUNADB_ADMIN_SECRET);
+  console.log("server secret: "+process.env.FAUNADB_SERVER_SECRET);
+  console.log("client secret: "+process.env.FAUNADB_CLIENT_SECRET);
+  console.log("saved app client secret: "+process.env.RMC_FAUNA_CLIENT);
+
 
   /** required for Fauna GraphQL auth */
   if (!process.env.FAUNADB_SERVER_SECRET) {

@@ -8,6 +8,7 @@ import { gql } from "apollo-boost";
 import { useQuery } from '@apollo/react-hooks';
 import { Blob, Repository } from '../../generated/graphql';
 import { Container, Message, Progress } from "rbx";
+import { github_client } from "../../App";
 
 export interface IDocumentProps {
     queryVariables: IGithubDocQueryVariables,
@@ -53,7 +54,8 @@ interface IGithubDocQueryVariables {
 
 const Document = (props: IDocumentProps) => {
     const { data, error, loading } = useQuery<IGithubDocResponse, IGithubDocQueryVariables>(GITHUB_DOCUMENT_QUERY, {
-        variables: props.queryVariables
+        variables: props.queryVariables,
+        client: github_client
     });
   
     if (loading) {

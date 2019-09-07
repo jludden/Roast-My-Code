@@ -1,5 +1,6 @@
 import update from "immutability-helper";
 import * as React from "react";
+import { github_client } from '../../App';
 import "../../App.css";
 import API, { IGithubData } from "../../api/API";
 import Document, { ErrorMessage } from '../CommentableDocument/Document';
@@ -86,7 +87,8 @@ const CommentableCode = (props: CCContainerProps) => {
 
   // Load Repo
   const { data, error, loading, refetch } = useQuery<IGithubRepoResponse, IGithubRepoVars>(LOAD_REPO_QUERY, {
-    variables: { owner, name }
+    variables: { owner, name },
+    client: github_client
   });
 
   if (loading) return <Progress color="info" />;
@@ -133,7 +135,7 @@ query getcomments {
 const ADD_COMMENT = gql`
 mutation CreateATodo {
   createTodo(data: {
-  title: "Build an awesome app!"
+  title: "Learn graphql"
   completed: false
   }) {
       title
@@ -149,7 +151,7 @@ const faunaDbClient = new ApolloClient({
 const LoadCommentsTest = () => {
 
   const { data, error, loading, refetch } = useQuery<IRepoCommentsResponse>(LOAD_COMMENTS_QUERY, {
-    client: faunaDbClient
+  //  client: faunaDbClient
   });
   
 
@@ -162,7 +164,7 @@ const LoadCommentsTest = () => {
     <div><span>Hello it worked</span>
     <ul>
       {data.allTodos.data.map(todo => (
-        <li>
+        <li key={todo.title}>
           <b>title: {todo.title}</b><p>completed: {todo.completed ? "true" : "false"}</p> 
         </li>
       ))}
@@ -174,12 +176,21 @@ const LoadCommentsTest = () => {
   )
 }
 
+/*
+update(cache, { data: { addTodo } }) {
+        const { todos } : any = cache.readQuery({ query: LOAD_COMMENTS_QUERY   }) || { todos: [] };
+        cache.writeQuery({
+          query: LOAD_COMMENTS_QUERY,
+          data: { todos: todos.concat([addTodo]) },
+        });
+      },
+*/
+
 function AddComment() {
   let input: HTMLInputElement|null;
   // const [addTodo, { data }] = useMutation(ADD_COMMENT);
   const [addTodo] = useMutation( //todo set client: faunaDbClient 
-    ADD_COMMENT,
-    
+    ADD_COMMENT,    
     {
       update(cache, { data: { addTodo } }) {
         const { todos } : any = cache.readQuery({ query: LOAD_COMMENTS_QUERY   }) || { todos: [] };

@@ -28,24 +28,13 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
   introspectionQueryResultData: IntrospectionResultData
 })
 export const cache = new InMemoryCache({ fragmentMatcher });
-export const client = new ApolloClient({
+export const github_client = new ApolloClient({
   cache,
   uri: "/.netlify/functions/repo_github"
-})
-
-// export const client = new ApolloClient({
-//   cache,
-//   uri:  "https://api.github.com/graphql",
-//   headers: {
-//     Authorization: `bearer ${process.env.REACT_APP_GITHUB_PAT}`,
-//   } 
-// });
-
-/*
-const faunaDbClient = new ApolloClient({
- uri: "/.netlify/functions/repo_comments"
 });
-*/
+export const faunaDb_client = new ApolloClient({
+  uri: "/.netlify/functions/repo_comments"
+ });
 
 
 //  Router && QueryParamProvider
@@ -68,7 +57,7 @@ class App extends React.Component {
 
     return (
       <>
-      <ApolloProvider client={client}>
+      <ApolloProvider client={faunaDb_client}>
        <IdentityContextProvider url={url}>
           <Router>
             <QueryParamProvider ReactRouterRoute={Route}>

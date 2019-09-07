@@ -2,7 +2,10 @@
 
 /* sync GraphQL schema to your FaunaDB account - use with `netlify dev:exec <path-to-this-file>` */
 function createFaunaGraphQL() {
-  console.log("secret: "+process.env.FAUNADB_SERVER_SECRET);
+  console.log("admin secret: "+process.env.FAUNADB_ADMIN_SECRET);
+  console.log("server secret: "+process.env.FAUNADB_SERVER_SECRET);
+  console.log("client secret: "+process.env.FAUNADB_CLIENT_SECRET);
+  console.log("saved app client secret: "+process.env.RMC_FAUNA_CLIENT);
 
 
   if (!process.env.FAUNADB_SERVER_SECRET) {
@@ -22,7 +25,7 @@ function createFaunaGraphQL() {
   //   process.env.FAUNADB_SERVER_SECRET + ":"
   // ).toString("base64");
 
-  // { Authorization: `bearer ${process.env.REACT_APP_FAUNA_CLIENT}`}
+  // { Authorization: `bearer ${process.env.RMC_FAUNA_CLIENT}`}
   // const headers = Buffer.from(
   //   process.env.FAUNADB_SERVER_SECRET + ":"
   // ).toString("base64");
@@ -30,8 +33,10 @@ function createFaunaGraphQL() {
   const b64encodedSecret = Buffer.from(
     process.env.FAUNADB_SERVER_SECRET + ":" // weird but they
   ).toString("base64");
-  const headers = `Basic ${b64encodedSecret}`;
+  //  const headers = `Basic ${b64encodedSecret}`;
+   const headers = `Bearer ${process.env.FAUNADB_SERVER_SECRET}`;
   // const headers = { Authorization: `Basic ${b64encodedSecret}` };
+  //const headers = { Authorization: `Bearer ${process.env.FAUNADB_SERVER_SECRET}`};
 
     console.log("headers: "+headers);
 //     headers: { Authorization }
