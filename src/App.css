@@ -113,9 +113,14 @@ span.boxclose{
 }
 
 /* add hover effects for our search repo and repo contents panels */
-.panel-block:hover {
-  background-color: #2098D1;
+/* .panel-block:hover {
+  background-color: lightgray;
+}  */
+
+.panelHover:hover {
+  background-color: lightgray;
 }
+
 
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }

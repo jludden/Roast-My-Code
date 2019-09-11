@@ -348,7 +348,7 @@ const PanelLine: React.SFC<IPanelLineProps> = props => {
   }
 
   return (
-    <Panel.Block active onClick={() => props.onLineClicked(file)}>
+    <Panel.Block active onClick={() => props.onLineClicked(file)} className="panelHover">
       <Panel.Icon>
         {(file.object.__typename === "Tree") ? <FaFolder /> : <FaBook />}
       </Panel.Icon>

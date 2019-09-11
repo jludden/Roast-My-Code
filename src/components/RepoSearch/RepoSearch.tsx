@@ -78,16 +78,17 @@ const RepoSearch = (props: IGithubQueryProps) => {
   return (
     <>
     { data && data.search.edges.map(repo => (
-        <Panel.Block key={repo.node.id} onClick={() => props.loadRepoHandler(repo.node)} hover >
+        <Panel.Block key={repo.node.id} onClick={() => props.loadRepoHandler(repo.node)} className="panelHover">
           <Panel.Icon>
             <FaCodeBranch />
           </Panel.Icon>                        
-          <a>{repo.node.nameWithOwner}: last updated at {repo.node.updatedAt}</a>
-          <a href={repo.node.url} target="_blank" rel="noopener noreferrer"><FaExternalLinkAlt /></a>
+          <p>{repo.node.nameWithOwner} </p>
+          {/* : last updated at {repo.node.updatedAt}</p> */}
           { repo.node.primaryLanguage &&
             <Tag.Group>
               <Tag rounded> {repo.node.primaryLanguage.name} </Tag>
               <Tag rounded><Panel.Icon><FaStar /></Panel.Icon>{repo.node.stargazers.totalCount}</Tag>
+              <a href={repo.node.url} target="_blank" rel="noopener noreferrer"><FaExternalLinkAlt /></a>
             </Tag.Group>
           }
         </Panel.Block> ))
