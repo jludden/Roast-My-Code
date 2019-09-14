@@ -14,7 +14,7 @@ import AuthStatusView from "../AuthStatusView";
 import { useIdentityContext } from "react-netlify-identity-widget";
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import { Section, Title, Tag, Container, Input, Button, Block, Help, Control, Delete, Field, Panel, Checkbox, Icon, Progress } from "rbx";
-import { gql } from "apollo-boost";
+import { gql, ExecutionResult } from "apollo-boost";
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import ApolloClient from "apollo-boost";
 
@@ -132,21 +132,15 @@ query getcomments {
 }
 `;
 
-const ADD_COMMENT = gql`
-mutation CreateATodo {
-  createTodo(data: {
-  title: "Learn graphql"
-  completed: false
-  }) {
-      title
-      completed
+
+const SUBMIT_COMMENT_MUTATION = gql`
+mutation CreateATodo($title: String!) {
+  createTodo(data: { title: $title, completed: false }) {
+    title
+    completed
   }
 }
 `;
-
-const faunaDbClient = new ApolloClient({
- uri: "/.netlify/functions/repo_comments"
-});
 
 const LoadCommentsTest = () => {
 
@@ -171,10 +165,13 @@ const LoadCommentsTest = () => {
     </ul>  
     <h3>Add comment: </h3>  
     <AddComment />
+    <h3>COMMENTS PAGE w/ MUTATIONS</h3>
+    <CommentsPageWithMutations />
     <br/><br/>
     </div>
   )
 }
+
 
 /*
 update(cache, { data: { addTodo } }) {
@@ -190,8 +187,9 @@ function AddComment() {
   let input: HTMLInputElement|null;
   // const [addTodo, { data }] = useMutation(ADD_COMMENT);
   const [addTodo] = useMutation( //todo set client: faunaDbClient 
-    ADD_COMMENT,    
+    SUBMIT_COMMENT_MUTATION,    
     {
+  //    variables: { "title": input ? input.value : 'oops empty title'},
       update(cache, { data: { addTodo } }) {
         const { todos } : any = cache.readQuery({ query: LOAD_COMMENTS_QUERY   }) || { todos: [] };
         cache.writeQuery({
@@ -202,7 +200,6 @@ function AddComment() {
     }
   );
 
-
   return (
     <div>
       <form
@@ -210,7 +207,7 @@ function AddComment() {
           const val = input ? input.value : '';
           console.log("comment submission attempted. value: "+val)
           e.preventDefault();
-          addTodo({ variables: { type: val } });
+          addTodo({ variables: { title: val } });
           if(input) input.value = '';
         }}
       >
@@ -224,6 +221,80 @@ function AddComment() {
     </div>
   );
 }
+ // export interface IRepoCommentsResponse {
+//   allTodos: {
+//     data: [
+//       {
+//         title: string,
+//         completed: boolean
+//       }
+//     ]
+//   }
+// }
+
+function CommentsPageWithMutations() {
+  const [mutate] = useMutation(SUBMIT_COMMENT_MUTATION);
+  return (
+    <CommentsPage
+      submit={(commentContent: string) =>
+        mutate({
+          variables: { title: commentContent },
+          optimisticResponse: {
+            __typename: "Mutation",
+            submitComment: {
+              __typename: "Todo",
+              title: commentContent,
+              completed: false
+            }
+          },
+          update: (cache, { data: { submitComment } }) => {
+            // Read the data from our cache for this query.
+            const data = cache.readQuery<IRepoCommentsResponse>({ query: LOAD_COMMENTS_QUERY })
+              || {allTodos: { data: []}};
+            // Write our data back to the cache with the new comment in it
+            // cache.writeQuery({ query: LOAD_COMMENTS_QUERY, data: {
+            //   ...data,
+            //   allTodos: [...data, submitComment]
+            // } as any});
+            // data.allTodos.data
+            cache.writeQuery({
+              query: LOAD_COMMENTS_QUERY,
+              data: {
+                allTodos:{
+                  data: (data.allTodos.data).concat(submitComment)
+                }
+              }
+            });
+          }
+        })
+      }
+    />
+  );
+}
+
+function CommentsPage({submit}: {submit: (commentContent: string) => Promise<ExecutionResult<any>>}) {
+  return (
+    <div>
+      <span>Hello world COMMENTS PAGE</span>
+      <button onClick={() => submit("COMMENTS PAGE MUTATION TEST")} />
+    </div>
+  );
+}
+
+/*
+mutate({
+          variables: { repoFullName, commentContent },
+          update: (store, { data: { submitComment } }) => {
+            // Read the data from our cache for this query.
+            const data = store.readQuery({ query: CommentAppQuery });
+            // Add our comment from the mutation to the end.
+            data.comments.push(submitComment);
+            // Write our data back to the cache.
+            store.writeQuery({ query: CommentAppQuery, data });
+          }
+        })
+
+*/
 
 class CommentableCodeInner extends React.Component<ICCProps, ICCState> {
     public state: ICCState = {

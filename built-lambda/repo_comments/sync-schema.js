@@ -8,7 +8,7 @@ function createFaunaGraphQL() {
   console.log("saved app client secret: "+process.env.RMC_FAUNA_CLIENT);
 
 
-  if (!process.env.FAUNADB_SERVER_SECRET) {
+  if (!process.env.RMC_FAUNA_CLIENT) {
     console.log("No FAUNADB_SERVER_SECRET in environment, skipping DB setup");
   }
   console.log("Upload GraphQL Schema!");
@@ -34,7 +34,7 @@ function createFaunaGraphQL() {
     process.env.FAUNADB_SERVER_SECRET + ":" // weird but they
   ).toString("base64");
   //  const headers = `Basic ${b64encodedSecret}`;
-   const headers = `Bearer ${process.env.FAUNADB_SERVER_SECRET}`;
+   const headers = `Bearer ${process.env.RMC_FAUNA_CLIENT}`;
   // const headers = { Authorization: `Basic ${b64encodedSecret}` };
   //const headers = { Authorization: `Bearer ${process.env.FAUNADB_SERVER_SECRET}`};
 

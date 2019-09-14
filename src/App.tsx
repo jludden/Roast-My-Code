@@ -33,6 +33,7 @@ export const github_client = new ApolloClient({
   uri: "/.netlify/functions/repo_github"
 });
 export const faunaDb_client = new ApolloClient({
+  cache,
   uri: "/.netlify/functions/repo_comments"
  });
 
