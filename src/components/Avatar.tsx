@@ -21,26 +21,24 @@ export default function Avatar (props: IAppProps) {
     // const isLoggedIn = identity && identity.isLoggedIn;
 
     return (
-        <Title>        
-            {props.isLoggedIn &&
-                <FaUserAstronaut onClick={() => setShowMore(!showMore)}/>
-            }
-            {!props.isLoggedIn &&
-                <FaUserSecret onClick={() => setShowMore(!showMore)}/>
-            }
-            {props.isLoggedIn ? ` ${props.name}` : " Anonymous"}      
+      <Title>        
+        {props.isLoggedIn &&
+        <FaUserAstronaut onClick={() => setShowMore(!showMore)} />}
+        {!props.isLoggedIn &&
+        <FaUserSecret onClick={() => setShowMore(!showMore)} />}
+        {props.isLoggedIn ? ` ${props.name}` : " Anonymous"}      
 
-            {showMore && 
-                <>
-                    <FaUserCircle/>
-                    <FaUserAstronaut/>
-                    <FaUser/>
-                    <FaUserAlt/>
-                    <FaUserTie/>
-                    <FaUserNinja />
-                    <FaUserSecret/>      
-                </>
-            }
+        {showMore && (
+          <>
+            <FaUserCircle />
+            <FaUserAstronaut />
+            <FaUser />
+            <FaUserAlt />
+            <FaUserTie />
+            <FaUserNinja />
+            <FaUserSecret />      
+          </>
+)}
       </Title>
     );
 }

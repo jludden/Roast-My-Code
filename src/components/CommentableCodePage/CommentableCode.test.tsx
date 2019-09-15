@@ -2,13 +2,13 @@ import * as enzyme from "enzyme";
 import { shallow, ShallowWrapper } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
+import Axios from "axios";
+import { Progress } from "rbx";
 import API from "../../api/API";
 import CommentableCode from "./CommentableCode";
 import DocumentHeader from "../CommentableDocument/DocumentHeader";
 import DocumentBody from "../CommentableDocument/DocumentBody";
 import RoastComment from "../RoastComment";
-import Axios from "axios";
-import { Progress } from "rbx";
 
 
 enzyme.configure({ adapter: new Adapter() });
@@ -19,7 +19,7 @@ describe("<CommentableCode />", () => {
       <CommentableCode />
     );
     try {
-      const instance = codeComponent.instance;
+      const {instance} = codeComponent;
 
       expect(instance.name != null);
 
@@ -44,7 +44,7 @@ describe("<CommentableCode />", () => {
 
     const shallowWrapper = shallow(<CommentableCode  />);
     const containsSpinner = shallowWrapper.containsMatchingElement(
-      <Progress/>
+      <Progress />
     );
 
     expect(containsSpinner).toBe(true);
@@ -68,7 +68,7 @@ describe("<CommentableCode />", () => {
 
 
     // const shallowWrapper = shallow(<CommentableCode document="" />);
-    const shallowWrapper = enzyme.mount(<CommentableCode/>);
+    const shallowWrapper = enzyme.mount(<CommentableCode />);
 
     const containsHeaderComponent = shallowWrapper.find(DocumentHeader);
     const containsBodyComponent = shallowWrapper.find(DocumentBody);

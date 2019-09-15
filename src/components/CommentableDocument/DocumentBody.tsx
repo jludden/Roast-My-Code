@@ -53,7 +53,7 @@ export default class DocumentBody extends React.Component<
   // public componentDidUpdate() {
   //     prettify.prettyPrint();
   // }
-  //`flex-item ${App-body}`}
+  // `flex-item ${App-body}`}
 
   public render() {
     // const decoded = atob(this.props.content);
@@ -75,40 +75,42 @@ export default class DocumentBody extends React.Component<
 
       
 
-        <Section backgroundColor = "primary" gradient="warning">
-                <Container color="primary">
-        <Column.Group>
-          <Column size="three-quarters">
-              {decoded && 
-              <SyntaxHighlighter
-                language="kotlin"
-                style={github}
-                className="left-align"
-                showLineNumbers={true}
-                renderer={this.renderSyntaxLines}
-              >
-                {decoded}
-              </SyntaxHighlighter> }
-          </Column>
-          <Column size="one-quarter" backgroundColor="primary">
-            <DocumentCommentsView
-              lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
-              onEditComment={this.props.onEditComment}
-              onSubmitComment={this.props.onSubmitComment}
-              lineRefs={this.state.lineRefs}
-              inProgressComment={this.state.inProgressComment}/>
-          </Column>
-        </Column.Group>
-        </Container>
+        <Section backgroundColor="primary" gradient="warning">
+          <Container color="primary">
+            <Column.Group>
+              <Column size="three-quarters">
+                {decoded && (
+                <SyntaxHighlighter
+                  language="kotlin"
+                  style={github}
+                  className="left-align"
+                  showLineNumbers
+                  renderer={this.renderSyntaxLines}
+                >
+                  {decoded}
+                </SyntaxHighlighter>
+)}
+              </Column>
+              <Column size="one-quarter" backgroundColor="primary">
+                <DocumentCommentsView
+                  lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
+                  onEditComment={this.props.onEditComment}
+                  onSubmitComment={this.props.onSubmitComment}
+                  lineRefs={this.state.lineRefs}
+                  inProgressComment={this.state.inProgressComment}
+                />
+              </Column>
+            </Column.Group>
+          </Container>
         </Section>
 
 
-{/* 
+        {/* 
         <div className="flex-container">
           <div id="doc-body" className={`flex-item App-body`}> */}
-            {/* possibly want to use a ref here https://reactjs.org/docs/refs-and-the-dom.html */}
-            {/* <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={()=>{LineRenderer()}}>{decoded}</SyntaxHighlighter> */}
-            {/* <SyntaxHighlighter
+        {/* possibly want to use a ref here https://reactjs.org/docs/refs-and-the-dom.html */}
+        {/* <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={()=>{LineRenderer()}}>{decoded}</SyntaxHighlighter> */}
+        {/* <SyntaxHighlighter
               language="kotlin"
               style={github}
               className="left-align"
@@ -142,7 +144,7 @@ export default class DocumentBody extends React.Component<
   {
         const lineNumberMap = new Map<number|undefined, RoastComment[]>();
         comments.map((comment: RoastComment) => {
-          var line: RoastComment[] = lineNumberMap.get(comment.data.lineNumber) || [];
+          const line: RoastComment[] = lineNumberMap.get(comment.data.lineNumber) || [];
           line.push(comment);
           lineNumberMap.set(comment.data.lineNumber, line);    
         });
@@ -156,7 +158,7 @@ export default class DocumentBody extends React.Component<
   {
     if (!el || !el.dataset) return;
     const lineNumber = parseInt(el.dataset.index || "");
-    const lineRefs =  this.state.lineRefs;
+    const {lineRefs} = this.state;
     lineRefs[lineNumber] = el;
     this.setState({lineRefs});   
   }
@@ -176,9 +178,9 @@ export default class DocumentBody extends React.Component<
       .default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
 
     // using the index as a key should be okay in this case, we are never insertering or deleting elements
-    return rows.map((node: any, i: number) =>       
+    return rows.map((node: any, i: number) => (
       <div key={i} data-index={i} onClick={this.handleLineClicked} ref={this.setLineRef}>
-      {/* todo!!! don't know about passing this state down here... is it causing a re-render for every line? */}
+        {/* todo!!! don't know about passing this state down here... is it causing a re-render for every line? */}
         {/* <SubmitComment
           comment={this.props.comments[this.props.comments.length-1]}
           isCurrentlySelected={this.state.selectedLine === i}
@@ -194,7 +196,7 @@ export default class DocumentBody extends React.Component<
         <SyntaxLine 
           lineNumber={i}
           handleCommentAdd={this.handleCommentAdd}
-          >
+        >
           {createElement({
             key: `code-segement${i}`,
             node,
@@ -204,7 +206,7 @@ export default class DocumentBody extends React.Component<
         </SyntaxLine>
 
       </div>
-    );
+));
   };
 
   private handleLineClicked = (event: React.SyntheticEvent<EventTarget>) => { // todo if no selection also allow adding comment?

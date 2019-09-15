@@ -1,6 +1,6 @@
+import { GraphQLError } from "graphql";
 import RepoSearch, { REPO_SEARCH_QUERY, PanelWarningLine, IGithubQueryVariables, IGithubQueryResponse } from "./RepoSearch";
 import { Repository } from '../../generated/graphql';
-import { GraphQLError } from "graphql";
 
 // const mockRepo: Repository = {
 const mockRepo = {

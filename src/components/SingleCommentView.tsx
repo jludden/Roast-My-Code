@@ -65,13 +65,13 @@ export default class SingleCommentView extends React.Component<IRoastCommentProp
 
   // todo have just a border on one left side: border-width: 0 0 0 4px;
   public render() {
-      const isEditOn = this.state.isEditOn;
+      const {isEditOn} = this.state;
       const text = this.props.comment.data.selectedText;
       return (
         // <Message>
         //   <Message.Header><Delete> </Delete></Message.Header>
         //   <Message.Body>
-            <Textarea fixedSize={true} readOnly={!this.state.isEditOn} placeholder={text} onClick={this.handleCommentClicked}></Textarea>
+        <Textarea fixedSize readOnly={!this.state.isEditOn} placeholder={text} onClick={this.handleCommentClicked} />
         //   </Message.Body>
         // </Message>
       //   <Message as="textarea" color="danger" defaultValue={text}>

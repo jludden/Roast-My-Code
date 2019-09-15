@@ -4,22 +4,22 @@ import "../App.css";
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 
 
+import ApolloClient from "apollo-boost";
+import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
+import { useIdentityContext } from "react-netlify-identity-widget";
+import update from "immutability-helper";
+import { BrowserRouter as Router, Switch, Route, Redirect, Link, RouteComponentProps  } from "react-router-dom";
+import { Container, Message, Progress, Table   } from "rbx";
 import API, { IGithubData } from "../api/API";
 import DocumentBody from "./CommentableDocument/DocumentBody";
 import DocumentHeader from "./CommentableDocument/DocumentHeader";
 import RoastComment from "./RoastComment";
-import ApolloClient from "apollo-boost";
-import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 // import schema from '../api/github.schema.json';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../generated/graphql';
 import {RepositoryOwner, StargazerConnection, Language} from '../generated/graphql'; // todo shouldnt really need
 import RepoSearchContainer from "./RepoSearch/RepoSearchContainer";
 import RepoContents, {UseUrlQuery} from "./RepoContents";
 import AuthStatusView from "./AuthStatusView";
-import { useIdentityContext } from "react-netlify-identity-widget";
-import update from "immutability-helper";
-import { BrowserRouter as Router, Switch, Route, Redirect, Link, RouteComponentProps  } from "react-router-dom";
-import { Container, Message, Progress, Table   } from "rbx";
 
 
 export interface IHomeProps {
@@ -39,38 +39,39 @@ export function Home (props: IHomeProps) {
     const [shouldRedirect, setShouldRedirect] = React.useState("");
 
     return (
-        <>
-            {
+      <>
+        {
                 (shouldRedirect.length > 0) && <Redirect to={`/repo${shouldRedirect}`} push />
             }
 
-            {/* <AuthStatusView showImmediately={false}/> */}
+        {/* <AuthStatusView showImmediately={false}/> */}
 
-            {/* {todo use a RBX-Page Loader for this part...} */}
-            {/* {this.state.loading && <Progress color="info"/>} */}
+        {/* {todo use a RBX-Page Loader for this part...} */}
+        {/* {this.state.loading && <Progress color="info"/>} */}
             
-            {/* Repo Search */}
-            <RepoSearchContainer
-              loadRepoHandler={(repo: Repository) => setShouldRedirect(repo.resourcePath)}
-              loadRecommendedRepo={() => setShouldRedirect("/jludden/ReefLifeSurvey---Species-Explorer")} />
+        {/* Repo Search */}
+        <RepoSearchContainer
+          loadRepoHandler={(repo: Repository) => setShouldRedirect(repo.resourcePath)}
+          loadRecommendedRepo={() => setShouldRedirect("/jludden/ReefLifeSurvey---Species-Explorer")}
+        />
 
-            <div>
+        <div>
                 Search
                     Personal Repositories -> Login prompt
                     Your starred Repos -> Login prompt
 
                 Hide everything below / translucent below when searching?
-            </div>
+        </div>
 
 
-            <div >
+        <div>
                 Grid - Recommended
                 Recent 
                 Top Roasted
                 Top Roasters
-            </div>
+        </div>
 
-            <div>
+        <div>
                 Recent -> fresh
 
                 Popularity Scale:
@@ -80,15 +81,15 @@ export function Home (props: IHomeProps) {
                 burnt
 
                 Add fuel to the fire
-            </div>
+        </div>
 
 
-            {/* <Columns>
+        {/* <Columns>
                 <Columns.Column>First Column</Columns.Column>
                 <Columns.Column>Second Column</Columns.Column>
                 <Columns.Column> */}
-                <div>
-                {/* <Table hoverable>
+        <div>
+          {/* <Table hoverable>
                 <Table.Head>
                     <Table.Row>
                     <Table.Heading>One</Table.Heading>
@@ -110,22 +111,22 @@ export function Home (props: IHomeProps) {
                     ))}
                 </Table.Body>
             </Table> */}
-                {/* </Columns.Column>
+          {/* </Columns.Column>
             </Columns> */}
 
-            </div>
+        </div>
            
 
 
-            <h1 >
+        <h1>
                 Sample `img` of Code + comments w/ roasties
-            </h1>
+        </h1>
 
 
 
-            {/* {React.cloneElement(props.children, { isLoggedIn })} */}
-            {props.children && React.cloneElement(props.children)}
-        </>      
+        {/* {React.cloneElement(props.children, { isLoggedIn })} */}
+        {props.children && React.cloneElement(props.children)}
+      </>      
     );
 }
 

@@ -33,21 +33,21 @@ export default class SubmitCommentForm extends React.Component<ISubmitCommentFor
 
     public render() {
         return (
-            <div>
-                <div hidden={this.state.active || !this.props.isCurrentlySelected}>
-                    <button onClick={this.handleAdd}>Add</button>
-                    {/* <p>{this.getCommentText}</p> */}
-                    {/* <h1>{(this.props.comment && this.props.comment.data && this.props.comment.data.selectedText) || "Select text to quote"}</h1> */}
-                    <h1>{this.props.selectedText || "Select text to quote"}</h1>
-                </div>
-                <div hidden={!this.state.active}>
-                    Hello world - submit comment form
-                    <b>{this.state.resultMessage}</b>
-                    <button onClick={this.handleSubmit} hidden={this.state.result === SubmitCommentResponse.Success}>{this.state.buttonText}</button>
-                    {/* todo text box */}
-                    {/* todo cancel */}
-                </div>
+          <div>
+            <div hidden={this.state.active || !this.props.isCurrentlySelected}>
+              <button onClick={this.handleAdd}>Add</button>
+              {/* <p>{this.getCommentText}</p> */}
+              {/* <h1>{(this.props.comment && this.props.comment.data && this.props.comment.data.selectedText) || "Select text to quote"}</h1> */}
+              <h1>{this.props.selectedText || "Select text to quote"}</h1>
             </div>
+            <div hidden={!this.state.active}>
+                    Hello world - submit comment form
+              <b>{this.state.resultMessage}</b>
+              <button onClick={this.handleSubmit} hidden={this.state.result === SubmitCommentResponse.Success}>{this.state.buttonText}</button>
+              {/* todo text box */}
+              {/* todo cancel */}
+            </div>
+          </div>
         )
     }
 
@@ -58,7 +58,7 @@ export default class SubmitCommentForm extends React.Component<ISubmitCommentFor
     private handleSubmit = async () => {
         const result = await this.props.onSubmitComment(this.props.comment);
         let resultMessage;
-        let buttonText = this.state.buttonText;
+        let {buttonText} = this.state;
         if (result === SubmitCommentResponse.Success) { 
             resultMessage="Success!"; 
         }

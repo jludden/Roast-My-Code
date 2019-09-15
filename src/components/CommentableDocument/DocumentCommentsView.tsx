@@ -40,7 +40,7 @@ export default class DocumentCommentsView extends React.Component<ICommentsViewP
 
 
     return (
-      <ul className={`flex-item comments-pane`} >
+      <ul className="flex-item comments-pane">
         {/* display all the saved comments */}
         {Array.from(this.props.lineNumberMap, ([lineNumber, comments]) => (
           <CommentContainer 
@@ -53,22 +53,22 @@ export default class DocumentCommentsView extends React.Component<ICommentsViewP
           />
         ))}
         {/* also display the comment in progress if any */}
-        {this.props.inProgressComment &&
-          <CommentContainer 
-              key={`unsubmitted ${this.props.inProgressComment.lineRef}`}
-              onEditComment={this.props.onEditComment}
-              onSubmitComment={this.props.onSubmitComment}
-              lineRef={this.props.inProgressComment.lineRef}
-              inProgress={true}
-              comments={[new RoastComment({
+        {this.props.inProgressComment && (
+        <CommentContainer 
+          key={`unsubmitted ${this.props.inProgressComment.lineRef}`}
+          onEditComment={this.props.onEditComment}
+          onSubmitComment={this.props.onSubmitComment}
+          lineRef={this.props.inProgressComment.lineRef}
+          inProgress
+          comments={[new RoastComment({
                 data: {
                     lineNumber: this.props.inProgressComment.lineNumber,
                     selectedText: this.props.inProgressComment.selectedText,
                     author:  this.props.inProgressComment.author,
                 }
               })]}
-            /> 
-        }
+        />
+)}
       </ul>
     );
   }

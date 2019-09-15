@@ -1,23 +1,21 @@
-import * as enzyme from "enzyme";
+import * as enzyme from 'enzyme';
 // import API from "../API";
 // import API from "../__mocks__/API";
-import Adapter from "enzyme-adapter-react-16";
+import Adapter from 'enzyme-adapter-react-16';
+import Axios from "axios";
 import RoastComment from "../../components/RoastComment";
 import mockAPI from "../API";
-import Axios from "axios";
 
 enzyme.configure({ adapter: new Adapter() });
 
-it("API get comments returns array of comments", async () => {
+it('API get comments returns array of comments', async () => {
   // can override mock implementation for this specific test
-  const spy = jest.spyOn(mockAPI, "getComments");
-  spy.mockImplementationOnce(() => {
-    return Promise.resolve([
+  const spy = jest.spyOn(mockAPI, 'getComments');
+  spy.mockImplementationOnce(() => Promise.resolve([
       new RoastComment({id: 12345, data: {lineNumber: 15, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
-    ]) as any;
-  });
+    ]) as any);
 
-  const results = await mockAPI.getComments();
+  const results = await mockAPI.getComments('test');
   // use toEqual for objects and arrays, use toBe for scalar data types only
   expect(results.length).toBe(1);
   expect(results[0]).toEqual(expect.any(RoastComment));
@@ -26,7 +24,7 @@ it("API get comments returns array of comments", async () => {
   // expect(mockAPI.getComments).toHaveBeenCalledTimes(1);
 });
 
-//theoretically possible to mock at a axios level to test things like request params & url
+// theoretically possible to mock at a axios level to test things like request params & url
 // it("calls axios and returns array of comments", async () => {
 //   const spy = jest.spyOn(mockAPI, "getComments");
 //   spy.mockRestore();

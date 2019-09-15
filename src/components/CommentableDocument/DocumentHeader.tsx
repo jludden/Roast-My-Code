@@ -1,7 +1,7 @@
 import * as React from "react";
 import '../../App.css';
-import API, { IGithubSearchResults } from "../../api/API";
 import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub } from 'react-icons/fa';
+import API, { IGithubSearchResults } from "../../api/API";
 // import RepoSearch from "./RepoSearch/RepoSearch";
 // import RepoExplorer from "./RepoSearch/RepoExplorer";
 import { Blob } from '../../generated/graphql';
@@ -39,13 +39,19 @@ export default class DocumentHeader extends React.Component<ICCProps, IHeaderSta
 
     public render() {
         return (
-            <Section>
-                <Container>
-                    <Title>{this.props.documentName}</Title>
-                    <Title subtitle><FaGithub/> number of comments: {this.props.commentsCount}</Title>
-                    <Button color="primary">Request Public Code Review</Button>
-                </Container>
-            </Section>
+          <Section>
+            <Container>
+              <Title>{this.props.documentName}</Title>
+              <Title subtitle>
+                <FaGithub />
+                {' '}
+number of comments: 
+                {' '}
+                {this.props.commentsCount}
+              </Title>
+              <Button color="primary">Request Public Code Review</Button>
+            </Container>
+          </Section>
         );
     }
 }

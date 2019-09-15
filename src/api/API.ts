@@ -1,5 +1,5 @@
-import axios, { AxiosInstance } from "axios";
-import RoastComment from "../components/RoastComment";
+import axios, { AxiosInstance } from 'axios';
+import RoastComment from '../components/RoastComment';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../generated/graphql';
 
 
@@ -11,14 +11,14 @@ class API {
   }
 
   public async postComment(comment: RoastComment): Promise<RoastComment> {
-    const { data } = await this.axiosInstance.post("/.netlify/functions/comments", comment);
+    const { data } = await this.axiosInstance.post('/.netlify/functions/comments', comment);
     return data;
   }
 
   public async putComment(comment: RoastComment): Promise<RoastComment> {
     const { data } = await this.axiosInstance.put(
       `/.netlify/functions/comments/${comment.id}`,
-      comment
+      comment,
     );
     return data;
   }
@@ -32,23 +32,20 @@ class API {
   public async getRepoAndComments(repoPath: string): Promise<[RoastComment[], Repository]> {
     const [comments, repo] = await Promise.all([
       this.getComments(repoPath),
-      this.getRepo(repoPath)
+      this.getRepo(repoPath),
     ]);
     return [comments, repo];
   }
 
   // todo use repoPath to get comments for repo
+  // eslint-disable-next-line no-unused-vars
   public async getComments(repoPath: string): Promise<RoastComment[]> {
-    const result = await this.axiosInstance.get("/.netlify/functions/comments");
+    const result = await this.axiosInstance.get('/.netlify/functions/comments');
     // const { data } = await this.axiosInstance.get("/.netlify/functions/comments");
-    const data = result.data;
-    data.map((el: any) => {
-      return el.data.id = el.ref['@ref'].id;
-    });
-    const newData = data.flatMap((el: any) => {
-      return el.data; 
-    });
-    
+    const {data} = result;
+    data.map((el: any) => el.data.id = el.ref['@ref'].id);
+    const newData = data.flatMap((el: any) => el.data);
+
     // data.id = result.data.ref['@ref'].id;
     return newData;
   }
@@ -66,7 +63,7 @@ class API {
     //   "https://api.github.com/repos/jludden/ReefLifeSurvey---Species-Explorer/contents/app/src/main/java/me/jludden/reeflifesurvey/detailed/DetailsActivity.kt"
     //      "http://localhost:34567/.netlify/functions/getRepo"
 
-    return (await this.axiosInstance.get("/.netlify/functions/getRepo")).data;
+    return (await this.axiosInstance.get('/.netlify/functions/getRepo')).data;
   }
 
   // old Github API V3 - now using GraphQL V4 in RepoSearch

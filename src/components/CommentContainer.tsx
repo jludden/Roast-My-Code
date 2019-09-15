@@ -51,13 +51,17 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
   }
 
   public render() {
-    const comments = this.props.comments;
+    const {comments} = this.props;
     return (
 
       <Card style={this.state.styles} size="large">
         <Card.Header> 
           <Card.Header.Title>
-            [{this.props.comments[0].data.lineNumber}] comments: {this.props.comments.length}
+            [
+            {this.props.comments[0].data.lineNumber}
+] comments: 
+            {' '}
+            {this.props.comments.length}
           </Card.Header.Title>
           <Card.Header.Icon onClick={this.onMinimizeClicked}>
             <Icon>
@@ -68,10 +72,14 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         <Collapse isOpened={this.state.expanded}>
           <Card.Content> 
             <Content>
-            <Heading>
-                [{this.props.comments[0].data.lineNumber}] comments: {this.props.comments.length}
+              <Heading>
+                [
+                {this.props.comments[0].data.lineNumber}
+] comments: 
+                {' '}
+                {this.props.comments.length}
                 <Delete />
-            </Heading>
+              </Heading>
               {comments.map(comment => (
                 <SingleCommentView 
                   key={comment.id}
@@ -83,42 +91,42 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
           </Card.Content>
 
           <Card.Footer>
-            {this.props.inProgress && 
-              <React.Fragment>
-                <Card.Footer.Item as="a" >
+            {this.props.inProgress && (
+            <>
+              <Card.Footer.Item as="a">
                   Cancel
-                </Card.Footer.Item>
-                <Card.Footer.Item as="a" onClick={() => this.props.onSubmitComment(comments[0])}>
+              </Card.Footer.Item>
+              <Card.Footer.Item as="a" onClick={() => this.props.onSubmitComment(comments[0])}>
                   Submit
-                </Card.Footer.Item>
-              </React.Fragment>
-            }
-            {!this.props.inProgress && !this.state.editMode &&
-              <React.Fragment>
-                <Card.Footer.Item as="a" onClick={() => this.setState({editMode: true})}>
+              </Card.Footer.Item>
+            </>
+)}
+            {!this.props.inProgress && !this.state.editMode && (
+            <>
+              <Card.Footer.Item as="a" onClick={() => this.setState({editMode: true})}>
                   Edit
-                </Card.Footer.Item>
-                <Card.Footer.Item as="a" >
+              </Card.Footer.Item>
+              <Card.Footer.Item as="a">
                   Reply
-                </Card.Footer.Item>
-              </React.Fragment>
-            }            
-            {!this.props.inProgress && this.state.editMode &&
-              <React.Fragment>
+              </Card.Footer.Item>
+            </>
+)}            
+            {!this.props.inProgress && this.state.editMode && (
+            <>
               <Card.Footer.Item as="a" onClick={() => this.props.onEditComment(comments[0], true)}>
                 Delete All
               </Card.Footer.Item>
-              <Card.Footer.Item as="a" >
+              <Card.Footer.Item as="a">
                 Reply
               </Card.Footer.Item>
-              <Card.Footer.Item as="a" >
+              <Card.Footer.Item as="a">
                 Cancel
               </Card.Footer.Item>
               <Card.Footer.Item as="a" onClick={() => this.props.onEditComment(comments[0], false)}>
                 Save
               </Card.Footer.Item>
-              </React.Fragment>
-            }
+            </>
+)}
           </Card.Footer>
         </Collapse>
       </Card>

@@ -1,10 +1,10 @@
 import React, {useState, useCallback} from "react";
 // import { createElement } from 'react-syntax-highlighter';
 // import * as rsh from 'react-syntax-highlighter';
-import RoastComment from './RoastComment'
 import useHover from 'react-use/lib/useHover'
 import { Button, Icon } from "rbx";
 import { FaPlusCircle, FaPlus, FaPlusSquare, FaRegPlusSquare, FaGooglePlus, FaSearchPlus } from "react-icons/fa";
+import RoastComment from './RoastComment'
 import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
 import SubmitComment from './SubmitCommentForm';
 
@@ -115,20 +115,22 @@ const SyntaxLine: React.FunctionComponent<IAppProps> = (props) => {
     }
   }, []);
 
-  const element = (hovered: boolean) =>
+  const element = (hovered: boolean) => (
     <div>
-        {hovered &&        
-        <Button.Group style={styles} align="right">
-          <Button size="small" rounded onClick={() => props.handleCommentAdd(props.lineNumber)}>
-            <Icon size="small">
-              <FaPlus />
-            </Icon>
-          </Button>
-          </Button.Group>}
-          <div ref={measuredRef}>
-            {props.children}     
-          </div>
-    </div>;
+      {hovered && (
+      <Button.Group style={styles} align="right">
+        <Button size="small" rounded onClick={() => props.handleCommentAdd(props.lineNumber)}>
+          <Icon size="small">
+            <FaPlus />
+          </Icon>
+        </Button>
+      </Button.Group>
+)}
+      <div ref={measuredRef}>
+        {props.children}     
+      </div>
+    </div>
+);
 
   const [hoverable, hovered] = useHover(element);
   return (

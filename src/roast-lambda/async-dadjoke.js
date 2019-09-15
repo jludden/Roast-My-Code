@@ -2,6 +2,7 @@
 // https://github.com/netlify/netlify-lambda/issues/43#issuecomment-444618311
 
 import fetch from "node-fetch"
+
 export async function handler(event, context) {
   try {
     const response = await fetch("https://icanhazdadjoke.com", { headers: { Accept: "application/json" } })

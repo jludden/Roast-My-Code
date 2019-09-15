@@ -1,232 +1,221 @@
-import React, {useEffect} from "react";
-import "../App.css";
+import React, { useEffect } from 'react';
+import '../App.css';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { useQuery } from '@apollo/react-hooks';
-import { gql } from "apollo-boost";
-import { Blob, Repository } from '../generated/graphql';
+import ApolloClient, { gql } from 'apollo-boost';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import {
-  FaBeer,
-  FaBook,
-  FaFolder,
-  FaSearch,
-  FaEllipsisH,
-  FaCodeBranch,
-  FaGithub,
-  FaExclamationCircle,
-  FaAngleDown,
-  FaImage
-} from "react-icons/fa";
+    FaBeer,
+    FaBook,
+    FaFolder,
+    FaSearch,
+    FaEllipsisH,
+    FaCodeBranch,
+    FaGithub,
+    FaExclamationCircle,
+    FaAngleDown,
+    FaImage,
+} from 'react-icons/fa';
 import {
-  Section,
-  Title,
-  Tag,
-  Dropdown,
-  Breadcrumb,
-  Container,
-  Input,
-  Button,
-  Block,
-  Help,
-  Control,
-  Delete,
-  Field,
-  Panel,
-  Checkbox,
-  Icon,
-  Progress
-} from "rbx";
-import { url } from "inspector";
-import { cache, github_client } from '../App';
-import ApolloClient from "apollo-boost";
-
+    Section,
+    Title,
+    Tag,
+    Dropdown,
+    Breadcrumb,
+    Container,
+    Input,
+    Button,
+    Block,
+    Help,
+    Control,
+    Delete,
+    Field,
+    Panel,
+    Checkbox,
+    Icon,
+    Progress,
+} from 'rbx';
+import { url } from 'inspector';
+import { Blob, Repository } from '../generated/graphql';
+import { cache, githubClient } from '../App';
 
 export interface IRepoContentsProps {
-  repoPath: string,
-  repo: Repository,
-  loadFileHandler: (fileName: string, filePath: string) => void // when a file is selected
+    repoPath: string;
+    repo: Repository;
+    loadFileHandler: (fileName: string, filePath: string) => void; // when a file is selected
 }
 
 interface IRepoContentsState {
-  branch: string,
-  queryVariables: IGithubRepoContentsVars,
-  fileSelected?: string
+    branch: string;
+    queryVariables: IGithubRepoContentsVars;
+    fileSelected?: string;
 }
 
 // to be included in the graphQL query
 export interface IGithubRepoContentsVars {
-  path: string, // path to this directory in form {branch:filePath}
-  repoName: string,
-  repoOwner: string
+    path: string; // path to this directory in form {branch:filePath}
+    repoName: string;
+    repoOwner: string;
 }
 
 // todo use types from generated graphql.tsx
 export interface Data {
-  repository: {
-    folder: {
-      entries: Array<Line>;
-    }
-  }
+    repository: {
+        folder: {
+            entries: Array<Line>;
+        };
+    };
 }
 
 interface Line {
-  oid: string, 
-  name: string, 
-  object: Blob
+    oid: string;
+    name: string;
+    object: Blob;
 }
-
 
 // Function component to wrap use query param hook api
 interface IUrlQueryProps {
-  url: string,
-  name: string
+    url: string;
+    name: string;
 }
-export function UseUrlQuery (props: IUrlQueryProps) {
-  const [url, setUrl] = useQueryParam(props.name, StringParam);  
+export function UseUrlQuery(props: IUrlQueryProps) {
+    const [url, setUrl] = useQueryParam(props.name, StringParam);
 
-  useEffect(
-    () => {
-      if (url !== props.url) {
-        setUrl(props.url);
-      }
-    }, [props.url]
-  );
+    useEffect(() => {
+        if (url !== props.url) {
+            setUrl(props.url);
+        }
+    }, [props.url]);
 
-  return (<></>);
+    return <></>;
 }
 
 const RepoExplorerContainer = (props: IRepoContentsProps) => {
-
-  const [queryString, setQueryString] = useQueryParam("q", StringParam);  
-  const queryVariables = {
-      queryString: queryString || "",
-      first: 5
-  }
+    const [queryString, setQueryString] = useQueryParam('q', StringParam);
+    const queryVariables = {
+        queryString: queryString || '',
+        first: 5,
+    };
     /* update the URL with the current search state */
     // <UseUrlQuery url={this.state.queryVariables.path} name={"path"}/>
     // {this.state.fileSelected && <UseUrlQuery url={this.state.fileSelected} name={"file"}/>}
 
     // <RepoExplorer />
 
-  return (<></>);
-}
-
-
+    return <></>;
+};
 
 // class that takes care of everything except for rewriting the URL
 export default class RepoExplorer extends React.Component<IRepoContentsProps, IRepoContentsState> {
-  constructor(props: IRepoContentsProps) {
-    super(props);
-    this.state = this.initState(props);
-  }
-  public componentWillReceiveProps(nextProps: IRepoContentsProps) {
-    if (this.props.repo.nameWithOwner !== nextProps.repo.nameWithOwner) this.setState(this.initState(nextProps));
-  }
+    constructor(props: IRepoContentsProps) {
+        super(props);
+        this.state = this.initState(props);
+    }
+
+    public componentWillReceiveProps(nextProps: IRepoContentsProps) {
+        if (this.props.repo.nameWithOwner !== nextProps.repo.nameWithOwner) this.setState(this.initState(nextProps));
+    }
+
+    // public async componentDidMount(){
+    //   if(this.props.repo.)
+    // }
+
+    // searchAPI = ((text: string) => {
+    //   const queryVariables = this.state.queryVariables;
+    //   queryVariables.path = text;
+    //   this.setState({queryVariables});
+    // });
+
+    // searchAPIDebounced = AwesomeDebouncePromise(this.searchAPI, 500);
+
+    // todo handle this search box? or disable it
+    // handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {
+    //   const query = event.currentTarget.value;
+    //   // this.searchAPIDebounced(query);
+    //   // this.setState({queryVariables: {queryString: query, first: 5}});
+    // }
+
+    handleLineClicked = (line: Line) => {
+        // todo if no selection also allow adding comment?
+        // if line is a file, load file into the commentable code container
+
+        const filePath = this.state.queryVariables.path;
+
+        if (line && line.name && line.object && line.object.oid) {
+            // this.props.loadFileHandler(line.name, line.object); // todo no
+            this.props.loadFileHandler(line.name, filePath); // trigger update
+            this.setState({ fileSelected: line.name }); // yes
+        } else if (line && line.name) {
+            // if line is a folder, load directory
+            const { queryVariables } = this.state;
+            queryVariables.path = `${queryVariables.path}${line.name}/`;
+            this.setState({ queryVariables });
+        }
+    };
+
+    // props.queryVariables.path will look something like:
+    //  "master:app/src/main/java/me/jludden/reeflifesurvey/"
+    // pass in a folder name (e.g. "java") to go up to that level
+    //  "master:app/src/main/java/"
+    // or pass in nothing to just go up one level
+    handleNavTo = (folder?: string) => {
+        const { queryVariables } = this.state;
+        const tempPath = queryVariables.path;
+
+        if (folder) {
+            // remove everything after the folder name (e.g. java+/)
+            queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(folder) + folder.length + 1);
+        } else {
+            if (this.inParentDirectory()) return;
+            const parts = this.paths(); // last real folder (e.g. "reeflifesurvey") will be in [length - 2]
+            queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(parts[parts.length - 2]));
+        }
+        this.setState({ queryVariables });
+    };
 
     // todo reconsider
-  initState(props: IRepoContentsProps): IRepoContentsState {
-    const branch = (props.repo.defaultBranchRef ? props.repo.defaultBranchRef.name : "master");
-    const filePath = "";
-    const queryVariables: IGithubRepoContentsVars = {
-      path: `${branch}:${filePath}`,
-      repoName: props.repo.name,
-      repoOwner: props.repo.owner.login
-    };    
+    // eslint-disable-next-line class-methods-use-this
+    initState(props: IRepoContentsProps): IRepoContentsState {
+        const branch = props.repo.defaultBranchRef ? props.repo.defaultBranchRef.name : 'master';
+        const filePath = '';
+        const queryVariables: IGithubRepoContentsVars = {
+            path: `${branch}:${filePath}`,
+            repoName: props.repo.name,
+            repoOwner: props.repo.owner.login,
+        };
 
-    // file=MainActivity.java
-    
+        // file=MainActivity.java
 
-    // using the full url , determine if we need to load a file
-    // const path = window.location.pathname;
-    // const indexOf = path.indexOf("filepath");
-    // const fileName = path.substring((indexOf+10), path.length);
+        // using the full url , determine if we need to load a file
+        // const path = window.location.pathname;
+        // const indexOf = path.indexOf("filepath");
+        // const fileName = path.substring((indexOf+10), path.length);
 
-    // loadFileHandler: (fileName: string, blob: Blob) => void // when a file is selected
-    // this.props.loadFileHandler(line.name, line.object); 
+        // loadFileHandler: (fileName: string, blob: Blob) => void // when a file is selected
+        // this.props.loadFileHandler(line.name, line.object);
 
-    return {branch, queryVariables};
-  }
-
-  // public async componentDidMount(){
-  //   if(this.props.repo.)
-  // }
-
-  // searchAPI = ((text: string) => {
-  //   const queryVariables = this.state.queryVariables;
-  //   queryVariables.path = text;
-  //   this.setState({queryVariables});
-  // });
-  
-  // searchAPIDebounced = AwesomeDebouncePromise(this.searchAPI, 500);
-
-  // todo handle this search box? or disable it
-  // handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {
-  //   const query = event.currentTarget.value; 
-  //   // this.searchAPIDebounced(query);
-  //   // this.setState({queryVariables: {queryString: query, first: 5}});
-  // }
-
-  handleLineClicked = (line: Line) => { // todo if no selection also allow adding comment?
-    // if line is a file, load file into the commentable code container
-
-    const filePath = this.state.queryVariables.path;
-
-    if (line && line.name && line.object && line.object.oid) {
-      // this.props.loadFileHandler(line.name, line.object); // todo no
-      this.props.loadFileHandler(line.name, filePath); // trigger update
-      this.setState({fileSelected: line.name})  // yes
+        return { branch, queryVariables };
     }
-    else if (line && line.name) {  // if line is a folder, load directory
-      const queryVariables = this.state.queryVariables;
-      queryVariables.path = `${queryVariables.path}${line.name}/`;
-      this.setState({queryVariables});
+
+    inParentDirectory() {
+        return this.state.queryVariables.path === `${this.state.branch}:`;
     }
-  }
 
-  inParentDirectory() {
-    return this.state.queryVariables.path === (this.state.branch+':');
-  }
-
-  // props.queryVariables.path will look something like:
-  //  "master:app/src/main/java/me/jludden/reeflifesurvey/"
-  // pass in a folder name (e.g. "java") to go up to that level
-  //  "master:app/src/main/java/"
-  // or pass in nothing to just go up one level
-  handleNavTo = (folder?: string) => {
-    const queryVariables = this.state.queryVariables;
-    var tempPath = queryVariables.path;
-
-    if (folder) { // remove everything after the folder name (e.g. java+/)
-      queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(folder) + folder.length + 1);
-    } else {
-      if (this.inParentDirectory()) return;
-      const parts = this.paths(); // last real folder (e.g. "reeflifesurvey") will be in [length - 2]
-      queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(parts[parts.length - 2]));
+    // split the paths on both colon and forward slash
+    paths(): string[] {
+        // return this.state.queryVariables.path.split(":").join("/").split("/");
+        const parts = this.state.queryVariables.path.split(':'); // remove branch
+        return parts[1].split('/');
     }
-    this.setState({queryVariables});
-  }
 
-  // split the paths on both colon and forward slash
-  paths(): string[] {
-    // return this.state.queryVariables.path.split(":").join("/").split("/");
-    const parts = this.state.queryVariables.path.split(":"); // remove branch
-    return parts[1].split("/");
-  }
+    public render() {
+        const title = (this.props.repo && this.props.repo.nameWithOwner) || 'Welcome to Roast My Code';
 
-  public render() {
-    const title = (this.props.repo && this.props.repo.nameWithOwner) || "Welcome to Roast My Code";
+        return (
+            <Panel>
+                <Panel.Heading>{title}</Panel.Heading>
 
-    return (
-          <Panel>            
-            <Panel.Heading>
-              {title}           
-            </Panel.Heading>
-
-            {/* update the URL with the current search state */}
-            <UseUrlQuery url={this.state.queryVariables.path} name={"path"}/>
-            {this.state.fileSelected && <UseUrlQuery url={this.state.fileSelected} name={"file"}/>}
-
-            {/* <Panel.Block>
+                {/* <Panel.Block>
               <Control iconLeft>
                 <Input size="small" type="text" placeholder="search" onChange={this.handleQueryChange} />
                 <Icon size="small" align="left">
@@ -234,180 +223,186 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
                 </Icon>
               </Control>
             </Panel.Block> */}
-            {/* TODO Add comment view! similar view to files, but expandable to see all comments under each file */}
-            <Panel.Tab.Group>
-              <Panel.Tab active>files</Panel.Tab>
-              <Panel.Tab>comments</Panel.Tab>
-              {/* <Panel.Tab>private</Panel.Tab>
+                {/* TODO Add comment view! similar view to files, but expandable to see all comments under each file */}
+                <Panel.Tab.Group>
+                    <Panel.Tab active>files</Panel.Tab>
+                    <Panel.Tab>comments</Panel.Tab>
+                    {/* <Panel.Tab>private</Panel.Tab>
               <Panel.Tab>sources</Panel.Tab>
               <Panel.Tab>forks</Panel.Tab> */}
-            </Panel.Tab.Group>
+                </Panel.Tab.Group>
 
-            {/*  Top line of the panel will show controls for the branch and file path  */}
-            <Panel.Block>
-              <Dropdown style={{padding: '0 15px 0 0'}}>
-                <Dropdown.Trigger>
-                  <Button>
-                    <span>{this.state.branch}</span>
-                    <FaAngleDown/>
-                  </Button>
-                </Dropdown.Trigger>
-                <Dropdown.Menu>
-                  <Dropdown.Content>
-                    <Dropdown.Item>Dropdown item</Dropdown.Item>
-                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
-                    <Dropdown.Item active>Active dropdown item</Dropdown.Item>
-                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item>With a divider</Dropdown.Item>
-                  </Dropdown.Content>
-                </Dropdown.Menu>
-              </Dropdown> 
-              
-              {/* size="small" align="left" */}
-              <Breadcrumb align="centered">
-                <Breadcrumb.Item><Icon color={this.inParentDirectory() ? "dark" : "info"} onClick={() => this.handleNavTo()} align="right"><FaEllipsisH/></Icon></Breadcrumb.Item>                              
-                {this.paths().map( path => (
-                  <Breadcrumb.Item onClick={() => this.handleNavTo(path)} key={path}> {path} </Breadcrumb.Item>
-                ))}     
-              </Breadcrumb>
-            </Panel.Block>
-            
-            <RepoContentsInner
-              variables={this.state.queryVariables}
-              onLineClicked={this.handleLineClicked}
-              />
-          </Panel>
+                {/*  Top line of the panel will show controls for the branch and file path  */}
+                <Panel.Block>
+                    <Dropdown style={{ padding: '0 15px 0 0' }}>
+                        <Dropdown.Trigger>
+                            <Button>
+                                <span>{this.state.branch}</span>
+                                <FaAngleDown />
+                            </Button>
+                        </Dropdown.Trigger>
+                        <Dropdown.Menu>
+                            <Dropdown.Content>
+                                <Dropdown.Item>Dropdown item</Dropdown.Item>
+                                <Dropdown.Item>Other dropdown item</Dropdown.Item>
+                                <Dropdown.Item active>Active dropdown item</Dropdown.Item>
+                                <Dropdown.Item>Other dropdown item</Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item>With a divider</Dropdown.Item>
+                            </Dropdown.Content>
+                        </Dropdown.Menu>
+                    </Dropdown>
+
+                    {/* size="small" align="left" */}
+                    <Breadcrumb align="centered">
+                        <Breadcrumb.Item>
+                            <Icon
+                                color={this.inParentDirectory() ? 'dark' : 'info'}
+                                onClick={() => this.handleNavTo()}
+                                align="right"
+                            >
+                                <FaEllipsisH />
+                            </Icon>
+                        </Breadcrumb.Item>
+                        {this.paths().map(path => (
+                            <Breadcrumb.Item onClick={() => this.handleNavTo(path)} key={path}>
+                                {' '}
+                                {path}{' '}
+                            </Breadcrumb.Item>
+                        ))}
+                    </Breadcrumb>
+                </Panel.Block>
+
+                {/* update the URL with the current search state */}
+                <UseUrlQuery url={this.state.queryVariables.path} name="path" />
+                {this.state.fileSelected && <UseUrlQuery url={this.state.fileSelected} name="file" />}
+
+                <RepoContentsInner variables={this.state.queryVariables} onLineClicked={this.handleLineClicked} />
+            </Panel>
         );
-      }
+    }
 }
 
-
-    // todo for path - automatically go into the directory with most comments!
-    // todo add Tags for number of comments if > 0
-    //  todo - aggregate comments to folder level
+// todo for path - automatically go into the directory with most comments!
+// todo add Tags for number of comments if > 0
+//  todo - aggregate comments to folder level
 
 interface IRepoContentsInner {
-  variables: IGithubRepoContentsVars,
-  onLineClicked: (line: Line) => void
+    variables: IGithubRepoContentsVars;
+    onLineClicked: (line: Line) => void;
 }
 
-// const github_client = new ApolloClient({
+// const githubClient = new ApolloClient({
 //   //cache,
 //   uri: "/.netlify/functions/repo_github"
 // });
 
 const RepoContentsInner = (props: IRepoContentsInner) => {
-  const { data, error, loading, refetch } = useQuery<Data, IGithubRepoContentsVars>(REPO_CONTENTS_QUERY, {
-    variables: props.variables,
-    client: github_client
-  });
-  useEffect(() => {
-    refetch(props.variables);
-  }); // TODO NO SHIP useeffect even without props.var change + url params will trigger many re-renders
-// }, [props.variables]);
+    const { data, error, loading, refetch } = useQuery<Data, IGithubRepoContentsVars>(REPO_CONTENTS_QUERY, {
+        variables: props.variables,
+        client: githubClient,
+    });
+    useEffect(() => {
+        refetch(props.variables);
+    }); // TODO NO SHIP useeffect even without props.var change + url params will trigger many re-renders
+    // }, [props.variables]);
 
-  if (loading) return (
-    <Panel.Block>
-      <Progress color="info" />
-    </Panel.Block>
-  );
-  
-  if (error || !data || !data.repository || !data.repository.folder|| !data.repository.folder.entries) {
+    if (loading)
+        return (
+            <Panel.Block>
+                <Progress color="info" />
+            </Panel.Block>
+        );
+
+    if (error || !data || !data.repository || !data.repository.folder || !data.repository.folder.entries) {
+        return <PanelWarningLine text="Error :(" color="danger" />;
+    }
+
     return (
-      <PanelWarningLine text="Error :(" color="danger"/>
+        <>
+            {data.repository.folder.entries.map(file => (
+                <PanelLine key={file.oid} file={file} onLineClicked={props.onLineClicked} />
+            ))}
+        </>
     );
-  }
+};
 
-  return (
-    <>
-    {data.repository.folder.entries.map(file => (
-        <PanelLine key={file.oid} file={file} onLineClicked={props.onLineClicked} />                                          
-    ))}
-    </>
-  );
-}
-
-interface IPanelLineProps { 
-  file: Line,
-  onLineClicked: (file: Line) => void 
+interface IPanelLineProps {
+    file: Line;
+    onLineClicked: (file: Line) => void;
 }
 const PanelLine: React.SFC<IPanelLineProps> = props => {
-  const file = props.file;
-  const fileType = file.name.substring(file.name.lastIndexOf('.'));
+    const { file } = props;
+    const fileType = file.name.substring(file.name.lastIndexOf('.'));
 
-  if ([".jpg", ".png", ".gif", ".ico", ".mp4", ".avi"].includes(fileType)) {
+    if (['.jpg', '.png', '.gif', '.ico', '.mp4', '.avi'].includes(fileType)) {
+        return (
+            <Panel.Block>
+                <Panel.Icon>
+                    <FaImage />
+                </Panel.Icon>
+                {file.name}
+            </Panel.Block>
+        );
+    }
+
     return (
-      <Panel.Block>
-        <Panel.Icon>
-          <FaImage />
-        </Panel.Icon>
-        {file.name} 
-      </Panel.Block>
+        <Panel.Block active onClick={() => props.onLineClicked(file)} className="panelHover">
+            <Panel.Icon>{file.object.__typename === 'Tree' ? <FaFolder /> : <FaBook />}</Panel.Icon>
+            <a>{file.name}</a>
+        </Panel.Block>
     );
-  }
+};
 
-  return (
-    <Panel.Block active onClick={() => props.onLineClicked(file)} className="panelHover">
-      <Panel.Icon>
-        {(file.object.__typename === "Tree") ? <FaFolder /> : <FaBook />}
-      </Panel.Icon>
-      <a>{file.name}</a>
-    </Panel.Block>
-)};
-
-
-interface IWarningText { 
-  text: string, 
-  color?: "primary" | "link" | "success" | "info" | "warning" | "danger" | undefined,
+interface IWarningText {
+    text: string;
+    color?: 'primary' | 'link' | 'success' | 'info' | 'warning' | 'danger' | undefined;
 }
 const PanelWarningLine: React.SFC<IWarningText> = props => {
-  return (
-    <Panel.Block backgroundColor={props.color||undefined}>
-      <Panel.Icon>
-        <FaExclamationCircle />
-      </Panel.Icon>
-      {props.text}
-    </Panel.Block>
-  )
+    return (
+        <Panel.Block backgroundColor={props.color || undefined}>
+            <Panel.Icon>
+                <FaExclamationCircle />
+            </Panel.Icon>
+            {props.text}
+        </Panel.Block>
+    );
 };
 
 // {"path": "master:app/src/main/java/me/jludden/reeflifesurvey"}
 //    repository(name: "ReefLifeSurvey---Species-Explorer", owner: "jludden") {
 //     repository(name: "react", owner: "facebook") {
 
-
-// can also load file contents here: repo -> folder: object -> Tree -> object -> Blob -> text 
+// can also load file contents here: repo -> folder: object -> Tree -> object -> Blob -> text
 export const REPO_CONTENTS_QUERY = gql`
-  query($path: String!, $repoName: String!, $repoOwner: String!) {
-    repository(name: $repoName, owner: $repoOwner) {
+    query($path: String!, $repoName: String!, $repoOwner: String!) {
+        repository(name: $repoName, owner: $repoOwner) {
+            refs(refPrefix: "refs/heads/", first: 100) {
+                nodes {
+                    name
+                }
+            }
 
-      refs(refPrefix:"refs/heads/", first: 100) {
-        nodes {
-          name
+            folder: object(expression: $path) {
+                ... on Tree {
+                    entries {
+                        oid
+                        name
+
+                        object {
+                            ... on Blob {
+                                id
+                                oid
+                                commitResourcePath
+                                commitUrl
+                                isTruncated
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
-
-      folder: object(expression: $path) {
-        ... on Tree {
-          entries {
-            oid
-            name
-
-            object {
-              ... on Blob {
-                id 
-                oid 
-                commitResourcePath
-                commitUrl 
-                isTruncated
-              }
-            }          
-          }
-        }
-      }
     }
-  }
 `;
 
 // const REPO_CONTENTS_QUERY = gql`
@@ -424,4 +419,3 @@ export const REPO_CONTENTS_QUERY = gql`
 //   }
 // }
 // `;
-
