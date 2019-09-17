@@ -24,10 +24,13 @@
     },
     "plugins": [
         "react",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "react-hooks"
     ],
     "rules": {
         "prettier/prettier": 1,
+        "react-hooks/rules-of-hooks": 2,
+        "react-hooks/exhaustive-deps": 1,
         "react/jsx-filename-extension": 0,
         "no-unused-vars": 0,
         "@typescript-eslint/no-unused-vars": 0,
