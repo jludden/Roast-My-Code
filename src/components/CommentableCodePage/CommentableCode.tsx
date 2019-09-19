@@ -11,6 +11,7 @@ import { RepositoryOwner, StargazerConnection, Language } from '../../generated/
 import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';
 import RepoContents from '../RepoContents';
 import AuthStatusView from '../AuthStatusView';
+import GraphQLTests from './GraphQLTests';
 import { useIdentityContext } from 'react-netlify-identity-widget';
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import {
@@ -82,13 +83,13 @@ export interface IGithubRepoResponse {
 
 export interface IRepoCommentsResponse {
     allTodos: {
-        data: [
-            {
-                title: string;
-                completed: boolean;
-            },
-        ];
+        data: IRepoCommentsObj[];
     };
+}
+
+export interface IRepoCommentsObj {
+    title: string;
+    completed: boolean;
 }
 
 // "owner": "jludden",
@@ -147,7 +148,7 @@ const LOAD_COMMENTS_QUERY = gql`
 `;
 
 const SUBMIT_COMMENT_MUTATION = gql`
-    mutation CreateATodo($title: String!) {
+    mutation createTodo($title: String!) {
         createTodo(data: { title: $title, completed: false }) {
             title
             completed
@@ -165,27 +166,35 @@ const LoadCommentsTest = () => {
     if (data) {
         console.log(data);
     }
+
     return (
         <div>
             <span>Hello it worked</span>
             <ul>
-                {data.allTodos.data.map(todo => (
-                    <li key={todo.title}>
-                        <b>
-                            title:
-                            {todo.title}
-                        </b>
-                        <p>
-                            completed:
-                            {todo.completed ? 'true' : 'false'}
-                        </p>
-                    </li>
-                ))}
+                {data.allTodos.data.map(todo => {
+                    if (!todo || !todo.title) return <p>Error</p>;
+                    return (
+                        <li key={todo.title}>
+                            <b>
+                                title:
+                                {todo.title}
+                            </b>
+                            <p>
+                                completed:
+                                {todo.completed ? 'true' : 'false'}
+                            </p>
+                        </li>
+                    );
+                })}
             </ul>
             <h3>Add comment: </h3>
             <AddComment />
             <h3>COMMENTS PAGE w/ MUTATIONS</h3>
             <CommentsPageWithMutations />
+            <br />
+            <br />
+            <h3>More Tests</h3>
+            <GraphQLTests />
             <br />
             <br />
         </div>
@@ -261,15 +270,18 @@ function CommentsPageWithMutations() {
                     variables: { title: commentContent },
                     optimisticResponse: {
                         __typename: 'Mutation',
-                        submitComment: {
-                            __typename: 'Todo',
+                        createTodo: {
+                            __typename: 'TodoInput',
                             title: commentContent,
                             completed: false,
+                            //      id: Math.round(Math.random() * -1000000),
                         },
                     },
-                    update: (cache, { data: { submitComment } }) => {
+                    update: (cache, { data: { createTodo } }) => {
                         // Read the data from our cache for this query.
-                        const data = cache.readQuery<IRepoCommentsResponse>({ query: LOAD_COMMENTS_QUERY }) || {
+                        const data: IRepoCommentsResponse = cache.readQuery<IRepoCommentsResponse>({
+                            query: LOAD_COMMENTS_QUERY,
+                        }) || {
                             allTodos: { data: [] },
                         };
                         // Write our data back to the cache with the new comment in it
@@ -278,13 +290,23 @@ function CommentsPageWithMutations() {
                         //   allTodos: [...data, submitComment]
                         // } as any});
                         // data.allTodos.data
+                        //const newData = data.allTodos.data.concat(submitComment);
+                        // const myCom = new [];
+                        const submitComment = createTodo;
+                        if (submitComment && submitComment.title) {
+                            data.allTodos.data.push(submitComment);
+                        } else if (submitComment && submitComment.createTodo) {
+                            data.allTodos.data.push(submitComment.createTodo);
+                        }
+
                         cache.writeQuery({
                             query: LOAD_COMMENTS_QUERY,
-                            data: {
-                                allTodos: {
-                                    data: data.allTodos.data.concat(submitComment),
-                                },
-                            },
+                            data: data,
+                            // data: {
+                            //     allTodos: {
+                            //         data: newData,
+                            //     },
+                            // },
                         });
                     },
                 })
@@ -294,10 +316,17 @@ function CommentsPageWithMutations() {
 }
 
 function CommentsPage({ submit }: { submit: (commentContent: string) => Promise<ExecutionResult<any>> }) {
+    let input: HTMLInputElement | null;
+
     return (
         <div>
             <span>Hello world COMMENTS PAGE</span>
-            <button onClick={() => submit('COMMENTS PAGE MUTATION TEST')} />
+            <input
+                ref={node => {
+                    input = node;
+                }}
+            />
+            <Button onClick={() => submit(input ? input.value : 'ADD COMMENT MUTATION TEST')}>ADD COMMENT 2</Button>
         </div>
     );
 }
@@ -352,10 +381,7 @@ class CommentableCodeInner extends React.Component<ICCProps, ICCState> {
     };
 
     // PUT an update to a comment
-    public editCommentHandler = async (
-        comment: RoastComment,
-        isDelete = false,
-    ): Promise<SubmitCommentResponse> => {
+    public editCommentHandler = async (comment: RoastComment, isDelete = false): Promise<SubmitCommentResponse> => {
         if (isDelete) {
             return await API.deleteComment(comment).then(response => {
                 const { comments } = this.state;
