@@ -90,6 +90,7 @@ export interface IRepoCommentsResponse {
 export interface IRepoCommentsObj {
     title: string;
     completed: boolean;
+    _id: string;
 }
 
 // "owner": "jludden",
@@ -133,7 +134,7 @@ const LoadCommentsTestContainer = () => {
         );
     }
 
-    return <LoadCommentsTest />;
+    return <LoadCommentsTestWithDelete />;
 };
 
 const LOAD_COMMENTS_QUERY = gql`
@@ -142,6 +143,7 @@ const LOAD_COMMENTS_QUERY = gql`
             data {
                 title
                 completed
+                _id
             }
         }
     }
@@ -152,11 +154,37 @@ const SUBMIT_COMMENT_MUTATION = gql`
         createTodo(data: { title: $title, completed: false }) {
             title
             completed
+            _id
         }
     }
 `;
 
-const LoadCommentsTest = () => {
+const DELETE_COMMENT_MUTATION = gql`
+    mutation deleteTodo($id: ID!) {
+        deleteTodo(id: $id) {
+            title
+        }
+    }
+`;
+
+const LoadCommentsTestWithDelete = () => {
+    const [deleteCommenMutation] = useMutation(DELETE_COMMENT_MUTATION);
+    return (
+        <LoadCommentsTest
+            deleteComment={(comment: IRepoCommentsObj) =>
+                deleteCommenMutation({
+                    variables: { id: comment._id },
+                })
+            }
+        />
+    );
+};
+
+const LoadCommentsTest = ({
+    deleteComment,
+}: {
+    deleteComment: (comment: IRepoCommentsObj) => Promise<ExecutionResult<any>>;
+}) => {
     const { data, error, loading, refetch } = useQuery<IRepoCommentsResponse>(LOAD_COMMENTS_QUERY, {
         //  client: faunaDbClient
     });
@@ -183,13 +211,14 @@ const LoadCommentsTest = () => {
                                 completed:
                                 {todo.completed ? 'true' : 'false'}
                             </p>
+                            <Button onClick={() => deleteComment(todo)}>Delete</Button>
                         </li>
                     );
                 })}
             </ul>
-            <h3>Add comment: </h3>
-            <AddComment />
-            <h3>COMMENTS PAGE w/ MUTATIONS</h3>
+            {/* <h3>Add comment: </h3> */}
+            {/* <AddComment /> */}
+            <h3>Add Comment - COMMENTS PAGE w/ MUTATIONS</h3>
             <CommentsPageWithMutations />
             <br />
             <br />
@@ -211,45 +240,45 @@ update(cache, { data: { addTodo } }) {
       },
 */
 
-function AddComment() {
-    let input: HTMLInputElement | null;
-    // const [addTodo, { data }] = useMutation(ADD_COMMENT);
-    const [addTodo] = useMutation(
-        // todo set client: faunaDbClient
-        SUBMIT_COMMENT_MUTATION,
-        {
-            //    variables: { "title": input ? input.value : 'oops empty title'},
-            update(cache, { data: { addTodo } }) {
-                const { todos }: any = cache.readQuery({ query: LOAD_COMMENTS_QUERY }) || { todos: [] };
-                cache.writeQuery({
-                    query: LOAD_COMMENTS_QUERY,
-                    data: { todos: todos.concat([addTodo]) },
-                });
-            },
-        },
-    );
+// function AddComment() {
+//     let input: HTMLInputElement | null;
+//     // const [addTodo, { data }] = useMutation(ADD_COMMENT);
+//     const [addTodo] = useMutation(
+//         // todo set client: faunaDbClient
+//         SUBMIT_COMMENT_MUTATION,
+//         {
+//             //    variables: { "title": input ? input.value : 'oops empty title'},
+//             update(cache, { data: { addTodo } }) {
+//                 const { todos }: any = cache.readQuery({ query: LOAD_COMMENTS_QUERY }) || { todos: [] };
+//                 cache.writeQuery({
+//                     query: LOAD_COMMENTS_QUERY,
+//                     data: { todos: todos.concat([addTodo]) },
+//                 });
+//             },
+//         },
+//     );
 
-    return (
-        <div>
-            <form
-                onSubmit={e => {
-                    const val = input ? input.value : '';
-                    console.log(`comment submission attempted. value: ${val}`);
-                    e.preventDefault();
-                    addTodo({ variables: { title: val } });
-                    if (input) input.value = '';
-                }}
-            >
-                <input
-                    ref={node => {
-                        input = node;
-                    }}
-                />
-                <button type="submit">Add Todo</button>
-            </form>
-        </div>
-    );
-}
+//     return (
+//         <div>
+//             <form
+//                 onSubmit={e => {
+//                     const val = input ? input.value : '';
+//                     console.log(`comment submission attempted. value: ${val}`);
+//                     e.preventDefault();
+//                     addTodo({ variables: { title: val } });
+//                     if (input) input.value = '';
+//                 }}
+//             >
+//                 <input
+//                     ref={node => {
+//                         input = node;
+//                     }}
+//                 />
+//                 <button type="submit">Add Todo</button>
+//             </form>
+//         </div>
+//     );
+// }
 // export interface IRepoCommentsResponse {
 //   allTodos: {
 //     data: [
@@ -271,10 +300,10 @@ function CommentsPageWithMutations() {
                     optimisticResponse: {
                         __typename: 'Mutation',
                         createTodo: {
-                            __typename: 'TodoInput',
+                            __typename: 'Todo',
                             title: commentContent,
                             completed: false,
-                            //      id: Math.round(Math.random() * -1000000),
+                            _id: '' + Math.round(Math.random() * -1000000),
                         },
                     },
                     update: (cache, { data: { createTodo } }) => {
