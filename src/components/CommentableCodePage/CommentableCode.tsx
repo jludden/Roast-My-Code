@@ -162,7 +162,7 @@ const SUBMIT_COMMENT_MUTATION = gql`
 const DELETE_COMMENT_MUTATION = gql`
     mutation deleteTodo($id: ID!) {
         deleteTodo(id: $id) {
-            title
+            _id
         }
     }
 `;
@@ -174,6 +174,27 @@ const LoadCommentsTestWithDelete = () => {
             deleteComment={(comment: IRepoCommentsObj) =>
                 deleteCommenMutation({
                     variables: { id: comment._id },
+                    optimisticResponse: {
+                        __typename: 'Mutation',
+                        deleteTodo: {
+                            __typename: 'Todo',
+                            _id: comment._id,
+                        },
+                    },
+                    update: (cache, { data: { deleteTodo } }) => {
+                        const data: IRepoCommentsResponse = cache.readQuery<IRepoCommentsResponse>({
+                            query: LOAD_COMMENTS_QUERY,
+                        }) || {
+                            allTodos: { data: [] },
+                        };
+
+                        data.allTodos.data = data.allTodos.data.filter(comment => comment._id != deleteTodo._id);
+
+                        cache.writeQuery({
+                            query: LOAD_COMMENTS_QUERY,
+                            data: data,
+                        });
+                    },
                 })
             }
         />
