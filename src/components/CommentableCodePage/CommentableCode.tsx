@@ -11,7 +11,7 @@ import { RepositoryOwner, StargazerConnection, Language } from '../../generated/
 import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';
 import RepoContents from '../RepoContents';
 import AuthStatusView from '../AuthStatusView';
-import GraphQLTests from './GraphQLTests';
+import { CompletedTodos, GraphQLTodoList } from './GraphQLTests';
 import { useIdentityContext } from 'react-netlify-identity-widget';
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import {
@@ -244,7 +244,9 @@ const LoadCommentsTest = ({
             <br />
             <br />
             <h3>More Tests</h3>
-            <GraphQLTests />
+            <CompletedTodos />
+            <br></br>
+            <GraphQLTodoList />
             <br />
             <br />
         </div>
@@ -366,7 +368,7 @@ function CommentsPageWithMutations() {
 }
 
 function CommentsPage({ submit }: { submit: (commentContent: string) => Promise<ExecutionResult<any>> }) {
-    let input: HTMLInputElement | null;
+    let input: HTMLInputElement | null = null;
 
     return (
         <div>
@@ -376,7 +378,7 @@ function CommentsPage({ submit }: { submit: (commentContent: string) => Promise<
                     input = node;
                 }}
             />
-            <Button onClick={() => submit(input ? input.value : 'ADD COMMENT MUTATION TEST')}>ADD COMMENT 2</Button>
+            <Button onClick={() => submit(input ? input.value : 'ADD COMMENT MUTATION TEST')}>ADD COMMENT</Button>
         </div>
     );
 }

@@ -1,8 +1,17 @@
-type Todo {
-  title: String!
-  completed: Boolean!
-}
+
 type Query {
   allTodos: [Todo!]
   todosByCompletedFlag(completed: Boolean!): [Todo!]
+  allLists: [TodoList!]
+}
+
+type Todo {
+  title: String!
+  completed: Boolean!
+  list: TodoList
+}
+
+type TodoList {
+  title: String!
+  todos: [Todo] @relation
 }
