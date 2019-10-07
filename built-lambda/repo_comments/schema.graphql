@@ -2,7 +2,9 @@
 type Query {
   allTodos: [Todo!]
   todosByCompletedFlag(completed: Boolean!): [Todo!]
-  allLists: [TodoList!]
+  allTodoLists: [TodoList!]
+  allComments: [Comment!]
+  allCommentLists: [CommentList!] 
 }
 
 type Todo {
@@ -14,4 +16,25 @@ type Todo {
 type TodoList {
   title: String!
   todos: [Todo] @relation
+}
+
+type Comment {
+  text: String!
+  list: CommentList
+}
+
+type CommentList {
+  comments: [Comment] @relation
+  document: Document
+}
+
+type Document {
+  title: String!
+  commentsList: [CommentList] @relation
+  repository: Repository
+}
+
+type Repository {
+  title: String!
+  documentsList: [Document] @relation
 }

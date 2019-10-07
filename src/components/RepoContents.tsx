@@ -85,7 +85,7 @@ export function UseUrlQuery(props: IUrlQueryProps) {
         if (url !== props.url) {
             setUrl(props.url);
         }
-    }, [props.url]);
+    }, [props.url, setUrl, url]);
 
     return <></>;
 }
@@ -375,7 +375,7 @@ const PanelWarningLine: React.SFC<IWarningText> = props => {
 
 // can also load file contents here: repo -> folder: object -> Tree -> object -> Blob -> text
 export const REPO_CONTENTS_QUERY = gql`
-    query($path: String!, $repoName: String!, $repoOwner: String!) {
+    query RepoContents($path: String!, $repoName: String!, $repoOwner: String!) {
         repository(name: $repoName, owner: $repoOwner) {
             refs(refPrefix: "refs/heads/", first: 100) {
                 nodes {

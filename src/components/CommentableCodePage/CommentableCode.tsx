@@ -5,6 +5,7 @@ import '../../App.css';
 import API, { IGithubData } from '../../api/API';
 import Document, { ErrorMessage } from '../CommentableDocument/Document';
 import RoastComment from '../RoastComment';
+import { Collapse } from 'react-collapse';
 // import schema from '../api/github.schema.json';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../../generated/graphql';
 import { RepositoryOwner, StargazerConnection, Language } from '../../generated/graphql'; // todo shouldnt really need
@@ -12,6 +13,7 @@ import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';
 import RepoContents from '../RepoContents';
 import AuthStatusView from '../AuthStatusView';
 import { CompletedTodos, GraphQLTodoList } from './GraphQLTests';
+import { FindCommentsForRepo } from './CommentsGraphQLtests';
 import { useIdentityContext } from 'react-netlify-identity-widget';
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import {
@@ -137,7 +139,7 @@ const LoadCommentsTestContainer = () => {
     return <LoadCommentsTestWithDelete />;
 };
 
-const LOAD_COMMENTS_QUERY = gql`
+export const LOAD_COMMENTS_QUERY = gql`
     query getcomments {
         allTodos {
             data {
@@ -206,6 +208,7 @@ const LoadCommentsTest = ({
 }: {
     deleteComment: (comment: IRepoCommentsObj) => Promise<ExecutionResult<any>>;
 }) => {
+    const [expanded, setExpanded] = React.useState(false);
     const { data, error, loading, refetch } = useQuery<IRepoCommentsResponse>(LOAD_COMMENTS_QUERY, {
         //  client: faunaDbClient
     });
@@ -218,35 +221,41 @@ const LoadCommentsTest = ({
 
     return (
         <div>
-            <span>Hello it worked</span>
-            <ul>
-                {data.allTodos.data.map(todo => {
-                    if (!todo || !todo.title) return <p>Error</p>;
-                    return (
-                        <li key={todo.title}>
-                            <b>
-                                title:
-                                {todo.title}
-                            </b>
-                            <p>
-                                completed:
-                                {todo.completed ? 'true' : 'false'}
-                            </p>
-                            <Button onClick={() => deleteComment(todo)}>Delete</Button>
-                        </li>
-                    );
-                })}
-            </ul>
+            <span onClick={() => setExpanded(!expanded)}>All Todos (toggle):</span>
+            <Collapse isOpened={expanded}>
+                <ul>
+                    {data.allTodos.data.map(todo => {
+                        if (!todo || !todo.title) return <p>Error</p>;
+                        return (
+                            <li key={todo.title}>
+                                <b>
+                                    title:
+                                    {todo.title}
+                                </b>
+                                <p>
+                                    completed:
+                                    {todo.completed ? 'true' : 'false'}
+                                </p>
+                                <Button onClick={() => deleteComment(todo)}>Delete</Button>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </Collapse>
             {/* <h3>Add comment: </h3> */}
             {/* <AddComment /> */}
             <h3>Add Comment - COMMENTS PAGE w/ MUTATIONS</h3>
             <CommentsPageWithMutations />
             <br />
             <br />
-            <h3>More Tests</h3>
+            <h1>More Tests</h1>
             <CompletedTodos />
             <br></br>
             <GraphQLTodoList />
+            <br />
+            <br />
+            <h1>COMMENTS FOR REPO</h1>
+            <FindCommentsForRepo />
             <br />
             <br />
         </div>
