@@ -12,8 +12,8 @@ import { RepositoryOwner, StargazerConnection, Language } from '../../generated/
 import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';
 import RepoContents from '../RepoContents';
 import AuthStatusView from '../AuthStatusView';
-import { CompletedTodos, GraphQLTodoList } from './GraphQLTests';
-import { FindCommentsForRepo } from './CommentsGraphQLtests';
+import { CompletedTodos, GraphQLTodoList, SubmitTodosMutation, LoadTodosTestWithDelete } from './GraphQLTests';
+import { FindCommentsForRepo, CreateCommentForRepo, LoadCommentsWithDelete } from './CommentsGraphQLtests';
 import { useIdentityContext } from 'react-netlify-identity-widget';
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import {
@@ -37,7 +37,7 @@ import ApolloClient, { gql, ExecutionResult } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 
 // todo type instead of interface? is this being used?
-export interface ICCProps {
+export interface CommentableCodeProps {
     userIsLoggedIn?: boolean;
     userName?: string;
     repo: Repository;
@@ -48,7 +48,7 @@ export interface CCContainerProps {
     userName?: string;
 }
 
-export interface IComment {
+export interface Comment {
     id: number;
     body: string;
     postId: number;
@@ -60,7 +60,7 @@ export enum SubmitCommentResponse {
     NotLoggedIn,
 }
 
-interface ICCState {
+interface CommentableCodeState {
     comments: RoastComment[];
     defaultFilePath: string; // todo del
     defaultFileName?: string; // todo del
@@ -75,25 +75,57 @@ interface ICCState {
     loadFilePath?: string;
 }
 
-export interface IGithubRepoVars {
+export interface LoadGithubQueryVars {
     owner: string;
     name: string;
 }
-export interface IGithubRepoResponse {
+export interface LoadGithubQueryResponse {
     repository: Repository;
 }
 
-export interface IRepoCommentsResponse {
+export interface LoadTodosQueryResponse {
     allTodos: {
-        data: IRepoCommentsObj[];
+        data: Todo[];
     };
 }
 
-export interface IRepoCommentsObj {
+export interface Todo {
     title: string;
     completed: boolean;
     _id: string;
 }
+
+const LOAD_REPO_QUERY = gql`
+    query LoadRepo($owner: String!, $name: String!) {
+        repository(owner: $owner, name: $name) {
+            name
+            createdAt
+            url
+            resourcePath
+            updatedAt
+            nameWithOwner
+            owner {
+                login
+            }
+            primaryLanguage {
+                name
+                color
+            }
+            languages(first: 5) {
+                nodes {
+                    name
+                }
+            }
+            descriptionHTML
+            stargazers {
+                totalCount
+            }
+            forks {
+                totalCount
+            }
+        }
+    }
+`;
 
 // "owner": "jludden",
 // "name": "ReefLifeSurvey---Species-Explorer"
@@ -103,7 +135,7 @@ const CommentableCode = (props: CCContainerProps) => {
     const name = repoPath.slice(repoPath.lastIndexOf('/') + 1);
 
     // Load Repo
-    const { data, error, loading, refetch } = useQuery<IGithubRepoResponse, IGithubRepoVars>(LOAD_REPO_QUERY, {
+    const { data, error, loading, refetch } = useQuery<LoadGithubQueryResponse, LoadGithubQueryVars>(LOAD_REPO_QUERY, {
         variables: { owner, name },
         client: githubClient,
     });
@@ -126,126 +158,17 @@ const CommentableCode = (props: CCContainerProps) => {
 const LoadCommentsTestContainer = () => {
     const [active, setActive] = React.useState(false);
 
-    if (!active) {
-        return (
-            <Button
-                onClick={() => {
-                    setActive(true);
-                }}
-            />
-        );
-    }
+    if (!active) return <Button onClick={() => setActive(true)} />;
 
-    return <LoadCommentsTestWithDelete />;
-};
-
-export const LOAD_COMMENTS_QUERY = gql`
-    query getcomments {
-        allTodos {
-            data {
-                title
-                completed
-                _id
-            }
-        }
-    }
-`;
-
-const SUBMIT_COMMENT_MUTATION = gql`
-    mutation createTodo($title: String!) {
-        createTodo(data: { title: $title, completed: false }) {
-            title
-            completed
-            _id
-        }
-    }
-`;
-
-const DELETE_COMMENT_MUTATION = gql`
-    mutation deleteTodo($id: ID!) {
-        deleteTodo(id: $id) {
-            _id
-        }
-    }
-`;
-
-const LoadCommentsTestWithDelete = () => {
-    const [deleteCommenMutation] = useMutation(DELETE_COMMENT_MUTATION);
-    return (
-        <LoadCommentsTest
-            deleteComment={(comment: IRepoCommentsObj) =>
-                deleteCommenMutation({
-                    variables: { id: comment._id },
-                    optimisticResponse: {
-                        __typename: 'Mutation',
-                        deleteTodo: {
-                            __typename: 'Todo',
-                            _id: comment._id,
-                        },
-                    },
-                    update: (cache, { data: { deleteTodo } }) => {
-                        const data: IRepoCommentsResponse = cache.readQuery<IRepoCommentsResponse>({
-                            query: LOAD_COMMENTS_QUERY,
-                        }) || {
-                            allTodos: { data: [] },
-                        };
-
-                        data.allTodos.data = data.allTodos.data.filter(comment => comment._id != deleteTodo._id);
-
-                        cache.writeQuery({
-                            query: LOAD_COMMENTS_QUERY,
-                            data: data,
-                        });
-                    },
-                })
-            }
-        />
-    );
-};
-
-const LoadCommentsTest = ({
-    deleteComment,
-}: {
-    deleteComment: (comment: IRepoCommentsObj) => Promise<ExecutionResult<any>>;
-}) => {
-    const [expanded, setExpanded] = React.useState(false);
-    const { data, error, loading, refetch } = useQuery<IRepoCommentsResponse>(LOAD_COMMENTS_QUERY, {
-        //  client: faunaDbClient
-    });
-
-    if (loading) return <Progress color="info" />;
-    if (error || !data) return <div>Error</div>; // ErrorMessage
-    if (data) {
-        console.log(data);
-    }
+    const repoId = '245564447665422867';
+    const commentListId = '245564447670665747';
+    const documentId = '245564447668568595';
 
     return (
         <div>
-            <span onClick={() => setExpanded(!expanded)}>All Todos (toggle):</span>
-            <Collapse isOpened={expanded}>
-                <ul>
-                    {data.allTodos.data.map(todo => {
-                        if (!todo || !todo.title) return <p>Error</p>;
-                        return (
-                            <li key={todo.title}>
-                                <b>
-                                    title:
-                                    {todo.title}
-                                </b>
-                                <p>
-                                    completed:
-                                    {todo.completed ? 'true' : 'false'}
-                                </p>
-                                <Button onClick={() => deleteComment(todo)}>Delete</Button>
-                            </li>
-                        );
-                    })}
-                </ul>
-            </Collapse>
-            {/* <h3>Add comment: </h3> */}
-            {/* <AddComment /> */}
+            {/* <LoadTodosTestWithDelete />
             <h3>Add Comment - COMMENTS PAGE w/ MUTATIONS</h3>
-            <CommentsPageWithMutations />
+            <SubmitTodosMutation />
             <br />
             <br />
             <h1>More Tests</h1>
@@ -253,162 +176,20 @@ const LoadCommentsTest = ({
             <br></br>
             <GraphQLTodoList />
             <br />
-            <br />
+            <br /> */}
             <h1>COMMENTS FOR REPO</h1>
-            <FindCommentsForRepo />
+            <LoadCommentsWithDelete commentListId={commentListId} documentId={documentId} repoId={repoId} />
+            <br />
+            <br />
+            <CreateCommentForRepo commentListId={commentListId} documentId={documentId} repoId={repoId} />
             <br />
             <br />
         </div>
     );
 };
 
-/*
-update(cache, { data: { addTodo } }) {
-        const { todos } : any = cache.readQuery({ query: LOAD_COMMENTS_QUERY   }) || { todos: [] };
-        cache.writeQuery({
-          query: LOAD_COMMENTS_QUERY,
-          data: { todos: todos.concat([addTodo]) },
-        });
-      },
-*/
-
-// function AddComment() {
-//     let input: HTMLInputElement | null;
-//     // const [addTodo, { data }] = useMutation(ADD_COMMENT);
-//     const [addTodo] = useMutation(
-//         // todo set client: faunaDbClient
-//         SUBMIT_COMMENT_MUTATION,
-//         {
-//             //    variables: { "title": input ? input.value : 'oops empty title'},
-//             update(cache, { data: { addTodo } }) {
-//                 const { todos }: any = cache.readQuery({ query: LOAD_COMMENTS_QUERY }) || { todos: [] };
-//                 cache.writeQuery({
-//                     query: LOAD_COMMENTS_QUERY,
-//                     data: { todos: todos.concat([addTodo]) },
-//                 });
-//             },
-//         },
-//     );
-
-//     return (
-//         <div>
-//             <form
-//                 onSubmit={e => {
-//                     const val = input ? input.value : '';
-//                     console.log(`comment submission attempted. value: ${val}`);
-//                     e.preventDefault();
-//                     addTodo({ variables: { title: val } });
-//                     if (input) input.value = '';
-//                 }}
-//             >
-//                 <input
-//                     ref={node => {
-//                         input = node;
-//                     }}
-//                 />
-//                 <button type="submit">Add Todo</button>
-//             </form>
-//         </div>
-//     );
-// }
-// export interface IRepoCommentsResponse {
-//   allTodos: {
-//     data: [
-//       {
-//         title: string,
-//         completed: boolean
-//       }
-//     ]
-//   }
-// }
-
-function CommentsPageWithMutations() {
-    const [mutate] = useMutation(SUBMIT_COMMENT_MUTATION);
-    return (
-        <CommentsPage
-            submit={(commentContent: string) =>
-                mutate({
-                    variables: { title: commentContent },
-                    optimisticResponse: {
-                        __typename: 'Mutation',
-                        createTodo: {
-                            __typename: 'Todo',
-                            title: commentContent,
-                            completed: false,
-                            _id: '' + Math.round(Math.random() * -1000000),
-                        },
-                    },
-                    update: (cache, { data: { createTodo } }) => {
-                        // Read the data from our cache for this query.
-                        const data: IRepoCommentsResponse = cache.readQuery<IRepoCommentsResponse>({
-                            query: LOAD_COMMENTS_QUERY,
-                        }) || {
-                            allTodos: { data: [] },
-                        };
-                        // Write our data back to the cache with the new comment in it
-                        // cache.writeQuery({ query: LOAD_COMMENTS_QUERY, data: {
-                        //   ...data,
-                        //   allTodos: [...data, submitComment]
-                        // } as any});
-                        // data.allTodos.data
-                        //const newData = data.allTodos.data.concat(submitComment);
-                        // const myCom = new [];
-                        const submitComment = createTodo;
-                        if (submitComment && submitComment.title) {
-                            data.allTodos.data.push(submitComment);
-                        } else if (submitComment && submitComment.createTodo) {
-                            data.allTodos.data.push(submitComment.createTodo);
-                        }
-
-                        cache.writeQuery({
-                            query: LOAD_COMMENTS_QUERY,
-                            data: data,
-                            // data: {
-                            //     allTodos: {
-                            //         data: newData,
-                            //     },
-                            // },
-                        });
-                    },
-                })
-            }
-        />
-    );
-}
-
-function CommentsPage({ submit }: { submit: (commentContent: string) => Promise<ExecutionResult<any>> }) {
-    let input: HTMLInputElement | null = null;
-
-    return (
-        <div>
-            <span>Hello world COMMENTS PAGE</span>
-            <input
-                ref={node => {
-                    input = node;
-                }}
-            />
-            <Button onClick={() => submit(input ? input.value : 'ADD COMMENT MUTATION TEST')}>ADD COMMENT</Button>
-        </div>
-    );
-}
-
-/*
-mutate({
-          variables: { repoFullName, commentContent },
-          update: (store, { data: { submitComment } }) => {
-            // Read the data from our cache for this query.
-            const data = store.readQuery({ query: CommentAppQuery });
-            // Add our comment from the mutation to the end.
-            data.comments.push(submitComment);
-            // Write our data back to the cache.
-            store.writeQuery({ query: CommentAppQuery, data });
-          }
-        })
-
-*/
-
-class CommentableCodeInner extends React.Component<ICCProps, ICCState> {
-    public state: ICCState = {
+class CommentableCodeInner extends React.Component<CommentableCodeProps, CommentableCodeState> {
+    public state: CommentableCodeState = {
         comments: [],
         defaultFilePath: '',
         file: {
@@ -597,37 +378,5 @@ class CommentableCodeInner extends React.Component<ICCProps, ICCState> {
     //   return "master";
     // }
 }
-
-const LOAD_REPO_QUERY = gql`
-    query LoadRepo($owner: String!, $name: String!) {
-        repository(owner: $owner, name: $name) {
-            name
-            createdAt
-            url
-            resourcePath
-            updatedAt
-            nameWithOwner
-            owner {
-                login
-            }
-            primaryLanguage {
-                name
-                color
-            }
-            languages(first: 5) {
-                nodes {
-                    name
-                }
-            }
-            descriptionHTML
-            stargazers {
-                totalCount
-            }
-            forks {
-                totalCount
-            }
-        }
-    }
-`;
 
 export default CommentableCode;

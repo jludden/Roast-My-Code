@@ -19,6 +19,7 @@ export interface findRepositoryByID_findRepositoryByID_documentsList_data_commen
 
 export interface findRepositoryByID_findRepositoryByID_documentsList_data_commentsList_data {
   __typename: "CommentList";
+  _id: string;
   comments: findRepositoryByID_findRepositoryByID_documentsList_data_commentsList_data_comments;
 }
 
@@ -29,6 +30,7 @@ export interface findRepositoryByID_findRepositoryByID_documentsList_data_commen
 
 export interface findRepositoryByID_findRepositoryByID_documentsList_data {
   __typename: "Document";
+  _id: string;
   title: string;
   commentsList: findRepositoryByID_findRepositoryByID_documentsList_data_commentsList;
 }

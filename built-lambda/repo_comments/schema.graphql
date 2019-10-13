@@ -20,21 +20,21 @@ type TodoList {
 
 type Comment {
   text: String!
-  list: CommentList
+  list: CommentList!
 }
 
 type CommentList {
-  comments: [Comment] @relation
-  document: Document
+  comments: [Comment!] @relation
+  document: Document!
 }
 
 type Document {
   title: String!
-  commentsList: [CommentList] @relation
-  repository: Repository
+  commentsList: [CommentList!] @relation
+  repository: Repository!
 }
 
 type Repository {
   title: String!
-  documentsList: [Document] @relation
+  documentsList: [Document!] @relation
 }
