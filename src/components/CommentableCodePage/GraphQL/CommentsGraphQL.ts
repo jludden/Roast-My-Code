@@ -20,7 +20,34 @@ export const createCommentMutation = gql`
     }
 `;
 
+// todo add index on title
 export const findCommentsForRepoQuery = gql`
+    query findRepositoryByTitle($repoTitle: String!) {
+        findRepositoryByTitle(title: $repoTitle) {
+            _id
+            title
+            documentsList {
+                data {
+                    _id
+                    title
+                    commentsList {
+                        data {
+                            _id
+                            comments {
+                                data {
+                                    _id
+                                    text
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const findCommentsForRepoByIDQuery = gql`
     query findRepositoryByID($repoId: ID!) {
         findRepositoryByID(id: $repoId) {
             _id

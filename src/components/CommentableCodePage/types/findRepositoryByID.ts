@@ -50,3 +50,7 @@ export interface findRepositoryByID_findRepositoryByID {
 export interface findRepositoryByID {
   findRepositoryByID: findRepositoryByID_findRepositoryByID | null;
 }
+
+export interface findRepositoryByIDVariables {
+  repoId: string;
+}

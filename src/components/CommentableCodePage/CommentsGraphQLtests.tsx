@@ -4,10 +4,10 @@ import { githubClient } from '../../App';
 import ApolloClient, { gql, ExecutionResult } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
-    findRepositoryByID,
+    findRepositoryByTitle,
     // eslint-disable-next-line @typescript-eslint/camelcase
-    findRepositoryByID_findRepositoryByID_documentsList_data_commentsList_data_comments_data,
-} from './types/findRepositoryByID';
+    findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data,
+} from './types/findRepositoryByTitle';
 import { createComment as createCommentType } from './types/createComment';
 import { deleteComment as deleteCommentType } from './types/deleteComment';
 import { deleteCommentMutation, createCommentMutation, findCommentsForRepoQuery } from './GraphQL/CommentsGraphQL';
@@ -30,19 +30,19 @@ import {
 } from 'rbx';
 
 function FindCommentList(
-    data: findRepositoryByID | null,
+    data: findRepositoryByTitle | null,
     documentId: string,
     commentListId: string,
     // eslint-disable-next-line @typescript-eslint/camelcase
-): (findRepositoryByID_findRepositoryByID_documentsList_data_commentsList_data_comments_data | null)[] | null {
+): (findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data | null)[] | null {
     if (
         data &&
-        data.findRepositoryByID &&
-        data.findRepositoryByID.documentsList &&
-        data.findRepositoryByID.documentsList.data &&
-        data.findRepositoryByID.documentsList.data.find(x => x && x._id === documentId)
+        data.findRepositoryByTitle &&
+        data.findRepositoryByTitle.documentsList &&
+        data.findRepositoryByTitle.documentsList.data &&
+        data.findRepositoryByTitle.documentsList.data.find(x => x && x._id === documentId)
     ) {
-        const document = data.findRepositoryByID.documentsList.data.find(x => x && x._id === documentId);
+        const document = data.findRepositoryByTitle.documentsList.data.find(x => x && x._id === documentId);
         if (document) {
             const commentList = document.commentsList.data.find(y => y && y._id === commentListId);
             if (commentList) {
@@ -56,16 +56,16 @@ function FindCommentList(
 export const LoadCommentsWithDelete = ({
     documentId,
     commentListId,
-    repoId,
+    repoTitle,
 }: {
     documentId: string;
     commentListId: string;
-    repoId: string;
+    repoTitle: string;
 }) => {
     const [mutate] = useMutation(deleteCommentMutation);
     return (
         <FindCommentsForRepo
-            repoId={repoId}
+            repoTitle={repoTitle}
             deleteComment={(comment: Comment) =>
                 mutate({
                     variables: { id: comment._id },
@@ -77,9 +77,9 @@ export const LoadCommentsWithDelete = ({
                         },
                     },
                     update: (cache, { data: { deletedComment } }) => {
-                        const data: findRepositoryByID | null = cache.readQuery<findRepositoryByID>({
+                        const data: findRepositoryByTitle | null = cache.readQuery<findRepositoryByTitle>({
                             query: findCommentsForRepoQuery,
-                            variables: { repoId },
+                            variables: { repoTitle },
                         });
 
                         const commentList = FindCommentList(data, documentId, commentListId);
@@ -101,11 +101,11 @@ export const LoadCommentsWithDelete = ({
 export const CreateCommentForRepo = ({
     documentId,
     commentListId,
-    repoId,
+    repoTitle,
 }: {
     documentId: string;
     commentListId: string;
-    repoId: string;
+    repoTitle: string;
 }) => {
     const [mutate] = useMutation(createCommentMutation);
 
@@ -128,9 +128,9 @@ export const CreateCommentForRepo = ({
                     },
                     update: (cache, { data: { createComment } }) => {
                         // Read the data from our cache for this query.
-                        const data = cache.readQuery<findRepositoryByID>({
+                        const data = cache.readQuery<findRepositoryByTitle>({
                             query: findCommentsForRepoQuery,
-                            variables: { repoId },
+                            variables: { repoTitle },
                         });
 
                         const commentList = FindCommentList(data, documentId, commentListId);
@@ -176,15 +176,15 @@ interface Comment {
 }
 
 export const FindCommentsForRepo = ({
-    repoId,
+    repoTitle,
     deleteComment,
 }: {
-    repoId: string;
+    repoTitle: string;
     deleteComment: (comment: Comment) => Promise<ExecutionResult<any>>;
 }) => {
     const [expanded, setExpanded] = React.useState(false);
-    const { data, error, loading, refetch } = useQuery<findRepositoryByID>(findCommentsForRepoQuery, {
-        variables: { repoId },
+    const { data, error, loading, refetch } = useQuery<findRepositoryByTitle>(findCommentsForRepoQuery, {
+        variables: { repoTitle },
     });
 
     if (loading) return <Progress color="info" />;
@@ -199,8 +199,8 @@ export const FindCommentsForRepo = ({
             <Collapse isOpened={expanded}>
                 <ul>
                     {data &&
-                        data.findRepositoryByID &&
-                        data.findRepositoryByID.documentsList.data.map(
+                        data.findRepositoryByTitle &&
+                        data.findRepositoryByTitle.documentsList.data.map(
                             document =>
                                 document && (
                                     <li key={document._id}>

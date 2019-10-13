@@ -5,6 +5,7 @@ type Query {
   allTodoLists: [TodoList!]
   allComments: [Comment!]
   allCommentLists: [CommentList!] 
+  findRepositoryByTitle(title: String!): Repository
 }
 
 type Todo {
@@ -35,6 +36,6 @@ type Document {
 }
 
 type Repository {
-  title: String!
+  title: String! @unique
   documentsList: [Document!] @relation
 }

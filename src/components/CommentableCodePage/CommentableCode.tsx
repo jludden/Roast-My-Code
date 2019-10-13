@@ -145,7 +145,7 @@ const CommentableCode = (props: CCContainerProps) => {
 
     return (
         <>
-            <LoadCommentsTestContainer />
+            <LoadCommentsTestContainer repoTitle={`${owner}/${name}`} />
             <CommentableCodeInner
                 userIsLoggedIn={props.userIsLoggedIn}
                 userName={props.userName}
@@ -155,7 +155,7 @@ const CommentableCode = (props: CCContainerProps) => {
     );
 };
 
-const LoadCommentsTestContainer = () => {
+const LoadCommentsTestContainer = ({ repoTitle }: { repoTitle: string }) => {
     const [active, setActive] = React.useState(false);
 
     if (!active) return <Button onClick={() => setActive(true)} />;
@@ -178,10 +178,10 @@ const LoadCommentsTestContainer = () => {
             <br />
             <br /> */}
             <h1>COMMENTS FOR REPO</h1>
-            <LoadCommentsWithDelete commentListId={commentListId} documentId={documentId} repoId={repoId} />
+            <LoadCommentsWithDelete commentListId={commentListId} documentId={documentId} repoTitle={repoTitle} />
             <br />
             <br />
-            <CreateCommentForRepo commentListId={commentListId} documentId={documentId} repoId={repoId} />
+            <CreateCommentForRepo commentListId={commentListId} documentId={documentId} repoTitle={repoTitle} />
             <br />
             <br />
         </div>

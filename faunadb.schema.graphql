@@ -297,6 +297,7 @@ type Query {
     # The pagination cursor.
     _cursor: String
   ): CommentListPage!
+  findRepositoryByTitle(title: String!): Repository
   # Find a document from the collection of 'Document' by its id.
   findDocumentByID(
     # The 'Document' document's ID
