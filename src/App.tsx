@@ -33,6 +33,7 @@ export const githubClient: ApolloClient<InMemoryCache> = new ApolloClient({
 export const faunaDbClient = new ApolloClient({
     cache,
     uri: '/.netlify/functions/repo_comments',
+    clientState: { defaults: {}, resolvers: {} },
 });
 
 //  Router && QueryParamProvider

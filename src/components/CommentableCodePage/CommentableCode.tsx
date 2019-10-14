@@ -34,7 +34,7 @@ import {
     Progress,
 } from 'rbx';
 import ApolloClient, { gql, ExecutionResult } from 'apollo-boost';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks';
 
 // todo type instead of interface? is this being used?
 export interface CommentableCodeProps {
@@ -135,13 +135,22 @@ const CommentableCode = (props: CCContainerProps) => {
     const name = repoPath.slice(repoPath.lastIndexOf('/') + 1);
 
     // Load Repo
-    const { data, error, loading, refetch } = useQuery<LoadGithubQueryResponse, LoadGithubQueryVars>(LOAD_REPO_QUERY, {
-        variables: { owner, name },
-        client: githubClient,
-    });
+    const { data, error, loading, client, refetch } = useQuery<LoadGithubQueryResponse, LoadGithubQueryVars>(
+        LOAD_REPO_QUERY,
+        {
+            variables: { owner, name },
+            client: githubClient,
+        },
+    );
+
+    const client2 = useApolloClient();
 
     if (loading) return <Progress color="info" />;
     if (error || !data || !data.repository) return <div>Error</div>; // ErrorMessage
+
+    client.writeData({ data: { currentRepoTitle: `${owner}/${name}` } });
+
+    // client2.writeData({ data: { currentRepoTitle: `${owner}/${name}` } });
 
     return (
         <>
@@ -157,6 +166,8 @@ const CommentableCode = (props: CCContainerProps) => {
 
 const LoadCommentsTestContainer = ({ repoTitle }: { repoTitle: string }) => {
     const [active, setActive] = React.useState(false);
+    //const client = useApolloClient();
+    //client.writeData({ data: { visibilityFilter: filter } })};
 
     if (!active) return <Button onClick={() => setActive(true)} />;
 

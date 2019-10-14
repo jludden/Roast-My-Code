@@ -110,7 +110,7 @@ export const CreateCommentForRepo = ({
     const [mutate] = useMutation(createCommentMutation);
 
     return (
-        <AddComment
+        <AddCommentInput
             list={commentListId}
             submit={(finalListId: string, commentContent: string) =>
                 mutate({
@@ -148,7 +148,7 @@ export const CreateCommentForRepo = ({
     );
 };
 
-function AddComment({
+function AddCommentInput({
     list,
     submit,
 }: {
@@ -183,9 +183,7 @@ export const FindCommentsForRepo = ({
     deleteComment: (comment: Comment) => Promise<ExecutionResult<any>>;
 }) => {
     const [expanded, setExpanded] = React.useState(false);
-    const { data, error, loading, refetch } = useQuery<findRepositoryByTitle>(findCommentsForRepoQuery, {
-        variables: { repoTitle },
-    });
+    const { data, error, loading, refetch } = useQuery<findRepositoryByTitle>(findCommentsForRepoQuery);
 
     if (loading) return <Progress color="info" />;
     if (error || !data) return <div>Error</div>; // ErrorMessage

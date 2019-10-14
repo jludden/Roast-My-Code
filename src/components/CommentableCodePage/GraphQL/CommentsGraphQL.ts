@@ -20,8 +20,35 @@ export const createCommentMutation = gql`
     }
 `;
 
-// todo add index on title
+// repo title - indexed w/ @unique and cached locally w/ @client @export
 export const findCommentsForRepoQuery = gql`
+    query findRepositoryByTitle($repoTitle: String!) {
+        currentRepoTitle @client @export(as: "repoTitle")
+        findRepositoryByTitle(title: $repoTitle) {
+            _id
+            title
+            documentsList {
+                data {
+                    _id
+                    title
+                    commentsList {
+                        data {
+                            _id
+                            comments {
+                                data {
+                                    _id
+                                    text
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const findCommentsForRepoByTitleQuery = gql`
     query findRepositoryByTitle($repoTitle: String!) {
         findRepositoryByTitle(title: $repoTitle) {
             _id
