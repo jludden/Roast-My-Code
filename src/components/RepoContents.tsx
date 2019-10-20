@@ -277,11 +277,55 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
                 <UseUrlQuery url={this.state.queryVariables.path} name="path" />
                 {this.state.fileSelected && <UseUrlQuery url={this.state.fileSelected} name="file" />}
 
-                <RepoContentsInner variables={this.state.queryVariables} onLineClicked={this.handleLineClicked} />
+                {/* <RepoContentsInner variables={this.state.queryVariables} onLineClicked={this.handleLineClicked} /> */}
+                <RepoContentsInner2 variables={this.state.queryVariables} />
             </Panel>
         );
     }
 }
+
+const RepoContentsInner2 = ({ variables }: { variables: IGithubRepoContentsVars }) => {
+    const [vars, setVars] = React.useState(variables);
+
+    const { data, error, loading, refetch } = useQuery<Data, IGithubRepoContentsVars>(REPO_CONTENTS_QUERY, {
+        variables: vars,
+        client: githubClient,
+    });
+
+    const handleLineClicked = (line: Line) => {
+        setVars({ ...vars, path: `${vars.path}${line.name}/` });
+    };
+
+    const goUpDir = () => {
+        const parts1 = vars.path.split(':'); // remove branch
+        const parts = parts1[1].split('/'); // last real folder (e.g. "reeflifesurvey") will be in [length - 2]
+        const tempPath = vars.path;
+        const newPath = tempPath.slice(0, tempPath.lastIndexOf(parts[parts.length - 2]));
+
+        setVars({ ...vars, path: newPath });
+    };
+
+    if (loading) {
+        return (
+            <Panel.Block>
+                <Progress color="info" />
+            </Panel.Block>
+        );
+    }
+
+    if (error || !data || !data.repository || !data.repository.folder || !data.repository.folder.entries) {
+        return <PanelWarningLine text="Error :(" color="danger" />;
+    }
+
+    return (
+        <>
+            <button onClick={goUpDir}></button>
+            {data.repository.folder.entries.map(file => (
+                <PanelLine key={file.oid} file={file} onLineClicked={handleLineClicked} />
+            ))}
+        </>
+    );
+};
 
 // todo for path - automatically go into the directory with most comments!
 // todo add Tags for number of comments if > 0
@@ -301,11 +345,12 @@ const RepoContentsInner = (props: IRepoContentsInner) => {
     const { data, error, loading, refetch } = useQuery<Data, IGithubRepoContentsVars>(REPO_CONTENTS_QUERY, {
         variables: props.variables,
         client: githubClient,
+        // fetchPolicy: 'cache-only',
     });
     useEffect(() => {
         refetch(props.variables);
-    }); // TODO NO SHIP useeffect even without props.var change + url params will trigger many re-renders
-    // }, [props.variables]);
+        // }); // TODO NO SHIP useeffect even without props.var change + url params will trigger many re-renders
+    }, [refetch, props.variables]);
 
     if (loading)
         return (
