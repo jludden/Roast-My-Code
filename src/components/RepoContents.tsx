@@ -106,7 +106,7 @@ const RepoExplorerContainer = (props: IRepoContentsProps) => {
 };
 
 // class that takes care of everything except for rewriting the URL
-export default class RepoExplorer extends React.Component<IRepoContentsProps, IRepoContentsState> {
+export class RepoExplorer2 extends React.Component<IRepoContentsProps, IRepoContentsState> {
     constructor(props: IRepoContentsProps) {
         super(props);
         this.state = this.initState(props);
@@ -115,25 +115,6 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
     public componentWillReceiveProps(nextProps: IRepoContentsProps) {
         if (this.props.repo.nameWithOwner !== nextProps.repo.nameWithOwner) this.setState(this.initState(nextProps));
     }
-
-    // public async componentDidMount(){
-    //   if(this.props.repo.)
-    // }
-
-    // searchAPI = ((text: string) => {
-    //   const queryVariables = this.state.queryVariables;
-    //   queryVariables.path = text;
-    //   this.setState({queryVariables});
-    // });
-
-    // searchAPIDebounced = AwesomeDebouncePromise(this.searchAPI, 500);
-
-    // todo handle this search box? or disable it
-    // handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {
-    //   const query = event.currentTarget.value;
-    //   // this.searchAPIDebounced(query);
-    //   // this.setState({queryVariables: {queryString: query, first: 5}});
-    // }
 
     handleLineClicked = (line: Line) => {
         // todo if no selection also allow adding comment?
@@ -278,32 +259,51 @@ export default class RepoExplorer extends React.Component<IRepoContentsProps, IR
                 {this.state.fileSelected && <UseUrlQuery url={this.state.fileSelected} name="file" />}
 
                 {/* <RepoContentsInner variables={this.state.queryVariables} onLineClicked={this.handleLineClicked} /> */}
-                <RepoContentsInner2 variables={this.state.queryVariables} />
+                {/* <RepoContentsInner2 variables={this.state.queryVariables} /> */}
             </Panel>
         );
     }
 }
 
-const RepoContentsInner2 = ({ variables }: { variables: IGithubRepoContentsVars }) => {
-    const [vars, setVars] = React.useState(variables);
+export const RepoExplorer = ({ repoPath, repo, loadFileHandler }: IRepoContentsProps) => {
+    const branch = repo.defaultBranchRef ? repo.defaultBranchRef.name : 'master';
+    const title = (repo && repo.nameWithOwner) || 'Welcome to Roast My Code';
+
+    const [fileSelected, setFileSelected] = React.useState('');
+    const [vars, setVars] = React.useState({
+        path: `${branch}:`,
+        repoName: repo.name,
+        repoOwner: repo.owner.login,
+    });
+
+    const parts = vars.path.split(':'); // 0 - branch 1 - directory path
+    const paths = parts[1].split('/');
+    const inParentDirectory = () => vars.path === `${branch}:`;
+
+    const handleNavTo = (folder?: string) => {
+        if (inParentDirectory()) return;
+        if (folder) {
+            // remove everything after the folder name (e.g. java+/)
+            const path = vars.path.slice(0, vars.path.lastIndexOf(folder) + folder.length + 1);
+        } else {
+            // go up one level
+            const path = vars.path.slice(0, vars.path.lastIndexOf(paths[paths.length - 2]));
+        }
+        setVars({ ...vars, path });
+    };
+    const handleLineClicked = (line: Line) => {
+        if (line && line.name && line.object && line.object.oid) {
+            loadFileHandler(line.name, vars.path); // trigger update
+            setFileSelected(line.name); // yes
+        } else {
+            setVars({ ...vars, path: `${vars.path}${line.name}/` });
+        }
+    };
 
     const { data, error, loading, refetch } = useQuery<Data, IGithubRepoContentsVars>(REPO_CONTENTS_QUERY, {
         variables: vars,
         client: githubClient,
     });
-
-    const handleLineClicked = (line: Line) => {
-        setVars({ ...vars, path: `${vars.path}${line.name}/` });
-    };
-
-    const goUpDir = () => {
-        const parts1 = vars.path.split(':'); // remove branch
-        const parts = parts1[1].split('/'); // last real folder (e.g. "reeflifesurvey") will be in [length - 2]
-        const tempPath = vars.path;
-        const newPath = tempPath.slice(0, tempPath.lastIndexOf(parts[parts.length - 2]));
-
-        setVars({ ...vars, path: newPath });
-    };
 
     if (loading) {
         return (
@@ -319,11 +319,69 @@ const RepoContentsInner2 = ({ variables }: { variables: IGithubRepoContentsVars 
 
     return (
         <>
-            <button onClick={goUpDir}></button>
-            {data.repository.folder.entries.map(file => (
-                <PanelLine key={file.oid} file={file} onLineClicked={handleLineClicked} />
-            ))}
+            {/* update the URL with the current search state */}
+            <UseUrlQuery url={vars.path} name="path" />
+            {fileSelected && <UseUrlQuery url={fileSelected} name="file" />}
+
+            <Panel>
+                <Panel.Heading>{title}</Panel.Heading>
+                {/* TODO Add comment view! similar view to files, but expandable to see all comments under each file */}
+                <Panel.Tab.Group>
+                    <Panel.Tab active>files</Panel.Tab>
+                    <Panel.Tab>comments</Panel.Tab>
+                </Panel.Tab.Group>
+
+                {/*  Top line of the panel will show controls for the branch and file path  */}
+                <Panel.Block>
+                    <DropdownMenu branch={parts[0]} />
+                    <Breadcrumb align="centered">
+                        <Breadcrumb.Item>
+                            <Icon
+                                color={inParentDirectory() ? 'dark' : 'info'}
+                                onClick={() => handleNavTo()}
+                                align="right"
+                            >
+                                <FaEllipsisH />
+                            </Icon>
+                        </Breadcrumb.Item>
+                        {paths.map(path => (
+                            <Breadcrumb.Item onClick={() => handleNavTo(path)} key={path}>
+                                {' '}
+                                {path}{' '}
+                            </Breadcrumb.Item>
+                        ))}
+                    </Breadcrumb>
+                </Panel.Block>
+
+                {/* <button onClick={goUpDir}></button> */}
+                {data.repository.folder.entries.map(file => (
+                    <PanelLine key={file.oid} file={file} onLineClicked={handleLineClicked} />
+                ))}
+            </Panel>
         </>
+    );
+};
+
+const DropdownMenu = ({ branch }: { branch: string }) => {
+    return (
+        <Dropdown style={{ padding: '0 15px 0 0' }}>
+            <Dropdown.Trigger>
+                <Button>
+                    <span>{branch}</span>
+                    <FaAngleDown />
+                </Button>
+            </Dropdown.Trigger>
+            <Dropdown.Menu>
+                <Dropdown.Content>
+                    <Dropdown.Item>Dropdown item</Dropdown.Item>
+                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
+                    <Dropdown.Item active>Active dropdown item</Dropdown.Item>
+                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item>With a divider</Dropdown.Item>
+                </Dropdown.Content>
+            </Dropdown.Menu>
+        </Dropdown>
     );
 };
 
@@ -464,3 +522,5 @@ export const REPO_CONTENTS_QUERY = gql`
 //   }
 // }
 // `;
+
+export default RepoExplorer;
