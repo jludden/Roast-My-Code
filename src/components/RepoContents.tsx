@@ -39,27 +39,20 @@ import { url } from 'inspector';
 import { Blob, Repository } from '../generated/graphql';
 import { cache, githubClient } from '../App';
 
-export interface IRepoContentsProps {
-    repoPath: string;
+export interface RepoContentsProps {
     repo: Repository;
     loadFileHandler: (fileName: string, filePath: string) => void; // when a file is selected
 }
 
-interface IRepoContentsState {
-    branch: string;
-    queryVariables: IGithubRepoContentsVars;
-    fileSelected?: string;
-}
-
 // to be included in the graphQL query
-export interface IGithubRepoContentsVars {
+export interface GithubRepoContentsQueryVars {
     path: string; // path to this directory in form {branch:filePath}
     repoName: string;
     repoOwner: string;
 }
 
 // todo use types from generated graphql.tsx
-export interface Data {
+export interface GithubRepoContentsQueryData {
     repository: {
         folder: {
             entries: Array<Line>;
@@ -74,11 +67,11 @@ interface Line {
 }
 
 // Function component to wrap use query param hook api
-interface IUrlQueryProps {
+interface UrlQueryProps {
     url: string;
     name: string;
 }
-export function UseUrlQuery(props: IUrlQueryProps) {
+export function UseUrlQuery(props: UrlQueryProps) {
     const [url, setUrl] = useQueryParam(props.name, StringParam);
 
     useEffect(() => {
@@ -90,387 +83,9 @@ export function UseUrlQuery(props: IUrlQueryProps) {
     return <></>;
 }
 
-const RepoExplorerContainer = (props: IRepoContentsProps) => {
-    const [queryString, setQueryString] = useQueryParam('q', StringParam);
-    const queryVariables = {
-        queryString: queryString || '',
-        first: 5,
-    };
-    /* update the URL with the current search state */
-    // <UseUrlQuery url={this.state.queryVariables.path} name={"path"}/>
-    // {this.state.fileSelected && <UseUrlQuery url={this.state.fileSelected} name={"file"}/>}
-
-    // <RepoExplorer />
-
-    return <></>;
-};
-
-// class that takes care of everything except for rewriting the URL
-export class RepoExplorer2 extends React.Component<IRepoContentsProps, IRepoContentsState> {
-    constructor(props: IRepoContentsProps) {
-        super(props);
-        this.state = this.initState(props);
-    }
-
-    public componentWillReceiveProps(nextProps: IRepoContentsProps) {
-        if (this.props.repo.nameWithOwner !== nextProps.repo.nameWithOwner) this.setState(this.initState(nextProps));
-    }
-
-    handleLineClicked = (line: Line) => {
-        // todo if no selection also allow adding comment?
-        // if line is a file, load file into the commentable code container
-
-        const filePath = this.state.queryVariables.path;
-
-        if (line && line.name && line.object && line.object.oid) {
-            // this.props.loadFileHandler(line.name, line.object); // todo no
-            this.props.loadFileHandler(line.name, filePath); // trigger update
-            this.setState({ fileSelected: line.name }); // yes
-        } else if (line && line.name) {
-            // if line is a folder, load directory
-            const { queryVariables } = this.state;
-            queryVariables.path = `${queryVariables.path}${line.name}/`;
-            this.setState({ queryVariables });
-        }
-    };
-
-    // props.queryVariables.path will look something like:
-    //  "master:app/src/main/java/me/jludden/reeflifesurvey/"
-    // pass in a folder name (e.g. "java") to go up to that level
-    //  "master:app/src/main/java/"
-    // or pass in nothing to just go up one level
-    handleNavTo = (folder?: string) => {
-        const { queryVariables } = this.state;
-        const tempPath = queryVariables.path;
-
-        if (folder) {
-            // remove everything after the folder name (e.g. java+/)
-            queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(folder) + folder.length + 1);
-        } else {
-            if (this.inParentDirectory()) return;
-            const parts = this.paths(); // last real folder (e.g. "reeflifesurvey") will be in [length - 2]
-            queryVariables.path = tempPath.slice(0, tempPath.lastIndexOf(parts[parts.length - 2]));
-        }
-        this.setState({ queryVariables });
-    };
-
-    // todo reconsider
-    // eslint-disable-next-line class-methods-use-this
-    initState(props: IRepoContentsProps): IRepoContentsState {
-        const branch = props.repo.defaultBranchRef ? props.repo.defaultBranchRef.name : 'master';
-        const filePath = '';
-        const queryVariables: IGithubRepoContentsVars = {
-            path: `${branch}:${filePath}`,
-            repoName: props.repo.name,
-            repoOwner: props.repo.owner.login,
-        };
-
-        // file=MainActivity.java
-
-        // using the full url , determine if we need to load a file
-        // const path = window.location.pathname;
-        // const indexOf = path.indexOf("filepath");
-        // const fileName = path.substring((indexOf+10), path.length);
-
-        // loadFileHandler: (fileName: string, blob: Blob) => void // when a file is selected
-        // this.props.loadFileHandler(line.name, line.object);
-
-        return { branch, queryVariables };
-    }
-
-    inParentDirectory() {
-        return this.state.queryVariables.path === `${this.state.branch}:`;
-    }
-
-    // split the paths on both colon and forward slash
-    paths(): string[] {
-        // return this.state.queryVariables.path.split(":").join("/").split("/");
-        const parts = this.state.queryVariables.path.split(':'); // remove branch
-        return parts[1].split('/');
-    }
-
-    public render() {
-        const title = (this.props.repo && this.props.repo.nameWithOwner) || 'Welcome to Roast My Code';
-
-        return (
-            <Panel>
-                <Panel.Heading>{title}</Panel.Heading>
-
-                {/* <Panel.Block>
-              <Control iconLeft>
-                <Input size="small" type="text" placeholder="search" onChange={this.handleQueryChange} />
-                <Icon size="small" align="left">
-                  <FaSearch />
-                </Icon>
-              </Control>
-            </Panel.Block> */}
-                {/* TODO Add comment view! similar view to files, but expandable to see all comments under each file */}
-                <Panel.Tab.Group>
-                    <Panel.Tab active>files</Panel.Tab>
-                    <Panel.Tab>comments</Panel.Tab>
-                    {/* <Panel.Tab>private</Panel.Tab>
-              <Panel.Tab>sources</Panel.Tab>
-              <Panel.Tab>forks</Panel.Tab> */}
-                </Panel.Tab.Group>
-
-                {/*  Top line of the panel will show controls for the branch and file path  */}
-                <Panel.Block>
-                    <Dropdown style={{ padding: '0 15px 0 0' }}>
-                        <Dropdown.Trigger>
-                            <Button>
-                                <span>{this.state.branch}</span>
-                                <FaAngleDown />
-                            </Button>
-                        </Dropdown.Trigger>
-                        <Dropdown.Menu>
-                            <Dropdown.Content>
-                                <Dropdown.Item>Dropdown item</Dropdown.Item>
-                                <Dropdown.Item>Other dropdown item</Dropdown.Item>
-                                <Dropdown.Item active>Active dropdown item</Dropdown.Item>
-                                <Dropdown.Item>Other dropdown item</Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Item>With a divider</Dropdown.Item>
-                            </Dropdown.Content>
-                        </Dropdown.Menu>
-                    </Dropdown>
-
-                    {/* size="small" align="left" */}
-                    <Breadcrumb align="centered">
-                        <Breadcrumb.Item>
-                            <Icon
-                                color={this.inParentDirectory() ? 'dark' : 'info'}
-                                onClick={() => this.handleNavTo()}
-                                align="right"
-                            >
-                                <FaEllipsisH />
-                            </Icon>
-                        </Breadcrumb.Item>
-                        {this.paths().map(path => (
-                            <Breadcrumb.Item onClick={() => this.handleNavTo(path)} key={path}>
-                                {' '}
-                                {path}{' '}
-                            </Breadcrumb.Item>
-                        ))}
-                    </Breadcrumb>
-                </Panel.Block>
-
-                {/* update the URL with the current search state */}
-                <UseUrlQuery url={this.state.queryVariables.path} name="path" />
-                {this.state.fileSelected && <UseUrlQuery url={this.state.fileSelected} name="file" />}
-
-                {/* <RepoContentsInner variables={this.state.queryVariables} onLineClicked={this.handleLineClicked} /> */}
-                {/* <RepoContentsInner2 variables={this.state.queryVariables} /> */}
-            </Panel>
-        );
-    }
-}
-
-export const RepoExplorer = ({ repoPath, repo, loadFileHandler }: IRepoContentsProps) => {
-    const branch = repo.defaultBranchRef ? repo.defaultBranchRef.name : 'master';
-    const title = (repo && repo.nameWithOwner) || 'Welcome to Roast My Code';
-
-    const [fileSelected, setFileSelected] = React.useState('');
-    const [vars, setVars] = React.useState({
-        path: `${branch}:`,
-        repoName: repo.name,
-        repoOwner: repo.owner.login,
-    });
-
-    const parts = vars.path.split(':'); // 0 - branch 1 - directory path
-    const paths = parts[1].split('/');
-    const inParentDirectory = () => vars.path === `${branch}:`;
-
-    const handleNavTo = (folder?: string) => {
-        if (inParentDirectory()) return;
-        if (folder) {
-            // remove everything after the folder name (e.g. java+/)
-            const path = vars.path.slice(0, vars.path.lastIndexOf(folder) + folder.length + 1);
-        } else {
-            // go up one level
-            const path = vars.path.slice(0, vars.path.lastIndexOf(paths[paths.length - 2]));
-        }
-        setVars({ ...vars, path });
-    };
-    const handleLineClicked = (line: Line) => {
-        if (line && line.name && line.object && line.object.oid) {
-            loadFileHandler(line.name, vars.path); // trigger update
-            setFileSelected(line.name); // yes
-        } else {
-            setVars({ ...vars, path: `${vars.path}${line.name}/` });
-        }
-    };
-
-    const { data, error, loading, refetch } = useQuery<Data, IGithubRepoContentsVars>(REPO_CONTENTS_QUERY, {
-        variables: vars,
-        client: githubClient,
-    });
-
-    if (loading) {
-        return (
-            <Panel.Block>
-                <Progress color="info" />
-            </Panel.Block>
-        );
-    }
-
-    if (error || !data || !data.repository || !data.repository.folder || !data.repository.folder.entries) {
-        return <PanelWarningLine text="Error :(" color="danger" />;
-    }
-
-    return (
-        <>
-            {/* update the URL with the current search state */}
-            <UseUrlQuery url={vars.path} name="path" />
-            {fileSelected && <UseUrlQuery url={fileSelected} name="file" />}
-
-            <Panel>
-                <Panel.Heading>{title}</Panel.Heading>
-                {/* TODO Add comment view! similar view to files, but expandable to see all comments under each file */}
-                <Panel.Tab.Group>
-                    <Panel.Tab active>files</Panel.Tab>
-                    <Panel.Tab>comments</Panel.Tab>
-                </Panel.Tab.Group>
-
-                {/*  Top line of the panel will show controls for the branch and file path  */}
-                <Panel.Block>
-                    <DropdownMenu branch={parts[0]} />
-                    <Breadcrumb align="centered">
-                        <Breadcrumb.Item>
-                            <Icon
-                                color={inParentDirectory() ? 'dark' : 'info'}
-                                onClick={() => handleNavTo()}
-                                align="right"
-                            >
-                                <FaEllipsisH />
-                            </Icon>
-                        </Breadcrumb.Item>
-                        {paths.map(path => (
-                            <Breadcrumb.Item onClick={() => handleNavTo(path)} key={path}>
-                                {' '}
-                                {path}{' '}
-                            </Breadcrumb.Item>
-                        ))}
-                    </Breadcrumb>
-                </Panel.Block>
-
-                {/* <button onClick={goUpDir}></button> */}
-                {data.repository.folder.entries.map(file => (
-                    <PanelLine key={file.oid} file={file} onLineClicked={handleLineClicked} />
-                ))}
-            </Panel>
-        </>
-    );
-};
-
-const DropdownMenu = ({ branch }: { branch: string }) => {
-    return (
-        <Dropdown style={{ padding: '0 15px 0 0' }}>
-            <Dropdown.Trigger>
-                <Button>
-                    <span>{branch}</span>
-                    <FaAngleDown />
-                </Button>
-            </Dropdown.Trigger>
-            <Dropdown.Menu>
-                <Dropdown.Content>
-                    <Dropdown.Item>Dropdown item</Dropdown.Item>
-                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
-                    <Dropdown.Item active>Active dropdown item</Dropdown.Item>
-                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item>With a divider</Dropdown.Item>
-                </Dropdown.Content>
-            </Dropdown.Menu>
-        </Dropdown>
-    );
-};
-
 // todo for path - automatically go into the directory with most comments!
 // todo add Tags for number of comments if > 0
 //  todo - aggregate comments to folder level
-
-interface IRepoContentsInner {
-    variables: IGithubRepoContentsVars;
-    onLineClicked: (line: Line) => void;
-}
-
-// const githubClient = new ApolloClient({
-//   //cache,
-//   uri: "/.netlify/functions/repo_github"
-// });
-
-const RepoContentsInner = (props: IRepoContentsInner) => {
-    const { data, error, loading, refetch } = useQuery<Data, IGithubRepoContentsVars>(REPO_CONTENTS_QUERY, {
-        variables: props.variables,
-        client: githubClient,
-        // fetchPolicy: 'cache-only',
-    });
-    useEffect(() => {
-        refetch(props.variables);
-        // }); // TODO NO SHIP useeffect even without props.var change + url params will trigger many re-renders
-    }, [refetch, props.variables]);
-
-    if (loading)
-        return (
-            <Panel.Block>
-                <Progress color="info" />
-            </Panel.Block>
-        );
-
-    if (error || !data || !data.repository || !data.repository.folder || !data.repository.folder.entries) {
-        return <PanelWarningLine text="Error :(" color="danger" />;
-    }
-
-    return (
-        <>
-            {data.repository.folder.entries.map(file => (
-                <PanelLine key={file.oid} file={file} onLineClicked={props.onLineClicked} />
-            ))}
-        </>
-    );
-};
-
-interface IPanelLineProps {
-    file: Line;
-    onLineClicked: (file: Line) => void;
-}
-const PanelLine: React.SFC<IPanelLineProps> = props => {
-    const { file } = props;
-    const fileType = file.name.substring(file.name.lastIndexOf('.'));
-
-    if (['.jpg', '.png', '.gif', '.ico', '.mp4', '.avi'].includes(fileType)) {
-        return (
-            <Panel.Block>
-                <Panel.Icon>
-                    <FaImage />
-                </Panel.Icon>
-                {file.name}
-            </Panel.Block>
-        );
-    }
-
-    return (
-        <Panel.Block active onClick={() => props.onLineClicked(file)} className="panelHover">
-            <Panel.Icon>{file.object.__typename === 'Tree' ? <FaFolder /> : <FaBook />}</Panel.Icon>
-            <a>{file.name}</a>
-        </Panel.Block>
-    );
-};
-
-interface IWarningText {
-    text: string;
-    color?: 'primary' | 'link' | 'success' | 'info' | 'warning' | 'danger' | undefined;
-}
-const PanelWarningLine: React.SFC<IWarningText> = props => {
-    return (
-        <Panel.Block backgroundColor={props.color || undefined}>
-            <Panel.Icon>
-                <FaExclamationCircle />
-            </Panel.Icon>
-            {props.text}
-        </Panel.Block>
-    );
-};
 
 // {"path": "master:app/src/main/java/me/jludden/reeflifesurvey"}
 //    repository(name: "ReefLifeSurvey---Species-Explorer", owner: "jludden") {
@@ -508,19 +123,185 @@ export const REPO_CONTENTS_QUERY = gql`
     }
 `;
 
-// const REPO_CONTENTS_QUERY = gql`
-//   query($path: String!) {
-//     repository(name: "ReefLifeSurvey---Species-Explorer", owner: "jludden") {
-//     folder: object(expression: $path) {
-//       ... on Tree {
-//         entries {
-//           oid
-//           name
-//         }
-//       }
-//     }
-//   }
-// }
-// `;
+export const RepoExplorer = ({ repo, loadFileHandler }: RepoContentsProps) => {
+    const branch = repo.defaultBranchRef ? repo.defaultBranchRef.name : 'master';
+    const title = (repo && repo.nameWithOwner) || 'Welcome to Roast My Code';
+
+    const [fileSelected, setFileSelected] = React.useState('');
+    const [vars, setVars] = React.useState({
+        path: `${branch}:`,
+        repoName: repo.name,
+        repoOwner: repo.owner.login,
+    });
+
+    const parts = vars.path.split(':'); // 0 - branch 1 - directory path
+    const paths = parts[1].split('/');
+    const inParentDirectory = () => vars.path === `${branch}:`;
+
+    // remove everything after the folder name (e.g. java+/) or just go up a directory
+    const handleNavTo = (folder?: string) => {
+        if (inParentDirectory()) return;
+        const path = folder
+            ? vars.path.slice(0, vars.path.lastIndexOf(folder) + folder.length + 1)
+            : vars.path.slice(0, vars.path.lastIndexOf(paths[paths.length - 2]));
+        setVars({ ...vars, path });
+    };
+    const handleLineClicked = (line: Line) => {
+        if (line && line.name && line.object && line.object.oid) {
+            loadFileHandler(line.name, vars.path); // trigger update
+            setFileSelected(line.name); // yes
+        } else {
+            setVars({ ...vars, path: `${vars.path}${line.name}/` });
+        }
+    };
+
+    const { data, error, loading, client } = useQuery<GithubRepoContentsQueryData, GithubRepoContentsQueryVars>(
+        REPO_CONTENTS_QUERY,
+        {
+            variables: vars,
+            client: githubClient,
+        },
+    );
+
+    return (
+        <>
+            {/* update the URL with the current search state */}
+            <UseUrlQuery url={vars.path} name="path" />
+            {fileSelected && <UseUrlQuery url={fileSelected} name="file" />}
+
+            <Panel>
+                <Panel.Heading>{title}</Panel.Heading>
+                {/* TODO Add comment view! similar view to files, but expandable to see all comments under each file */}
+                <Panel.Tab.Group>
+                    <Panel.Tab active>files</Panel.Tab>
+                    <Panel.Tab>comments</Panel.Tab>
+                </Panel.Tab.Group>
+
+                {/*  Top line of the panel will show controls for the branch and file path  */}
+                <Panel.Block>
+                    <DropdownMenu branch={parts[0]} />
+                    <Breadcrumb align="centered">
+                        <Breadcrumb.Item>
+                            <Icon
+                                color={inParentDirectory() ? 'dark' : 'info'}
+                                onClick={() => handleNavTo()}
+                                align="right"
+                            >
+                                <FaEllipsisH />
+                            </Icon>
+                        </Breadcrumb.Item>
+                        {paths.map(path => (
+                            <Breadcrumb.Item onClick={() => handleNavTo(path)} key={path}>
+                                {' '}
+                                {path}{' '}
+                            </Breadcrumb.Item>
+                        ))}
+                    </Breadcrumb>
+                </Panel.Block>
+
+                {loading && (
+                    <Panel.Block>
+                        <Progress color="info" />
+                    </Panel.Block>
+                )}
+
+                {!loading &&
+                    (error ||
+                        !data ||
+                        !data.repository ||
+                        !data.repository.folder ||
+                        !data.repository.folder.entries) && <PanelWarningLine text="Error :(" color="danger" />}
+
+                {!loading &&
+                    data &&
+                    data.repository.folder.entries.map(file => (
+                        <PanelLine
+                            key={file.oid}
+                            file={file}
+                            onLineClicked={handleLineClicked}
+                            onMouseOver={() => {
+                                if (file.object.__typename === 'Tree')
+                                    client.query({
+                                        query: REPO_CONTENTS_QUERY,
+                                        variables: { ...vars, path: `${vars.path}${file.name}/` },
+                                    });
+                            }}
+                        />
+                    ))}
+            </Panel>
+        </>
+    );
+};
+
+const DropdownMenu = ({ branch }: { branch: string }) => {
+    return (
+        <Dropdown style={{ padding: '0 15px 0 0' }}>
+            <Dropdown.Trigger>
+                <Button>
+                    <span>{branch}</span>
+                    <FaAngleDown />
+                </Button>
+            </Dropdown.Trigger>
+            <Dropdown.Menu>
+                <Dropdown.Content>
+                    <Dropdown.Item>Dropdown item</Dropdown.Item>
+                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
+                    <Dropdown.Item active>Active dropdown item</Dropdown.Item>
+                    <Dropdown.Item>Other dropdown item</Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item>With a divider</Dropdown.Item>
+                </Dropdown.Content>
+            </Dropdown.Menu>
+        </Dropdown>
+    );
+};
+
+interface PanelLineProps {
+    file: Line;
+    onLineClicked: (file: Line) => void;
+    onMouseOver: (event: React.SyntheticEvent<EventTarget>) => void;
+}
+const PanelLine: React.FunctionComponent<PanelLineProps> = props => {
+    const { file } = props;
+    const fileType = file.name.substring(file.name.lastIndexOf('.'));
+
+    if (['.jpg', '.png', '.gif', '.ico', '.mp4', '.avi'].includes(fileType)) {
+        return (
+            <Panel.Block>
+                <Panel.Icon>
+                    <FaImage />
+                </Panel.Icon>
+                {file.name}
+            </Panel.Block>
+        );
+    }
+
+    return (
+        <Panel.Block
+            active
+            onClick={() => props.onLineClicked(file)}
+            onMouseOver={props.onMouseOver}
+            className="panelHover"
+        >
+            <Panel.Icon>{file.object.__typename === 'Tree' ? <FaFolder /> : <FaBook />}</Panel.Icon>
+            <a>{file.name}</a>
+        </Panel.Block>
+    );
+};
+
+interface WarningLineProps {
+    text: string;
+    color?: 'primary' | 'link' | 'success' | 'info' | 'warning' | 'danger' | undefined;
+}
+const PanelWarningLine: React.FunctionComponent<WarningLineProps> = props => {
+    return (
+        <Panel.Block backgroundColor={props.color || undefined}>
+            <Panel.Icon>
+                <FaExclamationCircle />
+            </Panel.Icon>
+            {props.text}
+        </Panel.Block>
+    );
+};
 
 export default RepoExplorer;
