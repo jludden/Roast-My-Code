@@ -1,75 +1,79 @@
-import * as React from "react";
+import * as React from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
-import RoastComment from "../RoastComment";
+import RoastComment from '../RoastComment';
+// import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
+
 import CommentContainer from '../CommentContainer';
 
 export interface ICommentsViewProps {
-  lineNumberMap: Map<number|undefined, RoastComment[]>
-  lineRefs: HTMLDivElement[],
-  inProgressComment?: IUnsubmittedComment,
-  onEditComment: ((details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>),
-  onSubmitComment: ((details: RoastComment) => Promise<SubmitCommentResponse>) // handler for submitting a new comment
- 
+    lineNumberMap: Map<number | undefined, RoastComment[]>;
+    lineRefs: HTMLDivElement[];
+    inProgressComment?: IUnsubmittedComment;
+    // onEditComment: (details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
+    // onSubmitComment: (details: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
 }
 
 export interface IUnsubmittedComment {
-  lineRef: HTMLDivElement,
-  lineNumber: number,
-  selectedText: string,
-  author: string,
+    lineRef: HTMLDivElement;
+    lineNumber: number;
+    selectedText: string;
+    author: string;
 }
 
-interface ICommentsViewState {
-
-}
+interface ICommentsViewState {}
 
 export default class DocumentCommentsView extends React.Component<ICommentsViewProps, ICommentsViewState> {
-  constructor(props: ICommentsViewProps) {
-    super(props);
-  }
+    constructor(props: ICommentsViewProps) {
+        super(props);
+    }
 
-  public render() {
+    public render() {
+        // Group comments into Comment Containers based their associated line number TODO this could be state or something
+        // const lineNumberMap = new Map<number|undefined, RoastComment[]>();
+        // this.props.comments.map((comment: RoastComment) => {
+        //   var line: RoastComment[] = lineNumberMap.get(comment.data.lineNumber) || [];
+        //   line.push(comment);
+        //   lineNumberMap.set(comment.data.lineNumber, line);
+        // });
 
-    // Group comments into Comment Containers based their associated line number TODO this could be state or something
-    // const lineNumberMap = new Map<number|undefined, RoastComment[]>();
-    // this.props.comments.map((comment: RoastComment) => {
-    //   var line: RoastComment[] = lineNumberMap.get(comment.data.lineNumber) || [];
-    //   line.push(comment);
-    //   lineNumberMap.set(comment.data.lineNumber, line);    
-    // });
+        const onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse> = () =>
+            Promise.resolve(SubmitCommentResponse.Success);
+        const onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse> = () =>
+            Promise.resolve(SubmitCommentResponse.Success);
 
-
-    return (
-      <ul className="flex-item comments-pane">
-        {/* display all the saved comments */}
-        {Array.from(this.props.lineNumberMap, ([lineNumber, comments]) => (
-          <CommentContainer 
-            key={lineNumber}
-            comments={comments}
-            onEditComment={this.props.onEditComment}
-            onSubmitComment={this.props.onSubmitComment}
-            lineRef={this.props.lineRefs[lineNumber || 0]}
-            inProgress={false}
-          />
-        ))}
-        {/* also display the comment in progress if any */}
-        {this.props.inProgressComment && (
-        <CommentContainer 
-          key={`unsubmitted ${this.props.inProgressComment.lineRef}`}
-          onEditComment={this.props.onEditComment}
-          onSubmitComment={this.props.onSubmitComment}
-          lineRef={this.props.inProgressComment.lineRef}
-          inProgress
-          comments={[new RoastComment({
-                data: {
-                    lineNumber: this.props.inProgressComment.lineNumber,
-                    selectedText: this.props.inProgressComment.selectedText,
-                    author:  this.props.inProgressComment.author,
-                }
-              })]}
-        />
-)}
-      </ul>
-    );
-  }
+        return (
+            <ul className="flex-item comments-pane">
+                {/* display all the saved comments */}
+                {Array.from(this.props.lineNumberMap, ([lineNumber, comments]) => (
+                    <CommentContainer
+                        key={lineNumber}
+                        comments={comments}
+                        onEditComment={onEditComment}
+                        onSubmitComment={onSubmitComment}
+                        lineRef={this.props.lineRefs[lineNumber || 0]}
+                        inProgress={false}
+                    />
+                ))}
+                {/* also display the comment in progress if any */}
+                {this.props.inProgressComment && (
+                    <CommentContainer
+                        key={`unsubmitted ${this.props.inProgressComment.lineRef}`}
+                        onEditComment={onEditComment}
+                        onSubmitComment={onSubmitComment}
+                        lineRef={this.props.inProgressComment.lineRef}
+                        inProgress
+                        comments={[
+                            new RoastComment({
+                                data: {
+                                    lineNumber: this.props.inProgressComment.lineNumber,
+                                    selectedText: this.props.inProgressComment.selectedText,
+                                    author: this.props.inProgressComment.author,
+                                },
+                            }),
+                        ]}
+                    />
+                )}
+            </ul>
+        );
+    }
 }

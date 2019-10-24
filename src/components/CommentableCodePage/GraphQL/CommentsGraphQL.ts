@@ -48,32 +48,6 @@ export const findCommentsForRepoQuery = gql`
     }
 `;
 
-export const findCommentsForRepoByTitleQuery = gql`
-    query findRepositoryByTitle($repoTitle: String!) {
-        findRepositoryByTitle(title: $repoTitle) {
-            _id
-            title
-            documentsList {
-                data {
-                    _id
-                    title
-                    commentsList {
-                        data {
-                            _id
-                            comments {
-                                data {
-                                    _id
-                                    text
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-
 export const findCommentsForRepoByIDQuery = gql`
     query findRepositoryByID($repoId: ID!) {
         findRepositoryByID(id: $repoId) {

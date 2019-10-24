@@ -38,9 +38,11 @@ import {
 import { url } from 'inspector';
 import { Blob, Repository } from '../generated/graphql';
 import { cache, githubClient } from '../App';
+import { FindRepoResults } from './CommentableCodePage/CommentsGraphQLtests';
 
 export interface RepoContentsProps {
     repo: Repository;
+    repoComments: FindRepoResults;
     loadFileHandler: (fileName: string, filePath: string) => void; // when a file is selected
 }
 
@@ -123,7 +125,7 @@ export const REPO_CONTENTS_QUERY = gql`
     }
 `;
 
-export const RepoExplorer = ({ repo, loadFileHandler }: RepoContentsProps) => {
+export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoContentsProps) => {
     const branch = repo.defaultBranchRef ? repo.defaultBranchRef.name : 'master';
     const title = (repo && repo.nameWithOwner) || 'Welcome to Roast My Code';
 
@@ -168,67 +170,21 @@ export const RepoExplorer = ({ repo, loadFileHandler }: RepoContentsProps) => {
             {/* update the URL with the current search state */}
             <UseUrlQuery url={vars.path} name="path" />
             {fileSelected && <UseUrlQuery url={fileSelected} name="file" />}
-
-            <Panel>
-                <Panel.Heading>{title}</Panel.Heading>
-                {/* TODO Add comment view! similar view to files, but expandable to see all comments under each file */}
-                <Panel.Tab.Group>
-                    <Panel.Tab active>files</Panel.Tab>
-                    <Panel.Tab>comments</Panel.Tab>
-                </Panel.Tab.Group>
-
-                {/*  Top line of the panel will show controls for the branch and file path  */}
-                <Panel.Block>
-                    <DropdownMenu branch={parts[0]} />
-                    <Breadcrumb align="centered">
-                        <Breadcrumb.Item>
-                            <Icon
-                                color={inParentDirectory() ? 'dark' : 'info'}
-                                onClick={() => handleNavTo()}
-                                align="right"
-                            >
-                                <FaEllipsisH />
-                            </Icon>
-                        </Breadcrumb.Item>
-                        {paths.map(path => (
-                            <Breadcrumb.Item onClick={() => handleNavTo(path)} key={path}>
-                                {' '}
-                                {path}{' '}
-                            </Breadcrumb.Item>
-                        ))}
-                    </Breadcrumb>
-                </Panel.Block>
-
-                {loading && (
-                    <Panel.Block>
-                        <Progress color="info" />
-                    </Panel.Block>
-                )}
-
-                {!loading &&
-                    (error ||
-                        !data ||
-                        !data.repository ||
-                        !data.repository.folder ||
-                        !data.repository.folder.entries) && <PanelWarningLine text="Error :(" color="danger" />}
-
-                {!loading &&
-                    data &&
-                    data.repository.folder.entries.map(file => (
-                        <PanelLine
-                            key={file.oid}
-                            file={file}
-                            onLineClicked={handleLineClicked}
-                            onMouseOver={() => {
-                                if (file.object.__typename === 'Tree')
-                                    client.query({
-                                        query: REPO_CONTENTS_QUERY,
-                                        variables: { ...vars, path: `${vars.path}${file.name}/` },
-                                    });
-                            }}
-                        />
-                    ))}
-            </Panel>
+            <RepoContentsPanelFrame title={title}>
+                <RepoContentsPanel
+                    title={title}
+                    parts={parts}
+                    inParentDirectory={inParentDirectory}
+                    handleNavTo={handleNavTo}
+                    paths={paths}
+                    loading={loading}
+                    error={error}
+                    data={data}
+                    handleLineClicked={handleLineClicked}
+                    client={client}
+                    vars={vars}
+                />
+            </RepoContentsPanelFrame>
         </>
     );
 };
@@ -303,5 +259,102 @@ const PanelWarningLine: React.FunctionComponent<WarningLineProps> = props => {
         </Panel.Block>
     );
 };
+
+const RepoContentsPanelFrame = ({ title, children }: { title: string; children: React.ReactElement }) => {
+    const [filesTabActive, setfilesTabActive] = React.useState(true);
+
+    return (
+        <Panel>
+            <Panel.Heading>{title}</Panel.Heading>
+
+            <Panel.Tab.Group>
+                <Panel.Tab active={filesTabActive} onClick={() => setfilesTabActive(true)}>
+                    files
+                </Panel.Tab>
+                <Panel.Tab active={!filesTabActive} onClick={() => setfilesTabActive(false)}>
+                    comments
+                </Panel.Tab>
+            </Panel.Tab.Group>
+
+            {children && React.cloneElement(children)}
+        </Panel>
+    );
+};
+
+function RepoContentsPanel({
+    title,
+    parts,
+    inParentDirectory,
+    handleNavTo,
+    paths,
+    loading,
+    error,
+    data,
+    handleLineClicked,
+    client,
+    vars,
+}: {
+    title: string;
+    parts: string[];
+    inParentDirectory: () => boolean;
+    handleNavTo: (folder?: string | undefined) => void;
+    paths: string[];
+    loading: boolean;
+    error: any;
+    data: GithubRepoContentsQueryData | undefined;
+    handleLineClicked: (line: Line) => void;
+    client: any;
+    vars: { path: string; repoName: string; repoOwner: string };
+}) {
+    return (
+        <>
+            <Panel.Block>
+                <DropdownMenu branch={parts[0]} />
+                <Breadcrumb align="centered">
+                    <Breadcrumb.Item>
+                        <Icon color={inParentDirectory() ? 'dark' : 'info'} onClick={() => handleNavTo()} align="right">
+                            <FaEllipsisH />
+                        </Icon>
+                    </Breadcrumb.Item>
+                    {paths.map(path => (
+                        <Breadcrumb.Item onClick={() => handleNavTo(path)} key={path}>
+                            {' '}
+                            {path}{' '}
+                        </Breadcrumb.Item>
+                    ))}
+                </Breadcrumb>
+            </Panel.Block>
+
+            {loading && (
+                <Panel.Block>
+                    <Progress color="info" />
+                </Panel.Block>
+            )}
+
+            {!loading &&
+                (error || !data || !data.repository || !data.repository.folder || !data.repository.folder.entries) && (
+                    <PanelWarningLine text="Error :(" color="danger" />
+                )}
+
+            {!loading &&
+                data &&
+                data.repository.folder.entries.map(file => (
+                    <PanelLine
+                        key={file.oid}
+                        file={file}
+                        onLineClicked={handleLineClicked}
+                        onMouseOver={() => {
+                            // prefetch folder on hover
+                            if (file.object.__typename === 'Tree')
+                                client.query({
+                                    query: REPO_CONTENTS_QUERY,
+                                    variables: { ...vars, path: `${vars.path}${file.name}/` },
+                                });
+                        }}
+                    />
+                ))}
+        </>
+    );
+}
 
 export default RepoExplorer;

@@ -3,8 +3,9 @@ import * as React from 'react';
 import { githubClient } from '../../App';
 import '../../App.css';
 import API, { IGithubData } from '../../api/API';
-import Document, { ErrorMessage } from '../CommentableDocument/Document';
-import RoastComment from '../RoastComment';
+import Document, { ErrorMessage, IDocumentProps } from '../CommentableDocument/Document';
+// import RoastComment from '../RoastComment';
+import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from './types/findRepositoryByTitle';
 import { Collapse } from 'react-collapse';
 // import schema from '../api/github.schema.json';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../../generated/graphql';
@@ -13,9 +14,10 @@ import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';
 import RepoContents from '../RepoContents';
 import AuthStatusView from '../AuthStatusView';
 import { CompletedTodos, GraphQLTodoList, SubmitTodosMutation, LoadTodosTestWithDelete } from './GraphQLTests';
-import { FindCommentsForRepo, CreateCommentForRepo, LoadCommentsWithDelete } from './CommentsGraphQLtests';
+import { FindRepoResults, AddComment, RepoCommentsListDisplayWithDelete } from './CommentsGraphQLtests';
 import { useIdentityContext } from 'react-netlify-identity-widget';
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
+import { deleteCommentMutation, createCommentMutation, findCommentsForRepoQuery } from './GraphQL/CommentsGraphQL';
 import {
     Section,
     Title,
@@ -41,6 +43,7 @@ export interface CommentableCodeProps {
     userIsLoggedIn?: boolean;
     userName?: string;
     repo: Repository;
+    // repoComments: FindRepoResults;
 }
 
 export interface CCContainerProps {
@@ -143,34 +146,42 @@ const CommentableCode = (props: CCContainerProps) => {
         },
     );
 
-    const client2 = useApolloClient();
-
     if (loading) return <Progress color="info" />;
     if (error || !data || !data.repository) return <div>Error</div>; // ErrorMessage
 
+    // write current repo to apollo cache
     client.writeData({ data: { currentRepoTitle: `${owner}/${name}` } });
-
-    // client2.writeData({ data: { currentRepoTitle: `${owner}/${name}` } });
 
     return (
         <>
-            <LoadCommentsTestContainer repoTitle={`${owner}/${name}`} />
-            <CommentableCodeInner
+            <LoadCommentsTestContainer
                 userIsLoggedIn={props.userIsLoggedIn}
                 userName={props.userName}
                 repo={data.repository}
-            />
+                repoTitle={`${owner}/${name}`}
+            >
+                {/* <CommentableCodeInner
+                    userIsLoggedIn={props.userIsLoggedIn}
+                    userName={props.userName}
+                    repo={data.repository}
+                /> */}
+            </LoadCommentsTestContainer>
         </>
     );
 };
 
-const LoadCommentsTestContainer = ({ repoTitle }: { repoTitle: string }) => {
-    const [active, setActive] = React.useState(false);
-    //const client = useApolloClient();
-    //client.writeData({ data: { visibilityFilter: filter } })};
+interface ContainerProps {
+    repoTitle: string;
+    children: JSX.Element;
+}
 
-    if (!active) return <Button onClick={() => setActive(true)} />;
-
+const LoadCommentsTestContainer = ({
+    repoTitle,
+    children,
+    userIsLoggedIn,
+    userName,
+    repo,
+}: ContainerProps & CommentableCodeProps) => {
     const repoId = '245564447665422867';
     const commentListId = '245564447670665747';
     const documentId = '245564447668568595';
@@ -180,214 +191,119 @@ const LoadCommentsTestContainer = ({ repoTitle }: { repoTitle: string }) => {
             {/* <LoadTodosTestWithDelete />
             <h3>Add Comment - COMMENTS PAGE w/ MUTATIONS</h3>
             <SubmitTodosMutation />
-            <br />
-            <br />
             <h1>More Tests</h1>
             <CompletedTodos />
-            <br></br>
             <GraphQLTodoList />
-            <br />
-            <br /> */}
+            */}
             <h1>COMMENTS FOR REPO</h1>
-            <LoadCommentsWithDelete commentListId={commentListId} documentId={documentId} repoTitle={repoTitle} />
+            <FindCommentsForRepo userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} />
             <br />
             <br />
-            <CreateCommentForRepo commentListId={commentListId} documentId={documentId} repoTitle={repoTitle} />
+            <AddComment commentListId={commentListId} documentId={documentId} repoTitle={repoTitle} />
             <br />
             <br />
+            <div>{children}</div>
         </div>
     );
 };
 
-class CommentableCodeInner extends React.Component<CommentableCodeProps, CommentableCodeState> {
-    public state: CommentableCodeState = {
-        comments: [],
-        defaultFilePath: '',
-        file: {
-            fileName: 'Hello World',
-            fileContents: '',
-        },
-        loading: true,
-        triggerLogin: false,
-        msg: '',
-    };
+export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo }: CommentableCodeProps) => {
+    const { data, error, loading, refetch } = useQuery<FindRepoResults>(findCommentsForRepoQuery);
+    const client = useApolloClient();
 
-    // POST a new comment
-    public submitCommentHandler = async (comment: RoastComment): Promise<SubmitCommentResponse> => {
-        if (!this.props.userIsLoggedIn) {
-            this.setState({ triggerLogin: true });
-            return SubmitCommentResponse.NotLoggedIn; // todo retry
-        }
-
-        return await API.postComment(comment)
-            .then(response => {
-                // use immutability-helper to easily update the state
-                this.setState({
-                    comments: update(this.state.comments, { $push: [response] }),
-                });
-
-                return SubmitCommentResponse.Success;
-            })
-            .catch(error => {
-                return SubmitCommentResponse.Error;
-            });
-    };
-
-    // PUT an update to a comment
-    public editCommentHandler = async (comment: RoastComment, isDelete = false): Promise<SubmitCommentResponse> => {
-        if (isDelete) {
-            return await API.deleteComment(comment).then(response => {
-                const { comments } = this.state;
-                // const indexOf = comments.indexOf(response);
-                const indexOf = comments.indexOf(comment);
-                comments.splice(indexOf, 1);
-                this.setState({ comments });
-                return SubmitCommentResponse.Success;
-            });
-        }
-
-        return await API.putComment(comment)
-            .then(response => {
-                // use immutability-helper to easily update the state
-                this.setState({
-                    comments: update(this.state.comments, {
-                        [response.id]: {
-                            $set: response,
-                        },
-                    }),
-                });
-
-                return SubmitCommentResponse.Success;
-            })
-            .catch(error => {
-                return SubmitCommentResponse.Error;
-            });
-    };
-
-    public simpleMethod(a: number, b: number) {
-        return a * b;
+    if (loading) return <Progress color="info" />;
+    if (error || !data) return <div>Error</div>; // ErrorMessage
+    if (data) {
+        console.log(data);
     }
 
-    public async componentDidMount() {
-        const repoPath = window.location.pathname;
-        const comments = await API.getComments(repoPath);
-        // const [comments, repo] = await API.getRepoAndComments(repoPath);
+    //todo
+    const repoId = '245564447665422867';
+    const commentListId = '245564447670665747';
+    const documentId = '245564447668568595';
 
-        this.setState({ comments, loading: false });
-
-        console.log(repoPath);
-        console.log(comments);
-    }
-
-    public render() {
-        const currentDocVars = {
-            owner: this.props.repo ? this.props.repo.owner.login : '',
-            name: this.props.repo ? this.props.repo.name : '',
-            path: (this.state.loadFilePath || '') + this.state.loadFileName,
-        };
-
-        return (
-            <>
-                <h1>Hello welcome to the Jason's Annotateable Code Sample</h1>
-                <AuthStatusView showImmediately={this.state.triggerLogin} />
-                <p>
-                    Commentable code props. user name:
-                    {this.props.userName || ''} logged in:
-                    {this.props.userIsLoggedIn || false}
-                </p>
-                <p>
-                    {' '}
-                    Repo
-                    {this.props.repo && this.props.repo.resourcePath} total comments:
-                    {this.state.comments && this.state.comments.length}{' '}
-                </p>
-                <Button
-                    badge={this.state.comments && this.state.comments.length}
-                    badgeColor="danger"
-                    badgeOutlined
-                    color="danger"
-                    outlined
-                >
-                    <FaCommentAlt />
-                </Button>
-                {this.state.loading && <Progress color="info" />}
-
-                <p>
-                    lambda functions
-                    <button onClick={() => this.handleClick('async-dadjoke')}>
-                        {this.state.loading ? 'Loading...' : 'Call Async dadjoke'}
-                    </button>
-                    <button onClick={() => this.handleClick('fauna-crud')}>
-                        {this.state.loading ? 'Loading...' : 'Call fauna crud'}
-                    </button>
-                    <button onClick={() => this.handleClick('getRepo')}>
-                        {this.state.loading ? 'Loading...' : 'Call getRepo'}
-                    </button>
-                    <button onClick={() => this.handleClick('hello-world')}>
-                        {this.state.loading ? 'Loading...' : 'Call hello-world'}
-                    </button>
-                    <br />
-                    <span>{this.state.msg}</span>
-                </p>
-                <p className="text-xs-right">custom class</p>
-                <data />
-                <h3>Document Begin:</h3>
-
-                <RepoContents
-                    repo={this.props.repo}
-                    repoPath={window.location.pathname}
-                    loadFileHandler={this.LoadFileBlob}
+    return (
+        <div>
+            <RepoCommentsListDisplayWithDelete commentListId={commentListId} documentId={documentId} data={data} />
+            <TraceComponentUpdate>
+                <CommentableCodeInner2
+                    userIsLoggedIn={userIsLoggedIn}
+                    userName={userName}
+                    repo={repo}
+                    repoComments={data}
                 />
+            </TraceComponentUpdate>
 
-                <Document
-                    queryVariables={currentDocVars}
-                    documentName={this.state.file.fileName}
-                    commentsCount={this.state.comments.length}
-                    name={this.state.file.fileName}
-                    content={this.state.file.fileContents}
-                    comments={this.state.comments}
-                    onSubmitComment={this.submitCommentHandler}
-                    onEditComment={this.editCommentHandler}
-                />
+            {/* <CommentableCodeInner userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} /> */}
+        </div>
+    );
+};
 
-                <h3>Document End</h3>
-            </>
-        );
-    }
-
-    // temp todo call lambda functions from API
-    private handleClick = (functionName: string) => {
-        this.setState({ loading: true });
-        fetch(`/.netlify/functions/${functionName}`)
-            .then(response => response.json())
-            .then(json => this.setState({ loading: false, msg: json.msg }));
-    };
-
-    // when a file is selected in the repository contents explorer, load it into view
-    private LoadFileBlob = (fileName: string, blob: string) => {
-        // todo load item into commentable code
-        // todo don't update file from here - just note URL updated
-
-        // var file = this.state.file;
-        // if (blob.text) {
-        //   file.fileContents = blob.text;
-        //   file.fileName = fileName;
-        //   this.setState({file});
-        // }
-
-        this.setState({ loadFileName: fileName, loadFilePath: blob });
-    };
-
-    // need a default path to get the initial files in the repository
-    // this is based on default branch plus a colon
-    // todo
-    // private getDefaultPath(): string {
-    //   if (this.state.repo && this.state.repo.defaultBranchRef) {
-    //     return this.state.repo.defaultBranchRef.name;
-    //     // return `${this.state.repo.defaultBranchRef.name}:`;
-    //   }
-    //   return "master";
-    // }
+function useTraceUpdate(props: any) {
+    const prev = React.useRef(props);
+    React.useEffect(() => {
+        const changedProps: any = Object.entries(props).reduce((ps: any, [k, v]) => {
+            if (prev.current[k] !== v) {
+                ps[k as any] = [prev.current[k], v];
+            }
+            return ps;
+        }, {});
+        if (Object.keys(changedProps).length > 0) {
+            console.log('Changed props:', changedProps);
+        }
+        prev.current = props;
+    });
 }
+
+function TraceComponentUpdate(props: any) {
+    useTraceUpdate(props);
+    return <div>{props.children}</div>;
+}
+
+export const CommentableCodeInner2 = ({
+    userIsLoggedIn,
+    userName,
+    repo,
+    repoComments,
+}: {
+    userIsLoggedIn?: boolean;
+    userName?: string;
+    repo: Repository;
+    repoComments: FindRepoResults;
+}) => {
+    const [document, setDocumentPath] = React.useState({
+        fileName: '',
+        filePath: '',
+    });
+    const currentDocVars = {
+        owner: repo ? repo.owner.login : '',
+        name: repo ? repo.name : '',
+        path: (document.filePath || '') + document.fileName,
+    };
+
+    // const onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse> = () =>
+    //     Promise.resolve(SubmitCommentResponse.Success);
+    // const onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse> = () =>
+    //     Promise.resolve(SubmitCommentResponse.Success);
+    const loadFileHandler = (fileName: string, filePath: string) => {
+        setDocumentPath({ fileName, filePath });
+    };
+
+    return (
+        <>
+            {/* /{this.state.loading && <Progress color="info" />} */}
+
+            <RepoContents repo={repo} repoComments={repoComments} loadFileHandler={loadFileHandler} />
+
+            <Document
+                queryVariables={currentDocVars}
+                documentName={document.fileName}
+                repoComments={repoComments}
+                // onSubmitComment={onSubmitComment}
+                // onEditComment={onEditComment}
+            />
+        </>
+    );
+};
 
 export default CommentableCode;

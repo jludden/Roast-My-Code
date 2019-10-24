@@ -6,6 +6,8 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
     findRepositoryByTitle,
     // eslint-disable-next-line @typescript-eslint/camelcase
+    findRepositoryByTitle_findRepositoryByTitle,
+    // eslint-disable-next-line @typescript-eslint/camelcase
     findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data,
 } from './types/findRepositoryByTitle';
 import { createComment as createCommentType } from './types/createComment';
@@ -53,19 +55,20 @@ function FindCommentList(
     return null;
 }
 
-export const LoadCommentsWithDelete = ({
+export const RepoCommentsListDisplayWithDelete = ({
     documentId,
     commentListId,
-    repoTitle,
+    data,
 }: {
     documentId: string;
     commentListId: string;
-    repoTitle: string;
+    data: FindRepoResults;
 }) => {
     const [mutate] = useMutation(deleteCommentMutation);
+    const repoTitle = data.currentRepoTitle;
     return (
-        <FindCommentsForRepo
-            repoTitle={repoTitle}
+        <RepoCommentsListDisplay
+            data={data}
             deleteComment={(comment: Comment) =>
                 mutate({
                     variables: { id: comment._id },
@@ -77,7 +80,7 @@ export const LoadCommentsWithDelete = ({
                         },
                     },
                     update: (cache, { data: { deletedComment } }) => {
-                        const data: findRepositoryByTitle | null = cache.readQuery<findRepositoryByTitle>({
+                        const data = cache.readQuery<FindRepoResults>({
                             query: findCommentsForRepoQuery,
                             variables: { repoTitle },
                         });
@@ -98,7 +101,7 @@ export const LoadCommentsWithDelete = ({
     );
 };
 
-export const CreateCommentForRepo = ({
+export const AddComment = ({
     documentId,
     commentListId,
     repoTitle,
@@ -128,7 +131,8 @@ export const CreateCommentForRepo = ({
                     },
                     update: (cache, { data: { createComment } }) => {
                         // Read the data from our cache for this query.
-                        const data = cache.readQuery<findRepositoryByTitle>({
+
+                        const data = cache.readQuery<FindRepoResults>({
                             query: findCommentsForRepoQuery,
                             variables: { repoTitle },
                         });
@@ -175,22 +179,20 @@ interface Comment {
     text: string;
 }
 
-export const FindCommentsForRepo = ({
-    repoTitle,
+export interface FindRepoResults {
+    currentRepoTitle: string;
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    findRepositoryByTitle: findRepositoryByTitle_findRepositoryByTitle;
+}
+
+export const RepoCommentsListDisplay = ({
+    data,
     deleteComment,
 }: {
-    repoTitle: string;
+    data: FindRepoResults;
     deleteComment: (comment: Comment) => Promise<ExecutionResult<any>>;
 }) => {
     const [expanded, setExpanded] = React.useState(false);
-    const { data, error, loading, refetch } = useQuery<findRepositoryByTitle>(findCommentsForRepoQuery);
-
-    if (loading) return <Progress color="info" />;
-    if (error || !data) return <div>Error</div>; // ErrorMessage
-    if (data) {
-        console.log(data);
-    }
-
     return (
         <div>
             <span onClick={() => setExpanded(!expanded)}>Repo-Doc-CommentList-Comments: (toggle)</span>
@@ -203,7 +205,7 @@ export const FindCommentsForRepo = ({
                                 document && (
                                     <li key={document._id}>
                                         <b>
-                                            title:
+                                            document title:
                                             {document.title}
                                         </b>
                                         {document.commentsList.data.map(

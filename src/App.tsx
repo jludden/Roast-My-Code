@@ -84,8 +84,8 @@ class App extends React.Component {
                             <Content textAlign="centered">
                                 <p>
                                     <strong>Roast My Code</strong> by
-                                    <a href="https://github.com/jludden">Jason Ludden</a>. github link subreddit link
-                                    twitter/slack/discord
+                                    <a href="https://github.com/jludden"> Jason Ludden</a>
+                                    <span> github link subreddit link twitter/slack/discord </span>
                                 </p>
                             </Content>
                         </Footer>
