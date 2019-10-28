@@ -3,6 +3,7 @@ import '../../App.css';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 // import { kotlin } from 'react-syntax-highlighter/dist/languages/hljs' TODO
 import { github } from 'react-syntax-highlighter/dist/styles/hljs';
+import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 
@@ -23,8 +24,14 @@ import SyntaxLine from '../SyntaxRenderer';
 export interface IDocumentBodyProps {
     name: string; // github data - refactor to new interface
     content: string;
-    // comments: RoastComment[];
     comments: RoastComment[];
+
+    repoComments: FindRepoResults;
+    repoId: string;
+    repoTitle: string;
+    documentId: string;
+    documentTitle: string;
+    commentListId: string;
 
     // onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
     // onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
@@ -93,10 +100,13 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
                             <Column size="one-quarter" backgroundColor="primary">
                                 <DocumentCommentsView
                                     lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
-                                    // onEditComment={this.props.onEditComment}
-                                    // onSubmitComment={this.props.onSubmitComment}
                                     lineRefs={this.state.lineRefs}
                                     inProgressComment={this.state.inProgressComment}
+                                    repoId={this.props.repoId}
+                                    repoTitle={this.props.repoTitle}
+                                    documentId={this.props.documentId}
+                                    documentTitle={this.props.documentTitle}
+                                    commentListId={this.props.commentListId}
                                 />
                             </Column>
                         </Column.Group>
@@ -255,7 +265,7 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
             text = selection.toString();
         }
 
-        if (!text || !text.length) {
+        if (this.state.currentlySelected && (!text || !text.length)) {
             this.setState({ currentlySelected: false });
             return false;
         }
@@ -264,7 +274,7 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
         // const endContainerPosition = parseInt(range.endContainer.parentNode.dataset.position, 10);
 
         const sel = window.getSelection();
-        if (sel && sel.rangeCount > 0) {
+        if (text && sel && sel.rangeCount > 0) {
             // tslint:disable-next-line:no-console
             console.log(`selected text: ${text}`);
 

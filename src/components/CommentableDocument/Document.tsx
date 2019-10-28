@@ -9,7 +9,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { Blob, Repository } from '../../generated/graphql';
 import { Container, Message, Progress } from 'rbx';
 import { githubClient } from '../../App';
-import { FindRepoResults } from '../CommentableCodePage/CommentsGraphQLtests';
+import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment2 } from '../CommentableCodePage/types/findRepositoryByTitle';
 
 export interface IDocumentProps {
@@ -75,7 +75,8 @@ const Document = (props: IDocumentProps) => {
     // path:"master:local.properties"
 
     const docCommentsList = doc && doc.commentsList.data[0];
-    const docCommentsInitial: (RoastComment2 | null)[] = (docCommentsList && docCommentsList.comments.data) || [];
+    const docCommentsInitial: (RoastComment2 | null)[] =
+        (docCommentsList && docCommentsList.comments && docCommentsList.comments.data) || [];
     const docComments: RoastComment2[] = docCommentsInitial.filter(x => x != null) as RoastComment2[];
     // todo will this be updated on add new comment input?
 
@@ -98,6 +99,12 @@ const Document = (props: IDocumentProps) => {
                 name={props.documentName}
                 content={data.repository.object.text}
                 comments={comments}
+                repoComments={props.repoComments}
+                repoId={props.repoComments.findRepositoryByTitle._id}
+                repoTitle={props.repoComments.currentRepoTitle}
+                documentId={(doc && doc._id) || ''}
+                documentTitle={props.queryVariables.path}
+                commentListId={(docCommentsList && docCommentsList._id) || ''}
                 // onSubmitComment={props.onSubmitComment}
                 // onEditComment={props.onEditComment}
             />

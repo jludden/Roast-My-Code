@@ -35,10 +35,11 @@ import {
     Icon,
     Progress,
 } from 'rbx';
+import { RepoCommentsListDisplayWithDelete } from './CommentableCodePage/CommentsGqlQueries';
 import { url } from 'inspector';
 import { Blob, Repository } from '../generated/graphql';
 import { cache, githubClient } from '../App';
-import { FindRepoResults } from './CommentableCodePage/CommentsGraphQLtests';
+import { FindRepoResults } from './CommentableCodePage/CommentsGqlQueries';
 
 export interface RepoContentsProps {
     repo: Repository;
@@ -170,7 +171,7 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
             {/* update the URL with the current search state */}
             <UseUrlQuery url={vars.path} name="path" />
             {fileSelected && <UseUrlQuery url={fileSelected} name="file" />}
-            <RepoContentsPanelFrame title={title}>
+            <RepoContentsPanelFrame title={title} repoComments={repoComments}>
                 <RepoContentsPanel
                     title={title}
                     parts={parts}
@@ -260,8 +261,20 @@ const PanelWarningLine: React.FunctionComponent<WarningLineProps> = props => {
     );
 };
 
-const RepoContentsPanelFrame = ({ title, children }: { title: string; children: React.ReactElement }) => {
+const RepoContentsPanelFrame = ({
+    title,
+    repoComments,
+    children,
+}: {
+    title: string;
+    repoComments: FindRepoResults;
+    children: React.ReactElement;
+}) => {
     const [filesTabActive, setfilesTabActive] = React.useState(true);
+    //todo
+    const repoId = '245564447665422867';
+    const commentListId = '245564447670665747';
+    const documentId = '245564447668568595';
 
     return (
         <Panel>
@@ -276,7 +289,16 @@ const RepoContentsPanelFrame = ({ title, children }: { title: string; children: 
                 </Panel.Tab>
             </Panel.Tab.Group>
 
-            {children && React.cloneElement(children)}
+            {filesTabActive && children && React.cloneElement(children)}
+            {!filesTabActive && (
+                <Panel.Block>
+                    <RepoCommentsListDisplayWithDelete
+                        commentListId={commentListId}
+                        documentId={documentId}
+                        data={repoComments}
+                    />
+                </Panel.Block>
+            )}
         </Panel>
     );
 };

@@ -13,8 +13,8 @@ import { RepositoryOwner, StargazerConnection, Language } from '../../generated/
 import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';
 import RepoContents from '../RepoContents';
 import AuthStatusView from '../AuthStatusView';
-import { CompletedTodos, GraphQLTodoList, SubmitTodosMutation, LoadTodosTestWithDelete } from './GraphQLTests';
-import { FindRepoResults, AddComment, RepoCommentsListDisplayWithDelete } from './CommentsGraphQLtests';
+import { CompletedTodos, GraphQLTodoList, SubmitTodosMutation, LoadTodosTestWithDelete } from './GraphQLTodos';
+import { FindRepoResults, AddComment, RepoCommentsListDisplayWithDelete } from './CommentsGqlQueries';
 import { useIdentityContext } from 'react-netlify-identity-widget';
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import { deleteCommentMutation, createCommentMutation, findCommentsForRepoQuery } from './GraphQL/CommentsGraphQL';
@@ -225,6 +225,7 @@ export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo }: Commenta
     return (
         <div>
             <RepoCommentsListDisplayWithDelete commentListId={commentListId} documentId={documentId} data={data} />
+
             <TraceComponentUpdate>
                 <CommentableCodeInner2
                     userIsLoggedIn={userIsLoggedIn}
