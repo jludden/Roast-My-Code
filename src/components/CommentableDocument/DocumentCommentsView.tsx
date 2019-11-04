@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../RoastComment';
-import { AddComment, AddComment2, AddCommentInput, FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
+import {
+    AddComment,
+    AddComment2,
+    AddComment3,
+    AddCommentInput,
+    FindRepoResults,
+} from '../CommentableCodePage/CommentsGqlQueries';
 import {
     Section,
     Title,
@@ -96,12 +102,7 @@ export default class DocumentCommentsView extends React.Component<ICommentsViewP
                                 }),
                             ]}
                         />
-                        <AddComment
-                            commentListId={this.props.commentListId}
-                            documentId={this.props.documentId}
-                            repoTitle={this.props.repoTitle}
-                        />
-                        <AddComment2
+                        <AddComment3
                             repoId={this.props.repoId}
                             repoTitle={this.props.repoTitle}
                             documentId={this.props.documentId}
