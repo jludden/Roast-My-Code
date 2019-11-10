@@ -69,23 +69,6 @@ interface Line {
     object: Blob;
 }
 
-// Function component to wrap use query param hook api
-interface UrlQueryProps {
-    url: string;
-    name: string;
-}
-export function UseUrlQuery(props: UrlQueryProps) {
-    const [url, setUrl] = useQueryParam(props.name, StringParam);
-
-    useEffect(() => {
-        if (url !== props.url) {
-            setUrl(props.url);
-        }
-    }, [props.url, setUrl, url]);
-
-    return <></>;
-}
-
 // todo for path - automatically go into the directory with most comments!
 // todo add Tags for number of comments if > 0
 //  todo - aggregate comments to folder level
@@ -131,37 +114,45 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
     const title = (repo && repo.nameWithOwner) || 'Welcome to Roast My Code';
 
     const [fileSelected, setFileSelected] = React.useState('');
+    const [filePathParam, setFilePathParam] = useQueryParam('path', StringParam);
+    // React.useEffect(() => {
+    //     setFilePathParam(`${branch}:`);
+    // }, [branch, setFilePathParam]);
+    const filePath = filePathParam || `${branch}:`;
+
     const [vars, setVars] = React.useState({
-        path: `${branch}:`,
+        // path: `${branch}:`,
         repoName: repo.name,
         repoOwner: repo.owner.login,
     });
 
-    const parts = vars.path.split(':'); // 0 - branch 1 - directory path
+    const parts = filePath.split(':'); // 0 - branch 1 - directory path
     const paths = parts[1].split('/');
-    const inParentDirectory = () => vars.path === `${branch}:`;
+    const inParentDirectory = () => filePath === `${branch}:`;
 
     // remove everything after the folder name (e.g. java+/) or just go up a directory
     const handleNavTo = (folder?: string) => {
         if (inParentDirectory()) return;
         const path = folder
-            ? vars.path.slice(0, vars.path.lastIndexOf(folder) + folder.length + 1)
-            : vars.path.slice(0, vars.path.lastIndexOf(paths[paths.length - 2]));
-        setVars({ ...vars, path });
+            ? filePath.slice(0, filePath.lastIndexOf(folder) + folder.length + 1)
+            : filePath.slice(0, filePath.lastIndexOf(paths[paths.length - 2]));
+        // setVars({ ...vars, path });
+        setFilePathParam(path, 'pushIn');
     };
     const handleLineClicked = (line: Line) => {
         if (line && line.name && line.object && line.object.oid) {
-            loadFileHandler(line.name, vars.path); // trigger update
+            loadFileHandler(line.name, filePath); // trigger update
             setFileSelected(line.name); // yes
         } else {
-            setVars({ ...vars, path: `${vars.path}${line.name}/` });
+            // setVars({ ...vars, path: `${vars.path}${line.name}/` });
+            setFilePathParam(`${filePath}${line.name}/`, 'pushIn');
         }
     };
 
     const { data, error, loading, client } = useQuery<GithubRepoContentsQueryData, GithubRepoContentsQueryVars>(
         REPO_CONTENTS_QUERY,
         {
-            variables: vars,
+            variables: { ...vars, path: filePath },
             client: githubClient,
         },
     );
@@ -169,8 +160,8 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
     return (
         <>
             {/* update the URL with the current search state */}
-            <UseUrlQuery url={vars.path} name="path" />
-            {fileSelected && <UseUrlQuery url={fileSelected} name="file" />}
+            {/* <UseUrlQuery url={vars.path} name="path" /> */}
+            {/* {fileSelected && <UseUrlQuery url={fileSelected} name="file" />} */}
             <RepoContentsPanelFrame title={title} repoComments={repoComments}>
                 <RepoContentsPanel
                     title={title}
@@ -183,6 +174,7 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
                     data={data}
                     handleLineClicked={handleLineClicked}
                     client={client}
+                    filePath={filePath || ''}
                     vars={vars}
                 />
             </RepoContentsPanelFrame>
@@ -314,6 +306,7 @@ function RepoContentsPanel({
     data,
     handleLineClicked,
     client,
+    filePath,
     vars,
 }: {
     title: string;
@@ -326,7 +319,8 @@ function RepoContentsPanel({
     data: GithubRepoContentsQueryData | undefined;
     handleLineClicked: (line: Line) => void;
     client: any;
-    vars: { path: string; repoName: string; repoOwner: string };
+    filePath: string;
+    vars: { repoName: string; repoOwner: string };
 }) {
     return (
         <>
@@ -370,7 +364,7 @@ function RepoContentsPanel({
                             if (file.object.__typename === 'Tree')
                                 client.query({
                                     query: REPO_CONTENTS_QUERY,
-                                    variables: { ...vars, path: `${vars.path}${file.name}/` },
+                                    variables: { ...vars, path: `${filePath}${file.name}/` },
                                 });
                         }}
                     />

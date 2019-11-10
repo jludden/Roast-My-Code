@@ -37,6 +37,10 @@ import {
 } from 'rbx';
 import ApolloClient, { gql, ExecutionResult } from 'apollo-boost';
 import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks';
+import { useWindowPath } from './hooks/useWindowPath';
+import { useLocation } from './hooks/useLocation';
+import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
+import { useParams } from 'react-router-dom';
 
 // todo type instead of interface? is this being used?
 export interface CommentableCodeProps {
@@ -133,9 +137,25 @@ const LOAD_REPO_QUERY = gql`
 // "owner": "jludden",
 // "name": "ReefLifeSurvey---Species-Explorer"
 const CommentableCode = (props: CCContainerProps) => {
+    // const { pathname, search } = useWindowPath();
+    // React.useEffect(() => {
+    //     // do something when path changes ...
+    // }, []);
+
+    // todo use hook
     const repoPath = window.location.pathname;
     const owner = repoPath.slice(repoPath.lastIndexOf('repo/') + 5, repoPath.lastIndexOf('/'));
     const name = repoPath.slice(repoPath.lastIndexOf('/') + 1);
+
+    // const owner2 = pathname.slice(pathname.lastIndexOf('repo/') + 5, pathname.lastIndexOf('/'));
+    // const name2 = pathname.slice(pathname.lastIndexOf('/') + 1);
+
+    // // todo
+    // const params = new URLSearchParams(search);
+    // const filePath = params.get('path');
+    // const loadFileName = params.get('file');
+
+    // const testxxxx = loadFileName;
 
     // Load Repo
     const { data, error, loading, client, refetch } = useQuery<LoadGithubQueryResponse, LoadGithubQueryVars>(
@@ -227,7 +247,7 @@ export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo }: Commenta
             <RepoCommentsListDisplayWithDelete commentListId={commentListId} documentId={documentId} data={data} />
 
             <TraceComponentUpdate>
-                <CommentableCodeInner2
+                <CommentableCodeInner3
                     userIsLoggedIn={userIsLoggedIn}
                     userName={userName}
                     repo={repo}
@@ -261,6 +281,56 @@ function TraceComponentUpdate(props: any) {
     return <div>{props.children}</div>;
 }
 
+export const CommentableCodeInner3 = ({
+    userIsLoggedIn,
+    userName,
+    repo,
+    repoComments,
+}: {
+    userIsLoggedIn?: boolean;
+    userName?: string;
+    repo: Repository;
+    repoComments: FindRepoResults;
+}) => {
+    const [fileParam, setFileParam] = useQueryParam('file', StringParam);
+    const [filePathParam, setFilePathParam] = useQueryParam('path', StringParam);
+
+    const params = new URLSearchParams(window.location.search);
+    const filePath = params.get('path');
+    const fileName = params.get('file');
+
+    const loadFileHandler = (name: string, path: string) => {
+        //window.history.pushState({ 'file': fileName, 'path': filePath }, '', '');
+        setFileParam(name, 'pushIn');
+        if (path !== filePathParam) setFilePathParam(path, 'pushIn');
+        // setFile({ filePath, fileName });
+    };
+
+    const currentDocVars = {
+        owner: repo ? repo.owner.login : '',
+        name: repo ? repo.name : '',
+        path: (filePath || '') + fileName,
+    };
+
+    return (
+        <>
+            {/* /{this.state.loading && <Progress color="info" />} */}
+
+            <RepoContents repo={repo} repoComments={repoComments} loadFileHandler={loadFileHandler} />
+
+            {fileName && (
+                <Document
+                    queryVariables={currentDocVars}
+                    documentName={fileName}
+                    repoComments={repoComments}
+                    // onSubmitComment={onSubmitComment}
+                    // onEditComment={onEditComment}
+                />
+            )}
+        </>
+    );
+};
+
 export const CommentableCodeInner2 = ({
     userIsLoggedIn,
     userName,
@@ -272,23 +342,54 @@ export const CommentableCodeInner2 = ({
     repo: Repository;
     repoComments: FindRepoResults;
 }) => {
-    const [document, setDocumentPath] = React.useState({
-        fileName: '',
-        filePath: '',
+    // const [searchPath, setSearchPath] = React.useState(useWindowPath());
+
+    function handleChange() {
+        console.log(
+            'window location changed. pathname: ' + window.location.pathname + ' search: ' + window.location.search,
+        );
+    }
+
+    window.addEventListener('popstate', handleChange);
+    window.addEventListener('pushstate', handleChange);
+
+    const { search, pathname } = useLocation();
+
+    // const { search } = useWindowPath(); // todo state
+    const params = new URLSearchParams(search);
+
+    const [{ fileName, filePath }, setSearchPath] = React.useState({
+        filePath: params.get('path'),
+        fileName: params.get('file'),
     });
+
+    // React.useEffect(() => {
+    //     // todo make search state yeah
+    //     const params = new URLSearchParams(search);
+    //     setSearchPath({
+    //         filePath: params.get('path'),
+    //         fileName: params.get('file'),
+    //     });
+    // }, [search]);
+
+    // const [document, setDocumentPath] = React.useState({
+    //     fileName: '',
+    //     filePath: '',
+    // });
     const currentDocVars = {
         owner: repo ? repo.owner.login : '',
         name: repo ? repo.name : '',
-        path: (document.filePath || '') + document.fileName,
+        path: (filePath || '') + fileName,
     };
 
     // const onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse> = () =>
     //     Promise.resolve(SubmitCommentResponse.Success);
     // const onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse> = () =>
     //     Promise.resolve(SubmitCommentResponse.Success);
-    const loadFileHandler = (fileName: string, filePath: string) => {
-        setDocumentPath({ fileName, filePath });
-    };
+    // const loadFileHandler = (fileName: string, filePath: string) => {
+    //     setDocumentPath({ fileName, filePath });
+    // };
+    const loadFileHandler = (fileName: string, filePath: string) => {};
 
     return (
         <>
@@ -296,13 +397,15 @@ export const CommentableCodeInner2 = ({
 
             <RepoContents repo={repo} repoComments={repoComments} loadFileHandler={loadFileHandler} />
 
-            <Document
-                queryVariables={currentDocVars}
-                documentName={document.fileName}
-                repoComments={repoComments}
-                // onSubmitComment={onSubmitComment}
-                // onEditComment={onEditComment}
-            />
+            {fileName && (
+                <Document
+                    queryVariables={currentDocVars}
+                    documentName={fileName}
+                    repoComments={repoComments}
+                    // onSubmitComment={onSubmitComment}
+                    // onEditComment={onEditComment}
+                />
+            )}
         </>
     );
 };

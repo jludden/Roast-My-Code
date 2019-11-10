@@ -33,7 +33,7 @@ import {
 } from 'react-icons/fa';
 import { githubClient } from '../../App';
 
-import RepoContents, { UseUrlQuery } from '../RepoContents';
+import RepoContents from '../RepoContents';
 import { Repository } from '../../generated/graphql';
 
 export interface IGithubQueryProps {
