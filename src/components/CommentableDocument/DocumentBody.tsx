@@ -1,8 +1,17 @@
 import * as React from 'react';
 import '../../App.css';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-// import { kotlin } from 'react-syntax-highlighter/dist/languages/hljs' TODO
-import { github } from 'react-syntax-highlighter/dist/styles/hljs';
+// import SyntaxHighlighter from 'react-syntax-highlighter';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+
+// import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+
+// import { java } from 'react-syntax-highlighter/dist/languages/hljs';
+// import java from 'react-syntax-highlighter/dist/esm/languages/hljs/java';
+// "react-syntax-highlighter/dist/esm/languages/hljs/kotlin"
+
+// import { github } from 'react-syntax-highlighter/dist/styles/hljs';
+// import { dark as github } from 'react-syntax-highlighter/dist/esm/styles/prism'; // todo
+
 import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
@@ -55,16 +64,20 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
         lineRefs: [],
     };
 
-    // public async componentDidMount() {
-    //      this.runCodePrettify(); // todo serve the CSS file
-    //  }
-
-    // public componentDidUpdate() {
-    //     prettify.prettyPrint();
-    // }
-    // `flex-item ${App-body}`}
-
     public render() {
+        // todo add more mappings
+        const extMapping: { [key: string]: string } = {
+            kt: 'kotlin',
+            java: 'java',
+            js: 'javascript',
+        };
+
+        const docTitleParts = this.props.documentTitle.split('.');
+        const fileEnding = docTitleParts[docTitleParts.length - 1];
+        // const language = extensionMapping.filter(x => x.ext === `.${fileEnding}`);
+        const language = extMapping[fileEnding];
+        console.log(`detected language for ${this.props.documentTitle} is ${language}`);
+
         // const decoded = atob(this.props.content);
         const decoded = this.props.content; // todo figure out how we're getting the raw file from github
 
@@ -87,8 +100,8 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
                             <Column size="three-quarters">
                                 {decoded && (
                                     <SyntaxHighlighter
-                                        language="kotlin"
-                                        style={github}
+                                        language={language}
+                                        // style={github}
                                         className="left-align"
                                         showLineNumbers
                                         renderer={this.renderSyntaxLines}
