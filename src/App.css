@@ -122,6 +122,32 @@ span.boxclose{
 }
 
 
+
+/* comment card footer */
+.card-footer {
+  border-top: none;  
+}
+a.card-footer-item {
+  border-right: none;
+  padding: 0.25rem;
+}
+
+/* comment card header  */
+.commentHeader {
+  display: flex;
+  align-items: start;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

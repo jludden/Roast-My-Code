@@ -7,20 +7,33 @@ import { Message, Box, Textarea, Button, Delete } from 'rbx';
 
 export interface IRoastCommentProps {
     comment: RoastComment;
+    inProgress: boolean;
     // lineRef: HTMLDivElement;
     // topOffset: string;
     onEditComment: (details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
 }
 
+const SingleCommentView = ({ comment, inProgress, onEditComment }: IRoastCommentProps) => {
+    const text = comment.data.comment;
+    return (
+        <>
+            {!inProgress && <p>{text}</p>}
+            {inProgress && (
+                <Textarea fixedSize readOnly={false} placeholder={text} onClick={() => onEditComment(comment)} />
+            )}
+        </>
+    );
+};
+
+export default SingleCommentView;
+
+// todo - create a component for a comment
+// and share it with documentbody? could even have different css to look different but behave the same
 interface ISingleCommentState {
     isEditOn: boolean;
     // styles: React.CSSProperties
 }
-
-// todo - create a component for a comment
-// and share it with documentbody? could even have different css to look different but behave the same
-
-export default class SingleCommentView extends React.Component<IRoastCommentProps, ISingleCommentState> {
+class SingleCommentViewOld extends React.Component<IRoastCommentProps, ISingleCommentState> {
     constructor(props: IRoastCommentProps) {
         super(props);
         this.state = {
@@ -69,12 +82,17 @@ export default class SingleCommentView extends React.Component<IRoastCommentProp
             // <Message>
             //   <Message.Header><Delete> </Delete></Message.Header>
             //   <Message.Body>
-            <Textarea
-                fixedSize
-                readOnly={!this.state.isEditOn}
-                placeholder={text}
-                onClick={this.handleCommentClicked}
-            />
+            <>
+                {!this.props.inProgress && <p>{text}</p>}
+                {this.props.inProgress && (
+                    <Textarea
+                        fixedSize
+                        readOnly={!this.state.isEditOn}
+                        placeholder={text}
+                        onClick={this.handleCommentClicked}
+                    />
+                )}
+            </>
             //   </Message.Body>
             // </Message>
             //   <Message as="textarea" color="danger" defaultValue={text}>

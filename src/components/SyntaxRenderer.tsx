@@ -1,10 +1,10 @@
-import React, {useState, useCallback} from "react";
+import React, { useState, useCallback } from 'react';
 // import { createElement } from 'react-syntax-highlighter';
 // import * as rsh from 'react-syntax-highlighter';
-import useHover from 'react-use/lib/useHover'
-import { Button, Icon } from "rbx";
-import { FaPlusCircle, FaPlus, FaPlusSquare, FaRegPlusSquare, FaGooglePlus, FaSearchPlus } from "react-icons/fa";
-import RoastComment from './RoastComment'
+import useHover from 'react-use/lib/useHover';
+import { Button, Icon } from 'rbx';
+import { FaPlusCircle, FaPlus, FaPlusSquare, FaRegPlusSquare, FaGooglePlus, FaSearchPlus } from 'react-icons/fa';
+import RoastComment from './RoastComment';
 import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
 import SubmitComment from './SubmitCommentForm';
 
@@ -20,11 +20,11 @@ import SubmitComment from './SubmitCommentForm';
 //   const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
 
 //   return rows.map((node: any, i: number) => (
-//     <div key={i}> 
-//       <SubmitComment 
+//     <div key={i}>
+//       <SubmitComment
 //       isCurrentlySelected={false}
 //        comment={new RoastComment({data: {lineNumber: i}})}
-//         onSubmitComment={submitCommentHandler} 
+//         onSubmitComment={submitCommentHandler}
 //         selectedText=""
 //       />
 //       {createElement({
@@ -37,20 +37,16 @@ import SubmitComment from './SubmitCommentForm';
 //   ));
 // }
 
-
-
 // export async function submitCommentHandler(comment: RoastComment): Promise<SubmitCommentResponse> {
 //   return SubmitCommentResponse.Success;
 // }
-
-
 
 // export default function myRenderer({ rows, stylesheet, useInlineStyles }: {rows?:any, stylesheet?:any, useInlineStyles?:any}):JSX.Element {
 //     const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
 
 //     // using the index as a key should be okay in this case, we are never insertering or deleting elements
 //     return rows.map((node: any, i: number) => (
-//       <div key={i}> 
+//       <div key={i}>
 //         <SubmitComment isCurrentlySelected={false} comment={new Comment(1, 2)} onSubmitComment={submitCommentHandler}/>
 //         {createElement({
 //             key: `code-segement${i}`,
@@ -98,50 +94,48 @@ import SubmitComment from './SubmitCommentForm';
 // todo handle window resizing - the measured offset width will be out of date
 //  react-use window size hook?
 interface IAppProps {
-  lineNumber: number,
-  handleCommentAdd: (lineNumber: number) => void
+    lineNumber: number;
+    handleCommentAdd: (lineNumber: number) => void;
 }
 
-const SyntaxLine: React.FunctionComponent<IAppProps> = (props) => {
-  const [styles, setStyles] = useState();
-  const measuredRef = useCallback(node => {
-    if (node !== null) {    
-      const styles: React.CSSProperties = {
-        position: "absolute",
-        left: `${node.offsetWidth}px`  // node.getBoundingClientRect();
-      }
+const SyntaxLine: React.FunctionComponent<IAppProps> = props => {
+    const [styles, setStyles] = useState();
+    const measuredRef = useCallback(node => {
+        if (node !== null) {
+            const styles: React.CSSProperties = {
+                position: 'absolute',
+                left: `${node.offsetWidth}px`, // node.getBoundingClientRect();
+            };
 
-      setStyles(styles);
-    }
-  }, []);
+            setStyles(styles);
+        }
+    }, []);
 
-  const element = (hovered: boolean) => (
-    <div>
-      {hovered && (
-      <Button.Group style={styles} align="right">
-        <Button size="small" rounded onClick={() => props.handleCommentAdd(props.lineNumber)}>
-          <Icon size="small">
-            <FaPlus />
-          </Icon>
-        </Button>
-      </Button.Group>
-)}
-      <div ref={measuredRef}>
-        {props.children}     
-      </div>
-    </div>
-);
+    const element = (hovered: boolean) => (
+        <div>
+            {hovered && (
+                <Button.Group style={styles} align="right">
+                    <Button
+                        size="small"
+                        rounded
+                        onClick={() => props.handleCommentAdd(props.lineNumber)}
+                        tooltip="Add a comment"
+                    >
+                        <Icon size="small">
+                            <FaPlus />
+                        </Icon>
+                    </Button>
+                </Button.Group>
+            )}
+            <div ref={measuredRef}>{props.children}</div>
+        </div>
+    );
 
-  const [hoverable, hovered] = useHover(element);
-  return (
-    <div>
-      {hoverable}
-    </div>
-  );
+    const [hoverable, hovered] = useHover(element);
+    return <div>{hoverable}</div>;
 };
 
 export default SyntaxLine;
-
 
 // export interface ISyntaxLineProps {
 // }
@@ -150,14 +144,12 @@ export default SyntaxLine;
 //   constructor(props: ISyntaxLineProps) {
 //     super(props);
 
-  
 //   }
-
 
 //   public render() {
 //     const element = (hovered: boolean) =>
 //     <div>
-//         {hovered &&        
+//         {hovered &&
 //         <Button.Group className="float-right" align="right">
 //           <Button size="small" rounded onClick={() => this.props.handleCommentAdd(this.props.lineNumber)}>
 //             <Icon size="small">
@@ -165,9 +157,9 @@ export default SyntaxLine;
 //             </Icon>
 //           </Button>
 //           </Button.Group>}
-//           {this.props.children}      
+//           {this.props.children}
 //     </div>;
-    
+
 //   const [hoverable, hovered] = useHover(element);
 
 //     return (
@@ -177,7 +169,3 @@ export default SyntaxLine;
 //     );
 //   }
 // }
-
-
-
-

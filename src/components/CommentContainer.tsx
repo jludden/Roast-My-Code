@@ -6,6 +6,8 @@ import 'rbx/index.css';
 import { Container, Card, Button, Content, Heading, Message, Icon, Delete } from 'rbx';
 import { FaAngleDown, FaCommentAlt } from 'react-icons/fa';
 import { Collapse } from 'react-collapse';
+import '../App.css';
+import { CommentAuthorAvatar } from './Avatar';
 
 export interface ICommentContainerProps {
     comments: RoastComment[]; // comments belonging to this line number
@@ -58,10 +60,10 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                     <FaCommentAlt />
                 </Button>
                 <Collapse isOpened={this.state.expanded}>
-                    <Card size="large">
+                    <Card size="medium">
                         <Card.Header>
                             <Card.Header.Title>
-                                [{this.props.comments[0].data.lineNumber}] comments: {this.props.comments.length}
+                                <CardHeader comment={this.props.comments[0]} />
                             </Card.Header.Title>
                             <Card.Header.Icon onClick={this.onMinimizeClicked}>
                                 <Icon>
@@ -71,15 +73,12 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                         </Card.Header>
                         <Card.Content>
                             <Content>
-                                <Heading>
-                                    [{this.props.comments[0].data.lineNumber}] comments: {this.props.comments.length}
-                                    <Delete />
-                                </Heading>
                                 {comments.map(comment => (
                                     <SingleCommentView
                                         key={comment.id}
                                         comment={comment}
                                         onEditComment={this.props.onEditComment}
+                                        inProgress={this.props.inProgress}
                                     />
                                 ))}
                             </Content>
@@ -88,9 +87,19 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                         <Card.Footer>
                             {this.props.inProgress && (
                                 <>
-                                    <Card.Footer.Item as="a">Cancel</Card.Footer.Item>
+                                    {/* <Card.Footer.Item as="a">Cancel</Card.Footer.Item>
                                     <Card.Footer.Item as="a" onClick={() => this.props.onSubmitComment(comments[0])}>
                                         Submit
+                                    </Card.Footer.Item> */}
+
+                                    <Card.Footer.Item as="a">
+                                        <Button color="light">Cancel</Button>
+                                    </Card.Footer.Item>
+                                    <Card.Footer.Item as="a" onClick={() => this.props.onSubmitComment(comments[0])}>
+                                        {/* Submit */}
+                                        <Button color="info" type="submit">
+                                            Submit
+                                        </Button>
                                     </Card.Footer.Item>
                                 </>
                             )}
@@ -164,3 +173,15 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         return `${ref.offsetTop}px`;
     }
 }
+
+export const CardHeader = ({ comment }: { comment: RoastComment }) => {
+    return (
+        <>
+            <CommentAuthorAvatar comment={comment} />
+            <div className="commentHeader">
+                <div style={{ fontWeight: 'bold', fontSize: '14px' }}>Jason Ludden</div>
+                <div style={{ fontWeight: 'lighter', fontSize: '12px' }}>7:45 AM Nov 28</div>
+            </div>
+        </>
+    );
+};

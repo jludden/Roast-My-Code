@@ -10,7 +10,14 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 // "react-syntax-highlighter/dist/esm/languages/hljs/kotlin"
 
 // import { github } from 'react-syntax-highlighter/dist/styles/hljs';
-// import { dark as github } from 'react-syntax-highlighter/dist/esm/styles/prism'; // todo
+// import dark from 'react-syntax-highlighter/dist/esm/styles/prism/dark'; // todo
+// "react-syntax-highlighter/dist/styles/prism"
+
+import tomorrow from 'react-syntax-highlighter/dist/styles/prism/tomorrow';
+import ghcolors from 'react-syntax-highlighter/dist/styles/prism/ghcolors';
+import darcula from 'react-syntax-highlighter/dist/styles/prism/darcula';
+
+// import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism'; // todo
 
 import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 
@@ -23,7 +30,7 @@ import RoastComment from '../RoastComment';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
 
 import 'rbx/index.css';
-import { Column, Container, Section } from 'rbx';
+import { Column, Container, Section, Button } from 'rbx';
 import SyntaxLine from '../SyntaxRenderer';
 
 // import myRenderer from './SyntaxRenderer' todo delete that whole class, have function local
@@ -41,9 +48,20 @@ export interface IDocumentBodyProps {
     documentId: string;
     documentTitle: string;
     commentListId: string;
+}
+export interface IDocumentBodyPropsWithTheme {
+    name: string; // github data - refactor to new interface
+    content: string;
+    comments: RoastComment[];
 
-    // onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
-    // onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
+    repoComments: FindRepoResults;
+    repoId: string;
+    repoTitle: string;
+    documentId: string;
+    documentTitle: string;
+    commentListId: string;
+
+    theme: any;
 }
 
 interface IDocumentBodyState {
@@ -55,7 +73,40 @@ interface IDocumentBodyState {
     inProgressComment?: IUnsubmittedComment;
 }
 
-export default class DocumentBody extends React.Component<IDocumentBodyProps, IDocumentBodyState> {
+const DocumentBodyContainer = (props: IDocumentBodyProps) => {
+    const availableThemes = [tomorrow, ghcolors, darcula];
+    const [theme, setTheme] = React.useState(tomorrow);
+
+    const cycleTheme = () => {
+        const currentIndex = availableThemes.indexOf(theme);
+        const newIndex = availableThemes.length - currentIndex > 1 ? currentIndex + 1 : 0;
+        setTheme(availableThemes[newIndex]);
+    };
+
+    return (
+        <>
+            <Button color="info" onClick={() => cycleTheme()}>
+                Change Theme
+            </Button>
+            <DocumentBody
+                name={props.name}
+                content={props.content}
+                comments={props.comments}
+                repoComments={props.repoComments}
+                repoId={props.repoId}
+                repoTitle={props.repoTitle}
+                documentId={props.documentId}
+                documentTitle={props.documentTitle}
+                commentListId={props.commentListId}
+                theme={theme}
+            />
+        </>
+    );
+};
+
+export default DocumentBodyContainer;
+
+export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, IDocumentBodyState> {
     public state: IDocumentBodyState = {
         clicksCnt: 0,
         currentlySelected: false,
@@ -83,25 +134,38 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
 
         return (
             <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
-                {/* <button type="button" onClick={this.handleButtonPress}>Add Click</button>
-        <h3> number of clicks: {this.state.clicksCnt} </h3>
-        <pre> currently selected: {String(this.state.currentlySelected)}</pre>
-        <SubmitComment
-          comment={this.props.comments[0]}
-          isCurrentlySelected={this.state.currentlySelected}
-          selectedText={this.state.selectedText}
-          onSubmitComment={this.props.onSubmitComment}
-        />
-        <pre> comments selected: {this.getComments()}</pre> */}
+                {/* {decoded && (
+                    <SyntaxHighlighter
+                        language={language}
+                        style={this.props.theme}
+                        className="left-align"
+                        showLineNumbers
+                        renderer={this.renderSyntaxLines}
+                    >
+                        {decoded}
+                    </SyntaxHighlighter>
+                )}
+                <div style={{ marginLeft: '-100px' }}>
+                    <DocumentCommentsView
+                        lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
+                        lineRefs={this.state.lineRefs}
+                        inProgressComment={this.state.inProgressComment}
+                        repoId={this.props.repoId}
+                        repoTitle={this.props.repoTitle}
+                        documentId={this.props.documentId}
+                        documentTitle={this.props.documentTitle}
+                        commentListId={this.props.commentListId}
+                    />
+                </div> */}
 
-                <Section backgroundColor="primary" gradient="warning">
-                    <Container color="primary">
+                <Section backgroundColor="dark" gradient="warning">
+                    <Container color="dark">
                         <Column.Group>
                             <Column size="three-quarters">
                                 {decoded && (
                                     <SyntaxHighlighter
                                         language={language}
-                                        // style={github}
+                                        style={this.props.theme}
                                         className="left-align"
                                         showLineNumbers
                                         renderer={this.renderSyntaxLines}
@@ -110,7 +174,7 @@ export default class DocumentBody extends React.Component<IDocumentBodyProps, ID
                                     </SyntaxHighlighter>
                                 )}
                             </Column>
-                            <Column size="one-quarter" backgroundColor="primary">
+                            <Column size="one-quarter" backgroundColor="light">
                                 <DocumentCommentsView
                                     lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
                                     lineRefs={this.state.lineRefs}
