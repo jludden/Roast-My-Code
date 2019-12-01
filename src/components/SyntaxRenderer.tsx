@@ -3,7 +3,15 @@ import React, { useState, useCallback } from 'react';
 // import * as rsh from 'react-syntax-highlighter';
 import useHover from 'react-use/lib/useHover';
 import { Button, Icon } from 'rbx';
-import { FaPlusCircle, FaPlus, FaPlusSquare, FaRegPlusSquare, FaGooglePlus, FaSearchPlus } from 'react-icons/fa';
+import {
+    FaPlusCircle,
+    FaPlus,
+    FaPlusSquare,
+    FaRegPlusSquare,
+    FaGooglePlus,
+    FaSearchPlus,
+    FaComment,
+} from 'react-icons/fa';
 import RoastComment from './RoastComment';
 import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
 import SubmitComment from './SubmitCommentForm';
@@ -115,16 +123,24 @@ const SyntaxLine: React.FunctionComponent<IAppProps> = props => {
         <div>
             {hovered && (
                 <Button.Group style={styles} align="right">
-                    <Button
+                    <Icon
+                        color="info"
+                        size="medium"
+                        onClick={() => props.handleCommentAdd(props.lineNumber)}
+                        tooltip="Add a comment"
+                    >
+                        <FaComment size="medium" />
+                    </Icon>
+                    {/* <Button
                         size="small"
                         rounded
                         onClick={() => props.handleCommentAdd(props.lineNumber)}
                         tooltip="Add a comment"
                     >
                         <Icon size="small">
-                            <FaPlus />
+                        <FaComment />
                         </Icon>
-                    </Button>
+                    </Button> */}
                 </Button.Group>
             )}
             <div ref={measuredRef}>{props.children}</div>

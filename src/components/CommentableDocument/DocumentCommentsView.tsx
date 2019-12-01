@@ -7,6 +7,9 @@ import {
     AddComment3,
     AddCommentInput,
     FindRepoResults,
+    DefaultAddCommentView,
+    useAddComment,
+    AddComment4,
 } from '../CommentableCodePage/CommentsGqlQueries';
 import {
     Section,
@@ -29,10 +32,10 @@ import {
 
 import CommentContainer from '../CommentContainer';
 
-export interface ICommentsViewProps {
+export interface CommentsViewProps {
     lineNumberMap: Map<number | undefined, RoastComment[]>;
     lineRefs: HTMLDivElement[];
-    inProgressComment?: IUnsubmittedComment;
+    inProgressComment?: UnsubmittedComment;
     // onEditComment: (details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
     // onSubmitComment: (details: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
     repoId: string;
@@ -42,76 +45,82 @@ export interface ICommentsViewProps {
     commentListId: string;
 }
 
-export interface IUnsubmittedComment {
+export interface UnsubmittedComment {
     lineRef: HTMLDivElement;
     lineNumber: number;
     selectedText: string;
     author: string;
 }
 
-interface ICommentsViewState {}
+const DocumentCommentsView = (props: CommentsViewProps) => {
+    // Group comments into Comment Containers based their associated line number TODO this could be state or something
+    // const lineNumberMap = new Map<number|undefined, RoastComment[]>();
+    // this.props.comments.map((comment: RoastComment) => {
+    //   var line: RoastComment[] = lineNumberMap.get(comment.data.lineNumber) || [];
+    //   line.push(comment);
+    //   lineNumberMap.set(comment.data.lineNumber, line);
+    // });
 
-export default class DocumentCommentsView extends React.Component<ICommentsViewProps, ICommentsViewState> {
-    constructor(props: ICommentsViewProps) {
-        super(props);
-    }
+    const onSubmit = useAddComment({
+        repoId: props.repoId,
+        repoTitle: props.repoTitle,
+        documentId: props.documentId,
+        documentTitle: props.documentTitle,
+        commentListId: props.commentListId,
+    });
 
-    public render() {
-        // Group comments into Comment Containers based their associated line number TODO this could be state or something
-        // const lineNumberMap = new Map<number|undefined, RoastComment[]>();
-        // this.props.comments.map((comment: RoastComment) => {
-        //   var line: RoastComment[] = lineNumberMap.get(comment.data.lineNumber) || [];
-        //   line.push(comment);
-        //   lineNumberMap.set(comment.data.lineNumber, line);
-        // });
+    const onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse> = async (
+        comment: RoastComment,
+    ) => {
+        // todo check logged in i guess
+        try {
+            if (comment.data.comment) {
+                await onSubmit(comment.data.comment);
+                return SubmitCommentResponse.Success;
+            }
+        } catch (e) {}
+        return SubmitCommentResponse.Error;
+    };
 
-        const onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse> = () =>
-            Promise.resolve(SubmitCommentResponse.Success);
-        const onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse> = () =>
-            Promise.resolve(SubmitCommentResponse.Success);
+    const onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse> = () =>
+        Promise.resolve(SubmitCommentResponse.Success);
 
-        return (
-            <ul className="flex-item comments-pane">
-                {/* display all the saved comments */}
-                {Array.from(this.props.lineNumberMap, ([lineNumber, comments]) => (
+    return (
+        <ul className="flex-item comments-pane">
+            {/* display all the saved comments */}
+            {Array.from(props.lineNumberMap, ([lineNumber, comments]) => (
+                <CommentContainer
+                    key={lineNumber}
+                    comments={comments}
+                    onEditComment={onEditComment}
+                    onSubmitComment={onSubmitComment}
+                    lineRef={props.lineRefs[lineNumber || 0]}
+                    inProgress={false}
+                />
+            ))}
+            {/* also display the comment in progress if any */}
+            {props.inProgressComment && (
+                <>
                     <CommentContainer
-                        key={lineNumber}
-                        comments={comments}
+                        key={`unsubmitted ${props.inProgressComment.lineRef}`}
                         onEditComment={onEditComment}
                         onSubmitComment={onSubmitComment}
-                        lineRef={this.props.lineRefs[lineNumber || 0]}
-                        inProgress={false}
+                        lineRef={props.inProgressComment.lineRef}
+                        inProgress
+                        comments={[
+                            new RoastComment({
+                                data: {
+                                    lineNumber: props.inProgressComment.lineNumber,
+                                    selectedText: props.inProgressComment.selectedText,
+                                    author: props.inProgressComment.author,
+                                },
+                            }),
+                        ]}
                     />
-                ))}
-                {/* also display the comment in progress if any */}
-                {this.props.inProgressComment && (
-                    <>
-                        <CommentContainer
-                            key={`unsubmitted ${this.props.inProgressComment.lineRef}`}
-                            onEditComment={onEditComment}
-                            onSubmitComment={onSubmitComment}
-                            lineRef={this.props.inProgressComment.lineRef}
-                            inProgress
-                            comments={[
-                                new RoastComment({
-                                    data: {
-                                        lineNumber: this.props.inProgressComment.lineNumber,
-                                        selectedText: this.props.inProgressComment.selectedText,
-                                        author: this.props.inProgressComment.author,
-                                    },
-                                }),
-                            ]}
-                        />
-                        <AddComment3
-                            repoId={this.props.repoId}
-                            repoTitle={this.props.repoTitle}
-                            documentId={this.props.documentId}
-                            documentTitle={this.props.documentTitle}
-                            commentListId={this.props.commentListId}
-                        />
-                    </>
-                )}
-            </ul>
-        );
-    }
-}
+                </>
+            )}
+        </ul>
+    );
+};
+
+export default DocumentCommentsView;

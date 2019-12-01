@@ -3,8 +3,8 @@ import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
 import RoastComment from './RoastComment';
 import SingleCommentView from './SingleCommentView';
 import 'rbx/index.css';
-import { Container, Card, Button, Content, Heading, Message, Icon, Delete } from 'rbx';
-import { FaAngleDown, FaCommentAlt } from 'react-icons/fa';
+import { Container, Card, Button, Content, Heading, Message, Icon, Delete, Textarea } from 'rbx';
+import { FaAngleDown, FaAngleUp, FaCommentAlt } from 'react-icons/fa';
 import { Collapse } from 'react-collapse';
 import '../App.css';
 import { CommentAuthorAvatar } from './Avatar';
@@ -18,6 +18,7 @@ export interface ICommentContainerProps {
 }
 
 interface ICommentContainerState {
+    inputText: string;
     expanded: boolean;
     editMode: boolean; // flag for an existing comment in editMode
     styles: React.CSSProperties;
@@ -27,7 +28,8 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
     constructor(props: ICommentContainerProps) {
         super(props);
         this.state = {
-            expanded: true,
+            inputText: '',
+            expanded: props.inProgress,
             editMode: false,
             styles: {
                 top: 0,
@@ -37,8 +39,6 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
     }
 
     private onMinimizeClicked = () => {
-        // this.setState({expanded:false});
-
         this.setState({ expanded: !this.state.expanded });
     };
 
@@ -54,36 +54,52 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
 
     public render() {
         const { comments } = this.props;
+
         return (
             <div style={this.state.styles}>
-                <Button onClick={this.onMinimizeClicked} color="light">
+                {/* <Button onClick={this.onMinimizeClicked} color="light">
                     <FaCommentAlt />
-                </Button>
-                <Collapse isOpened={this.state.expanded}>
-                    <Card size="medium">
-                        <Card.Header>
-                            <Card.Header.Title>
-                                <CardHeader comment={this.props.comments[0]} />
-                            </Card.Header.Title>
-                            <Card.Header.Icon onClick={this.onMinimizeClicked}>
-                                <Icon>
-                                    <FaAngleDown />
-                                </Icon>
-                            </Card.Header.Icon>
-                        </Card.Header>
-                        <Card.Content>
-                            <Content>
-                                {comments.map(comment => (
-                                    <SingleCommentView
-                                        key={comment.id}
-                                        comment={comment}
-                                        onEditComment={this.props.onEditComment}
-                                        inProgress={this.props.inProgress}
-                                    />
-                                ))}
-                            </Content>
-                        </Card.Content>
+                </Button> */}
+                <Card size="medium">
+                    <Card.Header>
+                        <Card.Header.Title>
+                            <CardHeader comment={this.props.comments[0]} />
+                        </Card.Header.Title>
+                        <Card.Header.Icon onClick={this.onMinimizeClicked}>
+                            <Icon>
+                                {!this.state.expanded && <FaAngleDown />}
+                                {this.state.expanded && <FaAngleUp />}
+                            </Icon>
+                        </Card.Header.Icon>
+                    </Card.Header>
+                    <Card.Content>
+                        <Content>
+                            {/* {comments.map(comment => (
+                                <SingleCommentView
+                                    key={comment.id}
+                                    comment={comment}
+                                    onEditComment={this.props.onEditComment}
+                                    inProgress={this.props.inProgress}
+                                />
+                            ))} */}
 
+                            {!this.props.inProgress && comments.map(comment => <p>{comment.data.comment}</p>)}
+
+                            {this.props.inProgress && (
+                                <Textarea
+                                    fixedSize
+                                    readOnly={false}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        this.setState({ inputText: e.target.value })
+                                    }
+                                />
+                            )}
+
+                            {this.props.children}
+                        </Content>
+                    </Card.Content>
+
+                    <Collapse isOpened={this.state.expanded}>
                         <Card.Footer>
                             {this.props.inProgress && (
                                 <>
@@ -95,7 +111,13 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                                     <Card.Footer.Item as="a">
                                         <Button color="light">Cancel</Button>
                                     </Card.Footer.Item>
-                                    <Card.Footer.Item as="a" onClick={() => this.props.onSubmitComment(comments[0])}>
+                                    <Card.Footer.Item
+                                        as="a"
+                                        onClick={() => {
+                                            comments[0].data.comment = this.state.inputText;
+                                            this.props.onSubmitComment(comments[0]);
+                                        }}
+                                    >
                                         {/* Submit */}
                                         <Button color="info" type="submit">
                                             Submit
@@ -130,8 +152,8 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                                 </>
                             )}
                         </Card.Footer>
-                    </Card>
-                </Collapse>
+                    </Collapse>
+                </Card>
             </div>
 
             // <li className="float-comment-pane" style={this.state.styles}>

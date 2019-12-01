@@ -23,7 +23,7 @@ import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 
-import DocumentCommentsView, { IUnsubmittedComment } from './DocumentCommentsView';
+import DocumentCommentsView, { UnsubmittedComment } from './DocumentCommentsView';
 import SubmitComment from '../SubmitCommentForm';
 
 import RoastComment from '../RoastComment';
@@ -70,7 +70,7 @@ interface IDocumentBodyState {
     selectedLine: number;
     selectedText: string;
     lineRefs: HTMLDivElement[];
-    inProgressComment?: IUnsubmittedComment;
+    inProgressComment?: UnsubmittedComment;
 }
 
 const DocumentBodyContainer = (props: IDocumentBodyProps) => {
