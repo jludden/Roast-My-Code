@@ -106,6 +106,10 @@ const DocumentBodyContainer = (props: IDocumentBodyProps) => {
 
 export default DocumentBodyContainer;
 
+// export const DocumentBody = (props: IDocumentBodyPropsWithTheme) => {
+
+// }
+
 export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, IDocumentBodyState> {
     public state: IDocumentBodyState = {
         clicksCnt: 0,
@@ -184,6 +188,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
                                     documentId={this.props.documentId}
                                     documentTitle={this.props.documentTitle}
                                     commentListId={this.props.commentListId}
+                                    onSubmitCommentFinish={this.onSubmitCommentFinish}
                                 />
                             </Column>
                         </Column.Group>
@@ -223,6 +228,13 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
             </div>
         );
     }
+
+    // get rid of the in-progress comment when the submission goes through or is cancelled
+    private onSubmitCommentFinish = () => {
+        this.setState({
+            inProgressComment: undefined,
+        });
+    };
 
     // Group comments into Comment Containers based their associated line number TODO this could be state or something
     private groupCommentsByLineNumber = (comments: RoastComment[]) => {

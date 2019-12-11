@@ -10,16 +10,13 @@ import { IdentityContextProvider } from 'react-netlify-identity-widget';
 import RepoContents, { REPO_CONTENTS_QUERY } from './components/RepoContents';
 import App from './App';
 
-
 enzyme.configure({ adapter: new Adapter() });
-
 
 // it('renders without crashing', () => {
 //   const div = document.createElement('div');
 //   ReactDOM.render(<App />, div);
 //   ReactDOM.unmountComponentAtNode(div);
 // });
-
 
 // const shallowWrapper = shallow(<CommentableCode document="" />);
 //     const containsSpinner = shallowWrapper.containsMatchingElement(
@@ -28,31 +25,26 @@ enzyme.configure({ adapter: new Adapter() });
 
 //     expect(containsSpinner).toBe(true);
 
-
 xit('will render data', async () => {
-  const mocks = [
-    {
-      request: { query: {} },
-      result: { data: { hello: 'world' } },
-    },
-  ];
-  const wrapper = mount(
-    <MockedProvider mocks={mocks}>
-      <IdentityContextProvider url="https://jludden-react.netlify.com/">
-        <App />
-      </IdentityContextProvider>
-    </MockedProvider>,
-  );
-  await new Promise((resolve) => setTimeout(resolve));
-  wrapper.update();
+    const mocks = [
+        {
+            request: { query: {} },
+            result: { data: { hello: 'world' } },
+        },
+    ];
+    const wrapper = mount(
+        <MockedProvider mocks={mocks}>
+            <IdentityContextProvider url="https://jludden-react.netlify.com/">
+                <App />
+            </IdentityContextProvider>
+        </MockedProvider>,
+    );
+    await new Promise(resolve => setTimeout(resolve));
+    wrapper.update();
 
-  const containsSpinner = wrapper.containsMatchingElement(
-    <Progress />,
-  );
+    const containsSpinner = wrapper.containsMatchingElement(<Progress />);
 
-  const containsApp = wrapper.containsMatchingElement(
-    <App />,
-  );
+    const containsApp = wrapper.containsMatchingElement(<App />);
 
-  expect(containsSpinner).toBe(false);
+    expect(containsSpinner).toBe(false);
 });

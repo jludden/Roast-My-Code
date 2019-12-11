@@ -5,7 +5,7 @@ export default class RoastComment implements IRoastComment {
         lineNumber?: number;
         selectedText?: string;
         author?: string;
-        comment?: string;
+        text: string;
     };
 
     constructor(obj?: IRoastComment) {
@@ -14,7 +14,7 @@ export default class RoastComment implements IRoastComment {
             author: (obj && obj.data && obj.data.author) || '',
             lineNumber: (obj && obj.data && obj.data.lineNumber) || -1,
             selectedText: (obj && obj.data && obj.data.selectedText) || '',
-            comment: (obj && obj.data && obj.data.comment) || '',
+            text: (obj && obj.data && obj.data.text) || '',
         };
     }
 
@@ -44,14 +44,16 @@ export default class RoastComment implements IRoastComment {
 export interface IRoastComment {
     id?: number; // the id of the comment
 
-    data: {
-        lineNumber?: number;
-        selectedText?: string;
-        author?: string;
-        comment?: string;
-    };
+    data: CommentInput;
+}
 
-    // submit(text: string): void;
+export interface CommentInput {
+    text: string;
+    lineNumber?: number;
+    selectedText?: string;
+    author?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 // export interface ICommentPostResponse {

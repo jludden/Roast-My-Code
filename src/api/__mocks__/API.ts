@@ -1,12 +1,15 @@
-import API from "../API";
-import RoastComment from "../../components/RoastComment";
+import API from '../API';
+import RoastComment from '../../components/RoastComment';
 
 // working implementation - do we want to mock it at all times?
-const mockAPI = jest.spyOn(API, "getComments");
+const mockAPI = jest.spyOn(API, 'getComments');
 mockAPI.mockImplementation(() => {
-  return Promise.resolve([
-    new RoastComment({id: 12345, data: {lineNumber: 10, selectedText: "hello world", author: "jason", comment: "capitalize words"}})
-  ]) as any;
+    return Promise.resolve([
+        new RoastComment({
+            id: 12345,
+            data: { lineNumber: 10, selectedText: 'hello world', author: 'jason', text: 'capitalize words' },
+        }),
+    ]) as any;
 });
 
 // todo move to __mock__

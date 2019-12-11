@@ -21,6 +21,11 @@ type TodoList {
 
 type Comment {
   text: String!
+  lineNumber: Int
+  selectedText: String
+  author: User @relation
+  createdAt: String
+  updatedAt: String
   list: CommentList!
 }
 
@@ -38,4 +43,13 @@ type Document {
 type Repository {
   title: String! @unique
   documentsList: [Document!] @relation
+}
+
+type User {
+  name: String!
+  email: String
+  githubId: String
+  avatarUrl: String
+  createdAt: String
+  updatedAt: String
 }

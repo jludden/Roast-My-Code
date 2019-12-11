@@ -14,7 +14,7 @@ import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';
 import RepoContents from '../RepoContents';
 import AuthStatusView from '../AuthStatusView';
 import { CompletedTodos, GraphQLTodoList, SubmitTodosMutation, LoadTodosTestWithDelete } from './GraphQLTodos';
-import { FindRepoResults, AddComment, RepoCommentsListDisplayWithDelete } from './CommentsGqlQueries';
+import { FindRepoResults, RepoCommentsListDisplayWithDelete } from './CommentsGqlQueries';
 import { useIdentityContext } from 'react-netlify-identity-widget';
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import { deleteCommentMutation, createCommentMutation, findCommentsForRepoQuery } from './GraphQL/CommentsGraphQL';
@@ -102,7 +102,7 @@ export interface Todo {
     _id: string;
 }
 
-const LOAD_REPO_QUERY = gql`
+export const LOAD_REPO_QUERY = gql`
     query LoadRepo($owner: String!, $name: String!) {
         repository(owner: $owner, name: $name) {
             name
@@ -136,7 +136,7 @@ const LOAD_REPO_QUERY = gql`
 
 // "owner": "jludden",
 // "name": "ReefLifeSurvey---Species-Explorer"
-const CommentableCode = (props: CCContainerProps) => {
+const CommentableCodeLoadRepoContainer = (props: CCContainerProps) => {
     // const { pathname, search } = useWindowPath();
     // React.useEffect(() => {
     //     // do something when path changes ...
@@ -174,7 +174,7 @@ const CommentableCode = (props: CCContainerProps) => {
 
     return (
         <>
-            <LoadCommentsTestContainer
+            <CommentableCodeInnerContainer
                 userIsLoggedIn={props.userIsLoggedIn}
                 userName={props.userName}
                 repo={data.repository}
@@ -185,7 +185,7 @@ const CommentableCode = (props: CCContainerProps) => {
                     userName={props.userName}
                     repo={data.repository}
                 /> */}
-            </LoadCommentsTestContainer>
+            </CommentableCodeInnerContainer>
         </>
     );
 };
@@ -195,7 +195,7 @@ interface ContainerProps {
     children: JSX.Element;
 }
 
-const LoadCommentsTestContainer = ({
+const CommentableCodeInnerContainer = ({
     repoTitle,
     children,
     userIsLoggedIn,
@@ -217,11 +217,6 @@ const LoadCommentsTestContainer = ({
             */}
             <h1>COMMENTS FOR REPO</h1>
             <FindCommentsForRepo userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} />
-            <br />
-            <br />
-            <AddComment commentListId={commentListId} documentId={documentId} repoTitle={repoTitle} />
-            <br />
-            <br />
             <div>{children}</div>
         </div>
     );
@@ -410,4 +405,4 @@ export const CommentableCodeInner2 = ({
     );
 };
 
-export default CommentableCode;
+export default CommentableCodeLoadRepoContainer;

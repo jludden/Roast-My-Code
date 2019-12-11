@@ -1,16 +1,7 @@
 import * as React from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../RoastComment';
-import {
-    AddComment,
-    AddComment2,
-    AddComment3,
-    AddCommentInput,
-    FindRepoResults,
-    DefaultAddCommentView,
-    useAddComment,
-    AddComment4,
-} from '../CommentableCodePage/CommentsGqlQueries';
+import { useAddComment } from '../CommentableCodePage/CommentsGqlQueries';
 import {
     Section,
     Title,
@@ -36,8 +27,7 @@ export interface CommentsViewProps {
     lineNumberMap: Map<number | undefined, RoastComment[]>;
     lineRefs: HTMLDivElement[];
     inProgressComment?: UnsubmittedComment;
-    // onEditComment: (details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
-    // onSubmitComment: (details: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
+    onSubmitCommentFinish: () => void; // either submit or cancel, close in progress comment
     repoId: string;
     repoTitle: string;
     documentId: string;
@@ -72,14 +62,19 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
     const onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse> = async (
         comment: RoastComment,
     ) => {
-        // todo check logged in i guess
+        // todo check logged in
         try {
-            if (comment.data.comment) {
-                await onSubmit(comment.data.comment);
+            if (comment.data.text) {
+                await onSubmit(comment.data);
+                props.onSubmitCommentFinish(); // notify parent
                 return SubmitCommentResponse.Success;
             }
         } catch (e) {}
         return SubmitCommentResponse.Error;
+    };
+
+    const onCancelComment = () => {
+        props.onSubmitCommentFinish();
     };
 
     const onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse> = () =>
@@ -94,6 +89,7 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                     comments={comments}
                     onEditComment={onEditComment}
                     onSubmitComment={onSubmitComment}
+                    onCancelComment={onCancelComment}
                     lineRef={props.lineRefs[lineNumber || 0]}
                     inProgress={false}
                 />
@@ -105,11 +101,13 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                         key={`unsubmitted ${props.inProgressComment.lineRef}`}
                         onEditComment={onEditComment}
                         onSubmitComment={onSubmitComment}
+                        onCancelComment={onCancelComment}
                         lineRef={props.inProgressComment.lineRef}
                         inProgress
                         comments={[
                             new RoastComment({
                                 data: {
+                                    text: '',
                                     lineNumber: props.inProgressComment.lineNumber,
                                     selectedText: props.inProgressComment.selectedText,
                                     author: props.inProgressComment.author,

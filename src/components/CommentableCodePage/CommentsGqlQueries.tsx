@@ -31,6 +31,7 @@ import {
     Icon,
     Progress,
 } from 'rbx';
+import { CommentInput } from '../RoastComment';
 
 function FindCommentList(
     data: findRepositoryByTitle | null,
@@ -174,80 +175,6 @@ export const RepoCommentsListDisplayWithDelete = ({
         />
     );
 };
-
-export const AddComment = ({
-    documentId,
-    commentListId,
-    repoTitle,
-}: {
-    documentId: string;
-    commentListId: string;
-    repoTitle: string;
-}) => {
-    const [mutate] = useMutation(createCommentMutation);
-
-    return (
-        <AddCommentInput
-            list={commentListId}
-            submit={(finalListId: string, commentContent: string) =>
-                mutate({
-                    variables: { text: commentContent, listId: finalListId },
-                    optimisticResponse: {
-                        __typename: 'Mutation',
-                        createComment: {
-                            __typename: 'Comment',
-                            text: commentContent,
-                            _id: '' + Math.round(Math.random() * -1000000),
-                            list: {
-                                _id: finalListId,
-                            },
-                        },
-                    },
-                    update: (cache, { data: { createComment } }) => {
-                        // Read the data from our cache for this query.
-
-                        const data = cache.readQuery<FindRepoResults>({
-                            query: findCommentsForRepoQuery,
-                            variables: { repoTitle },
-                        });
-
-                        const commentList = FindCommentList(data, documentId, commentListId);
-                        if (commentList) {
-                            commentList.push(createComment);
-                        }
-                        cache.writeQuery({
-                            query: findCommentsForRepoQuery,
-                            data: data,
-                        });
-                    },
-                })
-            }
-        />
-    );
-};
-
-export const AddCommentInput = ({
-    list,
-    submit,
-}: {
-    list: string;
-    submit: (list: string, commentContent: string) => Promise<ExecutionResult<any>>;
-}) => {
-    let input: HTMLInputElement | null = null;
-
-    return (
-        <div>
-            <span>Add Comment to Comment List</span>
-            <input
-                ref={node => {
-                    input = node;
-                }}
-            />
-            <Button onClick={() => submit(list, input ? input.value : 'ADD COMMENT MUTATION TEST')}>ADD TO LIST</Button>
-        </div>
-    );
-};
-
 interface Comment {
     _id: string;
     text: string;
@@ -489,117 +416,6 @@ const createDocumentAndCommentListRESPONSE = `{
     }
   }`;
 
-// todo consider render prop pattern https://dev.to/busypeoples/notes-on-typescript-render-props-1f3p
-export const AddComment2 = ({
-    repoId,
-    repoTitle,
-    documentId,
-    documentTitle,
-    commentListId,
-}: // children,
-{
-    repoId: string;
-    repoTitle: string;
-    documentId: string;
-    documentTitle: string;
-    commentListId: string;
-    // children: JSX.Element;
-}) => {
-    // Mutation to add a comment to a comment list
-    const [submitCommentMutation] = useMutation(createCommentMutation);
-    const doSubmitComment = (commentListId: string, commentContent: string) => {
-        submitCommentMutation({
-            variables: { text: commentContent, listId: commentListId },
-            optimisticResponse: {
-                __typename: 'Mutation',
-                createComment: {
-                    __typename: 'Comment',
-                    text: commentContent,
-                    _id: '' + Math.round(Math.random() * -1000000),
-                    list: {
-                        _id: commentListId,
-                    },
-                },
-            },
-            update: (cache, { data: { createComment } }) => {
-                const data = cache.readQuery<FindRepoResults>({
-                    query: findCommentsForRepoQuery,
-                    variables: { repoTitle },
-                });
-
-                const commentList = FindCommentList(data, documentId, commentListId);
-                if (commentList) {
-                    commentList.push(createComment);
-                }
-                cache.writeQuery({
-                    query: findCommentsForRepoQuery,
-                    data: data,
-                });
-            },
-        });
-    };
-
-    // mutation to create a document and commentlist within the repository
-    const [setupDocumentMutation] = useMutation(createDocumentAndCommentList);
-
-    // keep track of
-    const [submitted, setSubmitted] = React.useState(false);
-    const trySubmitComment = async (commentContent: string) => {
-        if (submitted) return;
-
-        if (commentListId) doSubmitComment(commentListId, commentContent);
-        else {
-            let createdCommentList = '';
-            await setupDocumentMutation({
-                variables: { repoId: repoId, docTitle: documentTitle },
-                update: (cache, { data: { createDocument } }) => {
-                    const data = cache.readQuery<FindRepoResults>({
-                        query: findCommentsForRepoQuery,
-                        variables: { repoTitle },
-                    });
-
-                    const repoData =
-                        data &&
-                        data.findRepositoryByTitle &&
-                        data.findRepositoryByTitle.documentsList &&
-                        data.findRepositoryByTitle.documentsList.data;
-                    repoData && repoData.push(createDocument);
-
-                    cache.writeQuery({
-                        query: findCommentsForRepoQuery,
-                        data: data,
-                    });
-
-                    createdCommentList = createDocument.commentsList.data[0]._id;
-                },
-            });
-            if (createdCommentList) doSubmitComment(createdCommentList, commentContent);
-            else console.error('failed to add comment - failed to create comment list'); // todo
-        }
-        setSubmitted(true);
-    };
-
-    // return React.cloneElement(children, {
-    //     onSubmit: trySubmitComment,
-    // });
-
-    let input: HTMLInputElement | null = null;
-
-    return (
-        <div>
-            <span>Add Comment to Comment List</span>
-            <input
-                ref={node => {
-                    input = node;
-                }}
-            />
-            <Button onClick={() => trySubmitComment(input ? input.value : 'ADD COMMENT MUTATION TEST')}>
-                ADD TO LIST
-            </Button>
-        </div>
-    );
-};
-
 const createDocumentAndFirstComment = gql`
     mutation createDocumentAndFirstComment($text: String!, $docTitle: String!, $repoId: ID!) {
         createComment(
@@ -629,160 +445,6 @@ const createDocumentAndFirstComment = gql`
 // however a document without any comments on it yet will not have a comment list,
 // so in this case we will add a new document to the repo, and a new comment list to the doc,
 // and then the new comment to the new comment list
-export const AddComment3 = ({
-    repoId,
-    repoTitle,
-    documentId,
-    documentTitle,
-    commentListId,
-    // }: // children,
-    children,
-}: {
-    repoId: string;
-    repoTitle: string;
-    documentId: string;
-    documentTitle: string;
-    commentListId: string;
-    children: (onSubmit: (input: string) => void) => React.ReactNode;
-    // children: JSX.Element;
-    // { onSubmit: (input: string) => void }
-}) => {
-    // Mutation to add a comment to an existing comment list
-    const [submitCommentMutation] = useMutation(createCommentMutation);
-    const doSubmitComment = (commentListId: string, commentContent: string) => {
-        submitCommentMutation({
-            variables: { text: commentContent, listId: commentListId },
-            optimisticResponse: {
-                __typename: 'Mutation',
-                createComment: {
-                    __typename: 'Comment',
-                    text: commentContent,
-                    _id: '' + Math.round(Math.random() * -1000000),
-                    list: {
-                        _id: commentListId,
-                    },
-                },
-            },
-            update: (cache, { data: { createComment } }) => {
-                const data = cache.readQuery<FindRepoResults>({
-                    query: findCommentsForRepoQuery,
-                    variables: { repoTitle },
-                });
-
-                const commentList = FindCommentList(data, documentId, commentListId);
-                if (commentList) {
-                    commentList.push(createComment);
-                }
-                cache.writeQuery({
-                    query: findCommentsForRepoQuery,
-                    data: data,
-                });
-            },
-        });
-    };
-
-    // mutation to create a document and commentlist and first comment
-    const [firstCommentMutation] = useMutation(createDocumentAndFirstComment);
-
-    // keep track of
-    const [submitted, setSubmitted] = React.useState(false);
-    const trySubmitComment = async (commentContent: string) => {
-        if (submitted) return;
-
-        if (commentListId) doSubmitComment(commentListId, commentContent);
-        else {
-            firstCommentMutation({
-                variables: { repoId: repoId, docTitle: documentTitle, text: commentContent },
-                optimisticResponse: {
-                    __typename: 'Mutation',
-                    createComment: {
-                        __typename: 'Comment',
-                        text: commentContent,
-                        _id: '' + Math.round(Math.random() * -1000000),
-                        list: {
-                            _id: '' + Math.round(Math.random() * -1000000),
-                            document: {
-                                title: documentTitle,
-                                _id: '' + Math.round(Math.random() * -1000000),
-                                repository: {
-                                    _id: repoId,
-                                    title: repoTitle,
-                                },
-                            },
-                        },
-                    },
-                },
-                update: (cache, { data: { createComment } }) => {
-                    const data = cache.readQuery<FindRepoResults>({
-                        query: findCommentsForRepoQuery,
-                        variables: { repoTitle },
-                    });
-
-                    // add the newly create comment to the cached version of the repo
-                    if (
-                        data &&
-                        data.findRepositoryByTitle &&
-                        data.findRepositoryByTitle.documentsList &&
-                        data.findRepositoryByTitle.documentsList.data
-                    ) {
-                        data.findRepositoryByTitle.documentsList.data.push({
-                            __typename: 'Document',
-                            _id: createComment.list.document._id,
-                            title: createComment.list.document.title,
-                            commentsList: {
-                                __typename: 'CommentListPage',
-                                data: [
-                                    {
-                                        __typename: 'CommentList',
-                                        _id: createComment.list._id,
-                                        comments: {
-                                            __typename: 'CommentPage',
-                                            data: [
-                                                {
-                                                    __typename: 'Comment',
-                                                    _id: createComment._id,
-                                                    text: createComment.text,
-                                                },
-                                            ],
-                                        },
-                                    },
-                                ],
-                            },
-                        });
-                    }
-
-                    cache.writeQuery({
-                        query: findCommentsForRepoQuery,
-                        data: data,
-                    });
-                },
-            });
-        }
-        setSubmitted(true);
-    };
-
-    return children(trySubmitComment);
-
-    // return React.cloneElement(children, {
-    //     onSubmit: trySubmitComment,
-    // });
-
-    // let input: HTMLInputElement | null = null;
-
-    // return (
-    //     <div>
-    //         <span>Add Comment to Comment List</span>
-    //         <input
-    //             ref={node => {
-    //                 input = node;
-    //             }}
-    //         />
-    //         <Button onClick={() => trySubmitComment(input ? input.value : 'ADD COMMENT MUTATION TEST')}>
-    //             ADD TO LIST
-    //         </Button>
-    //     </div>
-    // );
-};
 
 type AddCommentHook = ({
     repoId,
@@ -796,7 +458,7 @@ type AddCommentHook = ({
     documentId: string;
     documentTitle: string;
     commentListId: string;
-}) => (input: string) => void;
+}) => (input: CommentInput) => void;
 
 export const useAddComment: AddCommentHook = ({
     repoId,
@@ -813,14 +475,19 @@ export const useAddComment: AddCommentHook = ({
 }) => {
     // Mutation to add a comment to an existing comment list
     const [submitCommentMutation] = useMutation(createCommentMutation);
-    const doSubmitComment = (commentListId: string, commentContent: string) => {
+    const doSubmitComment = (commentListId: string, commentContent: CommentInput) => {
         submitCommentMutation({
-            variables: { text: commentContent, listId: commentListId },
+            variables: {
+                text: commentContent.text,
+                listId: commentListId,
+                lineNumber: commentContent.lineNumber,
+                selectedText: commentContent.selectedText,
+            },
             optimisticResponse: {
                 __typename: 'Mutation',
                 createComment: {
                     __typename: 'Comment',
-                    text: commentContent,
+                    text: commentContent.text,
                     _id: '' + Math.round(Math.random() * -1000000),
                     list: {
                         _id: commentListId,
@@ -850,18 +517,18 @@ export const useAddComment: AddCommentHook = ({
 
     // keep track of
     const [submitted, setSubmitted] = React.useState(false);
-    const trySubmitComment = async (commentContent: string) => {
+    const trySubmitComment = async (commentContent: CommentInput) => {
         if (submitted) return;
 
         if (commentListId) doSubmitComment(commentListId, commentContent);
         else {
             firstCommentMutation({
-                variables: { repoId: repoId, docTitle: documentTitle, text: commentContent },
+                variables: { repoId: repoId, docTitle: documentTitle, text: commentContent.text },
                 optimisticResponse: {
                     __typename: 'Mutation',
                     createComment: {
                         __typename: 'Comment',
-                        text: commentContent,
+                        text: commentContent.text,
                         _id: '' + Math.round(Math.random() * -1000000),
                         list: {
                             _id: '' + Math.round(Math.random() * -1000000),
@@ -929,36 +596,6 @@ export const useAddComment: AddCommentHook = ({
 };
 
 export const DefaultAddCommentView = ({ onSubmit }: { onSubmit: (input: string) => void }) => {
-    let input: HTMLInputElement | null = null;
-
-    return (
-        <div>
-            <span>Add Comment to Comment List</span>
-            <input
-                ref={node => {
-                    input = node;
-                }}
-            />
-            <Button onClick={() => onSubmit(input ? input.value : 'ADD COMMENT MUTATION TEST')}>ADD TO LIST</Button>
-        </div>
-    );
-};
-
-export const AddComment4 = ({
-    repoId,
-    repoTitle,
-    documentId,
-    documentTitle,
-    commentListId,
-}: {
-    repoId: string;
-    repoTitle: string;
-    documentId: string;
-    documentTitle: string;
-    commentListId: string;
-}) => {
-    const onSubmit = useAddComment({ repoId, repoTitle, documentId, documentTitle, commentListId });
-
     let input: HTMLInputElement | null = null;
 
     return (

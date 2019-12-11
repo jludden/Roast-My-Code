@@ -14,6 +14,7 @@ export interface ICommentContainerProps {
     lineRef: HTMLDivElement; // div of the (top) line of code associated with these comments
     onEditComment: (details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
     onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
+    onCancelComment: () => void;
     inProgress: boolean; // flag for a new, unsubmitted comment
 }
 
@@ -23,6 +24,15 @@ interface ICommentContainerState {
     editMode: boolean; // flag for an existing comment in editMode
     styles: React.CSSProperties;
 }
+
+// export const CommentContainer = (props: ICommentContainerProps) => {
+//     const [inProgressSubmitted, submitInProgress] = React.useState();
+
+//     React.useEffect(() => {
+//         setUser(props.user);
+//     }, [props.inProgress])
+
+// }
 
 export default class CommentContainer extends React.PureComponent<ICommentContainerProps, ICommentContainerState> {
     constructor(props: ICommentContainerProps) {
@@ -83,7 +93,8 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                                 />
                             ))} */}
 
-                            {!this.props.inProgress && comments.map(comment => <p>{comment.data.comment}</p>)}
+                            {!this.props.inProgress &&
+                                comments.map(comment => <SingleCommentView key={comment.id} comment={comment} />)}
 
                             {this.props.inProgress && (
                                 <Textarea
@@ -108,13 +119,13 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                                         Submit
                                     </Card.Footer.Item> */}
 
-                                    <Card.Footer.Item as="a">
+                                    <Card.Footer.Item as="a" onClick={() => this.props.onCancelComment()}>
                                         <Button color="light">Cancel</Button>
                                     </Card.Footer.Item>
                                     <Card.Footer.Item
                                         as="a"
                                         onClick={() => {
-                                            comments[0].data.comment = this.state.inputText;
+                                            comments[0].data.text = this.state.inputText;
                                             this.props.onSubmitComment(comments[0]);
                                         }}
                                     >

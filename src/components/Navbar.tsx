@@ -25,8 +25,8 @@ const CCNavbar = () => {
                         src="https://bulma.io/images/bulma-logo.png"
                         alt=""
                         role="presentation"
-                        width="112"
-                        height="28"
+                        width="medium"
+                        height="medium"
                     />
                 </Navbar.Item>
                 <Navbar.Burger />

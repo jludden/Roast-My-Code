@@ -8,7 +8,66 @@ export const deleteCommentMutation = gql`
     }
 `;
 
+export const createCommentMutationExistingAuthor = gql`
+    # Write your query or mutation here
+    mutation createComment(
+        $text: String!
+        $listId: ID!
+        $lineNumber: Int = null
+        $selectedText: String = null
+        $authorId: ID = null
+    ) {
+        createComment(
+            data: {
+                text: $text
+                list: { connect: $listId }
+                lineNumber: $lineNumber
+                selectedText: $selectedText
+                author: { connect: $authorId }
+            }
+        ) {
+            text
+            _id
+            list {
+                _id
+            }
+            lineNumber
+            selectedText
+            author {
+                name
+                avatarUrl
+                githubId
+            }
+            createdAt
+            updatedAt
+        }
+    }
+`;
 export const createCommentMutation = gql`
+    # Write your query or mutation here
+    mutation createComment($text: String!, $listId: ID!, $lineNumber: Int = null, $selectedText: String = null) {
+        createComment(
+            data: { text: $text, list: { connect: $listId }, lineNumber: $lineNumber, selectedText: $selectedText }
+        ) {
+            text
+            _id
+            list {
+                _id
+            }
+            lineNumber
+            selectedText
+            author {
+                name
+                avatarUrl
+                githubId
+            }
+            createdAt
+            updatedAt
+        }
+    }
+`;
+
+export const createCommentMutationV1 = gql`
     mutation createComment($text: String!, $listId: ID!) {
         createComment(data: { text: $text, list: { connect: $listId } }) {
             text
@@ -38,6 +97,13 @@ export const findCommentsForRepoQuery = gql`
                                 data {
                                     _id
                                     text
+                                    lineNumber
+                                    selectedText
+                                    createdAt
+                                    updatedAt
+                                    author {
+                                        name
+                                    }
                                 }
                             }
                         }

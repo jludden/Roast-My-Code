@@ -129,7 +129,7 @@ const SyntaxLine: React.FunctionComponent<IAppProps> = props => {
                         onClick={() => props.handleCommentAdd(props.lineNumber)}
                         tooltip="Add a comment"
                     >
-                        <FaComment size="medium" />
+                        <FaComment size={32} />
                     </Icon>
                     {/* <Button
                         size="small"

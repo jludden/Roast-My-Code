@@ -86,7 +86,7 @@ const Document = (props: IDocumentProps) => {
                 id: Math.round(Math.random() * -1000000),
                 data: {
                     lineNumber: Math.round(Math.random() * 50),
-                    comment: x.text,
+                    text: x.text,
                 },
             }),
     );
