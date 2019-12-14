@@ -9,7 +9,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/camelcase
     findRepositoryByTitle_findRepositoryByTitle,
     // eslint-disable-next-line @typescript-eslint/camelcase
-    findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data,
+    findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment,
 } from './types/findRepositoryByTitle';
 import { createComment as createCommentType } from './types/createComment';
 import { deleteComment as deleteCommentType } from './types/deleteComment';
@@ -31,14 +31,14 @@ import {
     Icon,
     Progress,
 } from 'rbx';
-import { CommentInput } from '../RoastComment';
+// import { CommentInput } from '../RoastComment';
 
 function FindCommentList(
     data: findRepositoryByTitle | null,
     documentId: string,
     commentListId: string,
     // eslint-disable-next-line @typescript-eslint/camelcase
-): (findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data | null)[] | null {
+): (RoastComment | null)[] | null {
     if (
         data &&
         data.findRepositoryByTitle &&
@@ -61,7 +61,7 @@ function FindCommentListByCommentId(
     data: findRepositoryByTitle | null,
     commentId: string,
     // eslint-disable-next-line @typescript-eslint/camelcase
-): (findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data | null)[] | null {
+): (RoastComment | null)[] | null {
     let foundCommentsList = null;
     if (
         data &&
@@ -458,7 +458,7 @@ type AddCommentHook = ({
     documentId: string;
     documentTitle: string;
     commentListId: string;
-}) => (input: CommentInput) => void;
+}) => (input: RoastComment) => void;
 
 export const useAddComment: AddCommentHook = ({
     repoId,
@@ -475,7 +475,7 @@ export const useAddComment: AddCommentHook = ({
 }) => {
     // Mutation to add a comment to an existing comment list
     const [submitCommentMutation] = useMutation(createCommentMutation);
-    const doSubmitComment = (commentListId: string, commentContent: CommentInput) => {
+    const doSubmitComment = (commentListId: string, commentContent: RoastComment) => {
         submitCommentMutation({
             variables: {
                 text: commentContent.text,
@@ -517,7 +517,7 @@ export const useAddComment: AddCommentHook = ({
 
     // keep track of
     const [submitted, setSubmitted] = React.useState(false);
-    const trySubmitComment = async (commentContent: CommentInput) => {
+    const trySubmitComment = async (commentContent: RoastComment) => {
         if (submitted) return;
 
         if (commentListId) doSubmitComment(commentListId, commentContent);
@@ -569,11 +569,13 @@ export const useAddComment: AddCommentHook = ({
                                         comments: {
                                             __typename: 'CommentPage',
                                             data: [
-                                                {
-                                                    __typename: 'Comment',
-                                                    _id: createComment._id,
-                                                    text: createComment.text,
-                                                },
+                                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                                createComment as RoastComment,
+                                                // {
+                                                //     __typename: 'Comment',
+                                                //     _id: createComment._id,
+                                                //     text: createComment.text,
+                                                // },
                                             ],
                                         },
                                     },
@@ -581,6 +583,19 @@ export const useAddComment: AddCommentHook = ({
                             },
                         });
                     }
+
+                    /*
+export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data {
+  __typename: "Comment";
+  _id: string;
+  text: string;
+  lineNumber: number | null;
+  selectedText: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  author: findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data_author | null;
+}
+*/
 
                     cache.writeQuery({
                         query: findCommentsForRepoQuery,

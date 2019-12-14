@@ -6,10 +6,20 @@
 // GraphQL query operation: findRepositoryByTitle
 // ====================================================
 
+export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data_author {
+  __typename: "User";
+  name: string;
+}
+
 export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data {
   __typename: "Comment";
   _id: string;
   text: string;
+  lineNumber: number | null;
+  selectedText: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  author: findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data_author | null;
 }
 
 export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments {

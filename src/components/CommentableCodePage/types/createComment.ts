@@ -11,11 +11,23 @@ export interface createComment_createComment_list {
   _id: string;
 }
 
+export interface createComment_createComment_author {
+  __typename: "User";
+  name: string;
+  avatarUrl: string | null;
+  githubId: string | null;
+}
+
 export interface createComment_createComment {
   __typename: "Comment";
   text: string;
   _id: string;
   list: createComment_createComment_list;
+  lineNumber: number | null;
+  selectedText: string | null;
+  author: createComment_createComment_author | null;
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
 export interface createComment {
@@ -25,4 +37,6 @@ export interface createComment {
 export interface createCommentVariables {
   text: string;
   listId: string;
+  lineNumber?: number | null;
+  selectedText?: string | null;
 }

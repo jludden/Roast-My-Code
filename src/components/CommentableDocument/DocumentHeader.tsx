@@ -1,7 +1,6 @@
 import * as React from 'react';
 import '../../App.css';
 import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub, FaCommentAlt } from 'react-icons/fa';
-import API, { IGithubSearchResults } from '../../api/API';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 
 // import RepoSearch from "./RepoSearch/RepoSearch";
@@ -26,18 +25,18 @@ import {
     Icon,
 } from 'rbx';
 
-export interface ICCProps {
-    documentName: string;
-    commentsCount: number;
-    // loadFileHandler: (file: Blob) => void // when a file is selected
-}
+// export interface ICCProps {
+//     documentName: string;
+//     commentsCount: number;
+//     // loadFileHandler: (file: Blob) => void // when a file is selected
+// }
 
 // color: Variables["colors"]
-interface IHeaderState {
-    query: string;
-    queryColor: 'primary' | 'link' | 'success' | 'info' | 'warning' | 'danger' | undefined;
-    results: IGithubSearchResults;
-}
+// interface IHeaderState {
+//     query: string;
+//     queryColor: 'primary' | 'link' | 'success' | 'info' | 'warning' | 'danger' | undefined;
+//     results: IGithubSearchResults;
+// }
 
 // export default class DocumentHeader extends React.Component<ICCProps, IHeaderState> {
 //     public state: IHeaderState = {

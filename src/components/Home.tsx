@@ -9,7 +9,6 @@ import { useIdentityContext } from 'react-netlify-identity-widget';
 import update from 'immutability-helper';
 import { BrowserRouter as Router, Switch, Route, Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import { Container, Message, Progress, Table } from 'rbx';
-import API, { IGithubData } from '../api/API';
 import DocumentBody from './CommentableDocument/DocumentBody';
 import DocumentHeader from './CommentableDocument/DocumentHeader';
 import RoastComment from './RoastComment';

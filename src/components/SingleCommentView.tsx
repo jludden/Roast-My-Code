@@ -14,14 +14,14 @@ export interface IRoastCommentProps {
 }
 
 const SingleCommentView = ({ comment }: { comment: RoastComment }) => {
-    if (comment.id < 0) {
-        return <p style={{ border: 'dashed red' }}>{comment.data.text}</p>;
+    if (+comment._id < 0) {
+        return <p style={{ border: 'dashed red' }}>{comment.text}</p>;
     }
-    return <p>{comment.data.text}</p>;
+    return <p>{comment.text}</p>;
 };
 
 const SingleCommentViewOld2 = ({ comment, inProgress, onEditComment }: IRoastCommentProps) => {
-    const text = comment.data.text;
+    const text = comment.text;
     return (
         <>
             {!inProgress && <p>{text}</p>}
@@ -84,7 +84,7 @@ class SingleCommentViewOld extends React.Component<IRoastCommentProps, ISingleCo
     // todo have just a border on one left side: border-width: 0 0 0 4px;
     public render() {
         const { isEditOn } = this.state;
-        const text = this.props.comment.data.text;
+        const text = this.props.comment.text;
         return (
             // <Message>
             //   <Message.Header><Delete> </Delete></Message.Header>

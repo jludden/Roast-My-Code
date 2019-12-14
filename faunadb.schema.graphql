@@ -8,17 +8,37 @@ directive @resolver(
 directive @relation(name: String) on FIELD_DEFINITION
 directive @unique(index: String) on FIELD_DEFINITION
 type Comment {
+  author: User
+  updatedAt: String
   # The document's ID.
   _id: ID!
+  text: String!
+  selectedText: String
+  lineNumber: Int
+  createdAt: String
+  list: CommentList!
   # The document's timestamp.
   _ts: Long!
-  text: String!
-  list: CommentList!
+}
+
+# Allow manipulating the relationship between the types 'Comment' and 'User' using the field 'Comment.author'.
+input CommentAuthorRelation {
+  # Create a document of type 'User' and associate it with the current document.
+  create: UserInput
+  # Connect a document of type 'User' with the current document using its ID.
+  connect: ID
+  # If true, disconnects this document from 'User'
+  disconnect: Boolean
 }
 
 # 'Comment' input values
 input CommentInput {
   text: String!
+  lineNumber: Int
+  selectedText: String
+  author: CommentAuthorRelation
+  createdAt: String
+  updatedAt: String
   list: CommentListRelation
 }
 
@@ -150,6 +170,18 @@ type Mutation {
     # 'Todo' input values
     data: TodoInput!
   ): Todo!
+  # Update an existing document in the collection of 'User'
+  updateUser(
+    # The 'User' document's ID
+    id: ID!
+    # 'User' input values
+    data: UserInput!
+  ): User
+  # Create a new document in the collection of 'User'
+  createUser(
+    # 'User' input values
+    data: UserInput!
+  ): User!
   # Create a new document in the collection of 'TodoList'
   createTodoList(
     # 'TodoList' input values
@@ -209,6 +241,11 @@ type Mutation {
     # 'Comment' input values
     data: CommentInput!
   ): Comment!
+  # Delete an existing document in the collection of 'User'
+  deleteUser(
+    # The 'User' document's ID
+    id: ID!
+  ): User
   # Update an existing document in the collection of 'Repository'
   updateRepository(
     # The 'Repository' document's ID
@@ -303,6 +340,11 @@ type Query {
     # The 'Document' document's ID
     id: ID!
   ): Document
+  # Find a document from the collection of 'User' by its id.
+  findUserByID(
+    # The 'User' document's ID
+    id: ID!
+  ): User
   # Find a document from the collection of 'Todo' by its id.
   findTodoByID(
     # The 'Todo' document's ID
@@ -427,5 +469,28 @@ type TodoPage {
   after: String
   # A cursor for elements coming before the current page.
   before: String
+}
+
+type User {
+  name: String!
+  updatedAt: String
+  email: String
+  avatarUrl: String
+  # The document's ID.
+  _id: ID!
+  createdAt: String
+  githubId: String
+  # The document's timestamp.
+  _ts: Long!
+}
+
+# 'User' input values
+input UserInput {
+  name: String!
+  email: String
+  githubId: String
+  avatarUrl: String
+  createdAt: String
+  updatedAt: String
 }
 

@@ -34,7 +34,6 @@ import { Column, Container, Section, Button } from 'rbx';
 import SyntaxLine from '../SyntaxRenderer';
 
 // import myRenderer from './SyntaxRenderer' todo delete that whole class, have function local
-// import IGithubData from './CommentableCode';
 // import IGithubRepo from './CommentableCode';
 
 export interface IDocumentBodyProps {
@@ -238,11 +237,12 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
 
     // Group comments into Comment Containers based their associated line number TODO this could be state or something
     private groupCommentsByLineNumber = (comments: RoastComment[]) => {
-        const lineNumberMap = new Map<number | undefined, RoastComment[]>();
+        const lineNumberMap = new Map<number, RoastComment[]>();
         comments.map((comment: RoastComment) => {
-            const line: RoastComment[] = lineNumberMap.get(comment.data.lineNumber) || [];
+            const lineNumber = comment.lineNumber || 0;
+            const line: RoastComment[] = lineNumberMap.get(lineNumber) || [];
             line.push(comment);
-            lineNumberMap.set(comment.data.lineNumber, line);
+            lineNumberMap.set(lineNumber, line);
         });
         return lineNumberMap;
     };

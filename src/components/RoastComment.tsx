@@ -1,4 +1,9 @@
-export default class RoastComment implements IRoastComment {
+import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment2 } from './CommentableCodePage/types/findRepositoryByTitle';
+
+export default RoastComment2;
+
+// export default class RoastComment implements IRoastComment {
+class RoastCommentOld implements IRoastComment {
     id: number; // the id of the comment
 
     data: {

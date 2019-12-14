@@ -2,9 +2,7 @@ import * as enzyme from 'enzyme';
 import { shallow, ShallowWrapper } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import * as React from 'react';
-import Axios from 'axios';
 import { Progress } from 'rbx';
-import API from '../../api/API';
 import CommentableCode, { LOAD_REPO_QUERY } from './CommentableCode';
 import DocumentHeader from '../CommentableDocument/DocumentHeader';
 import DocumentBody from '../CommentableDocument/DocumentBody';
@@ -125,43 +123,5 @@ describe('<CommentableCode />', () => {
         expect(containsBodyComponent.length).toBe(1);
 
         expect(shallowWrapper.containsMatchingElement(<h1>Hello welcome to the Annotateable Code Sample</h1>));
-    });
-
-    xit('API (todo move to different directory) get comments returns array of comments', async () => {
-        // const mockAxiosGet = jest.spyOn(axios, "get");
-
-        // todo move to __mock__
-        // mockAxiosGet.mockImplementation(() => {
-        //   return Promise.resolve({
-        //     data: [
-        //       {
-        //         id: 1,
-        //         lineNumber: 10,
-        //         selectedText: "hello world",
-        //         commentText: "capitalize words"
-        //       }
-        //     ]
-        //   }) as any;
-        // });
-
-        // consider having mockimpl in __mock__ and
-        // mockImplOnce individual in each test as necessary
-        const mockAPI = jest.spyOn(API, 'getComments');
-        mockAPI.mockImplementation(() => {
-            return Promise.resolve([
-                {
-                    id: 1,
-                    data: {
-                        lineNumber: 10,
-                        commentText: 'capitalize words',
-                        selectedText: 'hello world',
-                    },
-                },
-            ]) as any;
-        });
-
-        const result = await API.getComments('');
-        expect(result.length).toEqual(1);
-        expect(result[0].data.lineNumber).toEqual(10);
     });
 });

@@ -94,7 +94,7 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                             ))} */}
 
                             {!this.props.inProgress &&
-                                comments.map(comment => <SingleCommentView key={comment.id} comment={comment} />)}
+                                comments.map(comment => <SingleCommentView key={comment._id} comment={comment} />)}
 
                             {this.props.inProgress && (
                                 <Textarea
@@ -125,7 +125,7 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                                     <Card.Footer.Item
                                         as="a"
                                         onClick={() => {
-                                            comments[0].data.text = this.state.inputText;
+                                            comments[0].text = this.state.inputText;
                                             this.props.onSubmitComment(comments[0]);
                                         }}
                                     >

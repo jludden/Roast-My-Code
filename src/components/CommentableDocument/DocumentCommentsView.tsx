@@ -64,8 +64,8 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
     ) => {
         // todo check logged in
         try {
-            if (comment.data.text) {
-                await onSubmit(comment.data);
+            if (comment.text) {
+                await onSubmit(comment);
                 props.onSubmitCommentFinish(); // notify parent
                 return SubmitCommentResponse.Success;
             }
@@ -105,14 +105,16 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                         lineRef={props.inProgressComment.lineRef}
                         inProgress
                         comments={[
-                            new RoastComment({
-                                data: {
-                                    text: '',
-                                    lineNumber: props.inProgressComment.lineNumber,
-                                    selectedText: props.inProgressComment.selectedText,
-                                    author: props.inProgressComment.author,
-                                },
-                            }),
+                            {
+                                __typename: 'Comment',
+                                _id: '-1',
+                                text: props.inProgressComment.selectedText || '',
+                                lineNumber: props.inProgressComment.lineNumber,
+                                selectedText: props.inProgressComment.selectedText,
+                                createdAt: null,
+                                updatedAt: null,
+                                author: null, // todo inProgress.author
+                            },
                         ]}
                     />
                 </>

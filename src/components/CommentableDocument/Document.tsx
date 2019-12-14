@@ -80,16 +80,17 @@ const Document = (props: IDocumentProps) => {
     const docComments: RoastComment2[] = docCommentsInitial.filter(x => x != null) as RoastComment2[];
     // todo will this be updated on add new comment input?
 
-    const comments: RoastComment[] = docComments.map(
-        x =>
-            new RoastComment({
-                id: Math.round(Math.random() * -1000000),
-                data: {
-                    lineNumber: Math.round(Math.random() * 50),
-                    text: x.text,
-                },
-            }),
-    );
+    const comments: RoastComment[] = docComments;
+    // const comments: RoastComment[] = docComments.map(
+    //     x =>
+    //         new RoastComment({
+    //             id: Math.round(Math.random() * -1000000),
+    //             data: {
+    //                 lineNumber: Math.round(Math.random() * 50),
+    //                 text: x.text,
+    //             },
+    //         }),
+    // );
 
     return (
         <>

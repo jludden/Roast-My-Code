@@ -2,7 +2,6 @@ import update from 'immutability-helper';
 import * as React from 'react';
 import { githubClient } from '../../App';
 import '../../App.css';
-import API, { IGithubData } from '../../api/API';
 import Document, { ErrorMessage, IDocumentProps } from '../CommentableDocument/Document';
 // import RoastComment from '../RoastComment';
 import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from './types/findRepositoryByTitle';
