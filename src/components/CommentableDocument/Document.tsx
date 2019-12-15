@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
-import RoastComment from '../RoastComment';
+import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import DocumentBody from './DocumentBody';
 import DocumentHeader from './DocumentHeader';
 import '../../App.css';

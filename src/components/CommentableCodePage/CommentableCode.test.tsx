@@ -6,7 +6,7 @@ import { Progress } from 'rbx';
 import CommentableCode, { LOAD_REPO_QUERY } from './CommentableCode';
 import DocumentHeader from '../CommentableDocument/DocumentHeader';
 import DocumentBody from '../CommentableDocument/DocumentBody';
-import RoastComment from '../RoastComment';
+import RoastComment from './types/RoastComment';
 import { render, fireEvent, waitForElement } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { MockedProvider } from '@apollo/react-testing';

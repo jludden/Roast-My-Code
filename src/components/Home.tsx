@@ -11,7 +11,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect, Link, RouteComponentP
 import { Container, Message, Progress, Table } from 'rbx';
 import DocumentBody from './CommentableDocument/DocumentBody';
 import DocumentHeader from './CommentableDocument/DocumentHeader';
-import RoastComment from './RoastComment';
+import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
 // import schema from '../api/github.schema.json';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../generated/graphql';
 import { RepositoryOwner, StargazerConnection, Language } from '../generated/graphql'; // todo shouldnt really need

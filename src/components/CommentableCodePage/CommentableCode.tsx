@@ -3,10 +3,8 @@ import * as React from 'react';
 import { githubClient } from '../../App';
 import '../../App.css';
 import Document, { ErrorMessage, IDocumentProps } from '../CommentableDocument/Document';
-// import RoastComment from '../RoastComment';
 import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from './types/findRepositoryByTitle';
 import { Collapse } from 'react-collapse';
-// import schema from '../api/github.schema.json';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../../generated/graphql';
 import { RepositoryOwner, StargazerConnection, Language } from '../../generated/graphql'; // todo shouldnt really need
 import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';

@@ -21,6 +21,7 @@ export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_
   updatedAt: string | null;
   author: findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data_author | null;
 }
+export default findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data;
 
 export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments {
   __typename: "CommentPage";

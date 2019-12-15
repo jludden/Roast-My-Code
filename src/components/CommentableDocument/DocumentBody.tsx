@@ -26,7 +26,7 @@ import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import DocumentCommentsView, { UnsubmittedComment } from './DocumentCommentsView';
 import SubmitComment from '../SubmitCommentForm';
 
-import RoastComment from '../RoastComment';
+import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
 
 import 'rbx/index.css';

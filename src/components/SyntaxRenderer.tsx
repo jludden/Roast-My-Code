@@ -12,7 +12,7 @@ import {
     FaSearchPlus,
     FaComment,
 } from 'react-icons/fa';
-import RoastComment from './RoastComment';
+import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
 import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
 import SubmitComment from './SubmitCommentForm';
 

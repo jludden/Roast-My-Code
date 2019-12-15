@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
-import RoastComment from './RoastComment';
+import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
 
 import 'rbx/index.css';
 import { Message, Box, Textarea, Button, Delete } from 'rbx';

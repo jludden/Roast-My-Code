@@ -30,7 +30,7 @@ import {
     FaUserGraduate,
     FaUserNinja,
 } from 'react-icons/fa';
-import RoastComment from './RoastComment';
+import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
 
 // import { useIdentityContext } from "react-netlify-identity-widget"
 // import "react-netlify-identity-widget/styles.css"

@@ -31,7 +31,6 @@ import {
     Icon,
     Progress,
 } from 'rbx';
-// import { CommentInput } from '../RoastComment';
 
 function FindCommentList(
     data: findRepositoryByTitle | null,
