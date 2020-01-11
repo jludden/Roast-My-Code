@@ -439,6 +439,7 @@ const createDocumentAndFirstComment = gql`
         }
     }
 `;
+
 // To add a comment, you need either a commentListId, or a repoId + document title
 // if commentlistid is passed in, we can simply create a comment linked to it
 // however a document without any comments on it yet will not have a comment list,
@@ -487,6 +488,8 @@ export const useAddComment: AddCommentHook = ({
                 createComment: {
                     __typename: 'Comment',
                     text: commentContent.text,
+                    lineNumber: commentContent.lineNumber,
+                    selectedText: commentContent.selectedText,
                     _id: '' + Math.round(Math.random() * -1000000),
                     list: {
                         _id: commentListId,

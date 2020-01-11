@@ -32,6 +32,7 @@ import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import 'rbx/index.css';
 import { Column, Container, Section, Button } from 'rbx';
 import SyntaxLine from '../SyntaxRenderer';
+import { EndpointTest } from './EndpointTest';
 
 // import myRenderer from './SyntaxRenderer' todo delete that whole class, have function local
 // import IGithubRepo from './CommentableCode';
@@ -87,6 +88,7 @@ const DocumentBodyContainer = (props: IDocumentBodyProps) => {
             <Button color="info" onClick={() => cycleTheme()}>
                 Change Theme
             </Button>
+            <EndpointTest></EndpointTest>
             <DocumentBody
                 name={props.name}
                 content={props.content}
@@ -104,10 +106,6 @@ const DocumentBodyContainer = (props: IDocumentBodyProps) => {
 };
 
 export default DocumentBodyContainer;
-
-// export const DocumentBody = (props: IDocumentBodyPropsWithTheme) => {
-
-// }
 
 export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, IDocumentBodyState> {
     public state: IDocumentBodyState = {

@@ -6,6 +6,7 @@ type Query {
   allComments: [Comment!]
   allCommentLists: [CommentList!] 
   findRepositoryByTitle(title: String!): Repository
+  sayHello(name: String!): String! @resolver(name: "say_hello")
 }
 
 type Todo {
