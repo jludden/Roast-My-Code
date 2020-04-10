@@ -1,0 +1,18 @@
+projects:
+  RMC_Chat:
+    schemaPath: src/graphql/schema.json
+    includes:
+      - src/graphql/**/*.ts
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: typescript
+        generatedFileName: src/generated/rmc-amp-graphql.ts
+        docsFilePath: src/graphql
+        region: us-east-1
+        apiId: wjjx4jfkkzfolf32dum5tz2gom
+        maxDepth: 6
+extensions:
+  amplify:
+    version: 3

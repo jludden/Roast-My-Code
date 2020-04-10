@@ -14,6 +14,24 @@ import { AuthWrapper } from './components/AuthWrapper';
 import { Home } from './components/Home';
 import CommentableCode from './components/CommentableCodePage/CommentableCode';
 import CCNavBar from './components/Navbar';
+import LatestMessages from './LatestMessages';
+import AWSAppSyncClient from 'aws-appsync';
+import AppSyncConfig from './aws-exports';
+import { Rehydrated } from 'aws-appsync-react'; // this needs to also be installed when working with React
+
+
+const awsClient = new AWSAppSyncClient({
+  url: AppSyncConfig.graphqlEndpoint,
+  region: AppSyncConfig.region,
+  auth: {
+    type: AppSyncConfig.authenticationType,
+    apiKey: AppSyncConfig.apiKey,
+    // jwtToken: async () => token, // Required when you use Cognito UserPools OR OpenID Connect. token object is obtained previously
+  }
+})
+
+
+
 // import logo from './' './logo.svg';
 
 // import { generateGithubSchema } from "../api/generateGithubSchema";
@@ -55,7 +73,9 @@ class App extends React.Component {
 
         return (
             <>
-                <ApolloProvider client={faunaDbClient}>
+                                                            {/* todo awsClient  */}
+                <ApolloProvider client={faunaDbClient}> 
+                <Rehydrated>
                     <IdentityContextProvider url={url}>
                         <Router>
                             <QueryParamProvider ReactRouterRoute={Route}>
@@ -90,6 +110,7 @@ class App extends React.Component {
                             </Content>
                         </Footer>
                     </IdentityContextProvider>
+                    </Rehydrated>
                 </ApolloProvider>
             </>
         );
