@@ -4,9 +4,11 @@ import { useSubscription } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import { subscribeToNewMessage } from './graphql/subscriptions';
 import { graphqlMutation } from 'aws-appsync-react';
-import { buildSubscription} from 'aws-apsync';
-import { SubscribeToNewMessageSubscriptionVariables, SubscribeToNewMessageSubscription } from './generated/rmc-amp-graphql';
-
+import { buildSubscription} from 'aws-appsync';
+import {
+    SubscribeToNewMessageSubscriptionVariables,
+    SubscribeToNewMessageSubscription,
+} from './generated/rmc-amp-graphql';
 
 // interface Event {
 //   id: string;

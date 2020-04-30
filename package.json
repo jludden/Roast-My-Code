@@ -11,7 +11,6 @@
     "@reach/visually-hidden": "^0.1.4",
     "@types/aws-lambda": "^8.10.25",
     "@types/graphql": "^14.2.3",
-    "@types/jest": "^24.0.13",
     "@types/ramda": "^0.26.33",
     "@types/react-collapse": "^4.0.2",
     "@types/react-router": "5.1.2",
@@ -20,6 +19,7 @@
     "apollo-server-lambda": "^2.9.3",
     "awesome-debounce-promise": "^2.1.0",
     "aws-appsync": "^3.0.2",
+    "aws-appsync-react": "^3.0.2",
     "axios": "^0.18.0",
     "babel-runtime": "6.26.0",
     "code-prettify": "^0.1.0",
@@ -32,13 +32,13 @@
     "graphql-tag": "^2.10.3",
     "http-proxy-middleware": "^0.19.1",
     "immutability-helper": "^3.0.0",
-    "jest-cli": "^24.8.0",
     "netlify-lambda": "^1.4.7",
     "node-fetch": "^2.5.0",
     "npm-run-all": "^4.1.5",
     "ramda": "^0.26.1",
     "rbx": "^2.1.0",
     "react": "16.9.0",
+    "react-apollo": "^3.1.4",
     "react-collapse": "^4.0.3",
     "react-dom": "16.9.0",
     "react-icons": "^3.7.0",
@@ -54,10 +54,8 @@
   "scripts": {
     "start": "run-p start:**",
     "start:app": "react-scripts start",
-    "start:lambda": "netlify-lambda serve src/roast-lambda",
     "build": "run-p build:**",
     "build:app": "react-scripts build",
-    "build:lambda": "yarn netlify-lambda build src/roast-lambda",
     "build:test": "set CI=true&&yarn test a --watchAll=false",
     "test": "react-scripts test --env=jsdom",
     "eject": "cross-env NODE_PATH=src react-scripts eject",
@@ -111,8 +109,5 @@
     "watchPathIgnorePatterns": [
       "node_modules"
     ]
-  },
-  "resolutions": {
-    "jest": "24.8.0"
   }
 }

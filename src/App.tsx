@@ -15,22 +15,33 @@ import { Home } from './components/Home';
 import CommentableCode from './components/CommentableCodePage/CommentableCode';
 import CCNavBar from './components/Navbar';
 import LatestMessages from './LatestMessages';
-import AWSAppSyncClient from 'aws-appsync';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import AppSyncConfig from './aws-exports';
-import { Rehydrated } from 'aws-appsync-react'; // this needs to also be installed when working with React
+// import { Rehydrated } from 'aws-appsync-react'; // this needs to also be installed when working with React
 
 
-const awsClient = new AWSAppSyncClient({
-  url: AppSyncConfig.graphqlEndpoint,
-  region: AppSyncConfig.region,
-  auth: {
-    type: AppSyncConfig.authenticationType,
-    apiKey: AppSyncConfig.apiKey,
-    // jwtToken: async () => token, // Required when you use Cognito UserPools OR OpenID Connect. token object is obtained previously
-  }
-})
+// const awsClient = new AWSAppSyncClient({
+//   url: AppSyncConfig.aws_appsync_graphqlEndpoint as string,
+//   region: AppSyncConfig.aws_appsync_region as string,
+//      auth: {
+//         type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS, //Auth_typeAMAZON_COGNITO_USER_POOLS, //AppSyncConfig.aws_appsync_authenticationType,
+//         jwtToken: '1234',
+//      }
+//      //     apiKey: "1234" // AppSyncConfig.apiKey,
+// //     // jwtToken: async () => token, // Required when you use Cognito UserPools OR OpenID Connect. token object is obtained previously
+// //   }
+// });
 
-
+const client2 = new AWSAppSyncClient({
+    url: process.env.REACT_APP_RMC_AWS_APPSYNC_GRAPHQLENDPOINT as string,
+    region: process.env.REACT_APP_RMC_AWS_APPSYNC_REGION as string,
+    auth: {
+      type: AUTH_TYPE.API_KEY,
+      apiKey: process.env.REACT_APP_RMC_CHAT_APPSYNC
+    //   jwtToken: () => getUser().token,
+    // REACT_APP_RMC_CHAT_APPSYNC
+    },
+  });
 
 // import logo from './' './logo.svg';
 
@@ -75,7 +86,7 @@ class App extends React.Component {
             <>
                                                             {/* todo awsClient  */}
                 <ApolloProvider client={faunaDbClient}> 
-                <Rehydrated>
+                {/* <Rehydrated> */}
                     <IdentityContextProvider url={url}>
                         <Router>
                             <QueryParamProvider ReactRouterRoute={Route}>
@@ -110,7 +121,7 @@ class App extends React.Component {
                             </Content>
                         </Footer>
                     </IdentityContextProvider>
-                    </Rehydrated>
+                    {/* </Rehydrated> */}
                 </ApolloProvider>
             </>
         );
