@@ -2,8 +2,7 @@ import * as React from 'react';
 import '../App.css';
 
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
-
-import ApolloClient from 'apollo-boost';
+import { ApolloClient } from 'apollo-client';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import { useIdentityContext } from 'react-netlify-identity-widget';
 import update from 'immutability-helper';

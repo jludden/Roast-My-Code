@@ -2,7 +2,11 @@
 import * as React from 'react';
 import { Collapse } from 'react-collapse';
 import { githubClient } from '../../App';
-import ApolloClient, { gql, ExecutionResult } from 'apollo-boost';
+import { ExecutionResult } from 'graphql';
+
+// import ApolloClient, { gql, ExecutionResult } from 'apollo-boost';
+import { ApolloClient } from 'apollo-client';
+import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
     Comment,

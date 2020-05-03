@@ -6,17 +6,30 @@ import { IdentityContextProvider } from 'react-netlify-identity-widget';
 import 'react-netlify-identity-widget/styles.css';
 import { BrowserRouter as Router, Switch, Route, Link, RouteComponentProps } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
-import { ApolloProvider } from '@apollo/react-hooks';
-import ApolloClient from 'apollo-boost';
-import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
+import { ApolloProvider}  from 'react-apollo' 
+import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
+import { createHttpLink, HttpLink } from 'apollo-link-http';
+import { ApolloClient } from 'apollo-client';
+
+import { AppSyncChatView } from './components/AppSyncChatView';
+
+// import { ApolloProvider } from '@apollo/react-hooks';
+// import ApolloClient from 'apollo-boost';
+// import { ApolloClient, ApolloLink, InMemoryCache, HttpLink, NormalizedCacheObject } from 'apollo-boost'
+// import { ApolloClient, ApolloLink, HttpLink, NormalizedCacheObject } from 'apollo-boost'
+
+import { InMemoryCache, IntrospectionFragmentMatcher, NormalizedCacheObject } from 'apollo-cache-inmemory';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from './generated/graphql';
 import { AuthWrapper } from './components/AuthWrapper';
 import { Home } from './components/Home';
 import CommentableCode from './components/CommentableCodePage/CommentableCode';
 import CCNavBar from './components/Navbar';
 import LatestMessages from './LatestMessages';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+
+import AWSAppSyncClient, { AUTH_TYPE, buildSubscription } from 'aws-appsync';
+import { Rehydrated, graphqlMutation } from 'aws-appsync-react';
 import AppSyncConfig from './aws-exports';
+import { ApolloLink } from 'apollo-link';
 // import { Rehydrated } from 'aws-appsync-react'; // this needs to also be installed when working with React
 
 
@@ -32,16 +45,25 @@ import AppSyncConfig from './aws-exports';
 // //   }
 // });
 
-const client2 = new AWSAppSyncClient({
-    url: process.env.REACT_APP_RMC_AWS_APPSYNC_GRAPHQLENDPOINT as string,
-    region: process.env.REACT_APP_RMC_AWS_APPSYNC_REGION as string,
-    auth: {
-      type: AUTH_TYPE.API_KEY,
-      apiKey: process.env.REACT_APP_RMC_CHAT_APPSYNC
-    //   jwtToken: () => getUser().token,
-    // REACT_APP_RMC_CHAT_APPSYNC
-    },
-  });
+// const client2 = new AWSAppSyncClient({
+//     url: process.env.REACT_APP_RMC_AWS_APPSYNC_GRAPHQLENDPOINT as string,
+//     region: process.env.REACT_APP_RMC_AWS_APPSYNC_REGION as string,
+//     auth: {
+//       type: AUTH_TYPE.API_KEY,
+//       apiKey: process.env.REACT_APP_RMC_CHAT_APPSYNC
+//     //   jwtToken: () => getUser().token,
+//     // REACT_APP_RMC_CHAT_APPSYNC
+//     },
+//   });
+const appsyncClient = new AWSAppSyncClient({
+  url: AppSyncConfig.aws_appsync_graphqlEndpoint,
+  region: AppSyncConfig.aws_project_region,
+  auth: {
+    type: 'API_KEY', //AppSyncConfig.aws_appsync_authenticationType,
+    apiKey: AppSyncConfig.aws_appsync_apiKey,
+    // jwtToken: async () => token, // Required when you use Cognito UserPools OR OpenID Connect. token object is obtained previously
+  }
+})
 
 // import logo from './' './logo.svg';
 
@@ -55,15 +77,46 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
     introspectionQueryResultData: IntrospectionResultData,
 });
 export const cache = new InMemoryCache({ fragmentMatcher });
-export const githubClient: ApolloClient<InMemoryCache> = new ApolloClient({
-    cache,
-    uri: '/.netlify/functions/repo_github',
+// export const githubClient: ApolloClient<InMemoryCache> = new ApolloClient({
+//     cache,
+//     // link: createHttpLink({ uri: '/.netlify/functions/repo_github' }),
+//     link: ApolloLink.from([ createHttpLink({ uri: '/.netlify/functions/repo_github' }) ])
+// });
+
+// export const githubClient: ApolloClient<InMemoryCache> = new ApolloClient({
+//     cache,
+//     link: '/.netlify/functions/repo_github',
+// });
+
+const httpLinkGH = new HttpLink({ uri: '/.netlify/functions/repo_github' });
+
+export const githubClient = new ApolloClient<NormalizedCacheObject>({
+    ssrMode: typeof window === 'undefined',
+    link: httpLinkGH,
+    cache: new InMemoryCache(),
 });
-export const faunaDbClient = new ApolloClient({
-    cache,
-    uri: '/.netlify/functions/repo_comments',
-    clientState: { defaults: {}, resolvers: {} },
-});
+
+export const faunaDbClient = appsyncClient;
+// export const faunaDbClient = new ApolloClient({
+//     cache,
+//     uri: '/.netlify/functions/repo_comments',
+//     clientState: { defaults: {}, resolvers: {} },
+// });
+
+const url = AppSyncConfig.aws_appsync_graphqlEndpoint;
+const httpLink = createHttpLink({ uri: url });
+
+const link = ApolloLink.from([
+  createSubscriptionHandshakeLink(url, httpLink)
+]);
+  const appsyncCache = new InMemoryCache({ addTypename: false }); //apollo-client/issues/1564
+
+// if this doesn't work can try https://github.com/awslabs/aws-mobile-appsync-sdk-js/issues/450#issuecomment-589693150
+const appsync2client = new ApolloClient({
+//   ssrMode: typeof window === 'undefined',
+  link,
+  cache: appsyncCache
+})
 
 //  Router && QueryParamProvider
 // AuthWrapper && ApolloProvider?
@@ -84,24 +137,11 @@ class App extends React.Component {
 
         return (
             <>
-                                                            {/* todo awsClient  */}
-                <ApolloProvider client={faunaDbClient}> 
-                {/* <Rehydrated> */}
+                <ApolloProvider client={appsync2client}> 
                     <IdentityContextProvider url={url}>
                         <Router>
                             <QueryParamProvider ReactRouterRoute={Route}>
                                 <CCNavBar />
-
-                                {/* 
-              <Hero color="primary" size="medium" gradient>
-              <Hero.Body>
-                <Container>
-                  <Title>
-                    Welcome to Roast My Code!
-                  </Title>
-                </Container>
-              </Hero.Body>
-              </Hero> */}
                                 <Section color="dark">
                                     <Switch>
                                         <Route path="/" exact component={Home} />
@@ -121,7 +161,6 @@ class App extends React.Component {
                             </Content>
                         </Footer>
                     </IdentityContextProvider>
-                    {/* </Rehydrated> */}
                 </ApolloProvider>
             </>
         );
@@ -148,6 +187,7 @@ function CommentableCodePage() {
             <Section>
                 <Container>
                     <AuthWrapper>
+                        <AppSyncChatView />
                         <CommentableCode />
                     </AuthWrapper>
                 </Container>

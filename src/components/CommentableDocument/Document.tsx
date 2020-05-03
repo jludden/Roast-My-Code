@@ -4,7 +4,7 @@ import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import DocumentBody from './DocumentBody';
 import DocumentHeader from './DocumentHeader';
 import '../../App.css';
-import { gql } from 'apollo-boost';
+import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import { Blob, Repository } from '../../generated/graphql';
 import { Container, Message, Progress } from 'rbx';

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import ApolloClient, { gql } from 'apollo-boost';
-
+import { ApolloClient } from 'apollo-client';
+import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import {
     Progress,

@@ -32,8 +32,10 @@ import {
     Icon,
     Progress,
 } from 'rbx';
-import ApolloClient, { gql, ExecutionResult } from 'apollo-boost';
+
 import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks';
+import { ApolloClient } from 'apollo-client';
+import gql from 'graphql-tag';
 import { useWindowPath } from './hooks/useWindowPath';
 import { useLocation } from './hooks/useLocation';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';

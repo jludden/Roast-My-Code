@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import '../App.css';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { useQuery } from '@apollo/react-hooks';
-import ApolloClient, { gql } from 'apollo-boost';
+import { ApolloClient } from 'apollo-client';
+import gql from 'graphql-tag';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import {
     FaBeer,

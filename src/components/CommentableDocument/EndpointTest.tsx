@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as R from 'ramda';
-import ApolloClient, { gql, ExecutionResult } from 'apollo-boost';
+import { ApolloClient } from 'apollo-client';
+import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
     Section,

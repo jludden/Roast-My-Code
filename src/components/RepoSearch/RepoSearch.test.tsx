@@ -7,7 +7,8 @@ import Adapter from 'enzyme-adapter-react-16';
 import { Progress } from 'rbx';
 import { FaCodeBranch } from 'react-icons/fa';
 import { act } from 'react-dom/test-utils';
-import ApolloClient from 'apollo-boost';
+import { ApolloClient } from 'apollo-client';
+import gql from 'graphql-tag';
 import RepoSearch, {
     REPO_SEARCH_QUERY,
     PanelWarningLine,
