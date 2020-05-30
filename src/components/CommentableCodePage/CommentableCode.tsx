@@ -159,7 +159,7 @@ const CommentableCodeLoadRepoContainer = (props: CCContainerProps) => {
         LOAD_REPO_QUERY,
         {
             variables: { owner, name },
-            client: githubClient,
+            client: githubClient as any,
         },
     );
 

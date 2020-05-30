@@ -111,7 +111,7 @@ function RemoveCommentById(
                 doc.commentsList &&
                 doc.commentsList.data &&
                 doc.commentsList.data.forEach(commentsList => {
-                    commentsList && commentsList.comments.data && R.reject(eqByCommentId, commentsList.comments.data);
+                    commentsList && commentsList.comments.data && R.reject(eqByCommentId, commentsList.comments.data as any);
                     // commentsList.comments.data.forEach(comment => {
 
                     //     R.reject(eqByCommentId, commentsList.comments.data)

@@ -58,7 +58,7 @@ interface IGithubDocQueryVariables {
 const Document = (props: IDocumentProps) => {
     const { data, error, loading } = useQuery<IGithubDocResponse, IGithubDocQueryVariables>(GITHUB_DOCUMENT_QUERY, {
         variables: props.queryVariables,
-        client: githubClient,
+        client: githubClient as any,
     }); // todo potentially could get repoComments from cache.readQuery instead of passing it down?!
 
     if (loading) {

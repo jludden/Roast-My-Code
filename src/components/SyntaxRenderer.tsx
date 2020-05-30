@@ -107,7 +107,7 @@ interface IAppProps {
 }
 
 const SyntaxLine: React.FunctionComponent<IAppProps> = props => {
-    const [styles, setStyles] = useState();
+    const [styles, setStyles] = useState<React.CSSProperties>();
     const measuredRef = useCallback(node => {
         if (node !== null) {
             const styles: React.CSSProperties = {

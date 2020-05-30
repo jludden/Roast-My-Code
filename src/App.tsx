@@ -6,7 +6,8 @@ import { IdentityContextProvider } from 'react-netlify-identity-widget';
 import 'react-netlify-identity-widget/styles.css';
 import { BrowserRouter as Router, Switch, Route, Link, RouteComponentProps } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
-import { ApolloProvider } from '@apollo/react-hooks';
+// import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from './generated/graphql';
@@ -47,15 +48,14 @@ export const faunaDbClient = new ApolloClient({
 
 // Code - /repo/jludden/ReefLifeSurvey---Species-Explorer
 
-class App extends React.Component {
+export const App = () => {
     // // <div className="App_Background">
 
-    public render() {
         const url = 'https://jludden-react.netlify.com/';
+    return (
 
-        return (
             <>
-                <ApolloProvider client={faunaDbClient}>
+                <ApolloProvider client={faunaDbClient as any}>
                     <IdentityContextProvider url={url}>
                         <Router>
                             <QueryParamProvider ReactRouterRoute={Route}>
@@ -80,30 +80,36 @@ class App extends React.Component {
                                 </Section>
                             </QueryParamProvider>
                         </Router>
-                        <Footer>
-                            <Content textAlign="centered">
-                                <p>
-                                    <strong>Roast My Code</strong> by
-                                    <a href="https://github.com/jludden"> Jason Ludden</a>
-                                    <span> github link subreddit link twitter/slack/discord </span>
-                                </p>
-                            </Content>
-                        </Footer>
+                        <AppFooter />
                     </IdentityContextProvider>
                 </ApolloProvider>
             </>
-        );
-    }
+    );
+    
+}
+
+const AppFooter = () => {
+    return (
+        <Footer>
+            <Content textAlign="centered">
+                <p>
+                    <strong>Roast My Code</strong> by
+                    <a href="https://github.com/jludden"> Jason Ludden</a>
+                    <span> github link subreddit link twitter/slack/discord </span>
+                </p>
+            </Content>
+        </Footer>
+        )
 }
 
 //
 //
 
-function HomePage() {
+// function HomePage() {
     // welcome
     // repo explorer
     // Link repo explorer => Commentable Code
-}
+// }
 
 function CommentableCodePage() {
     return (

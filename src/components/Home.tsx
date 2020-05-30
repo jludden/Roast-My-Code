@@ -38,32 +38,27 @@ export function Home(props: IHomeProps) {
     //   grid-column: "absolute",
     //   left: `${node.offsetWidth}px`  // node.getBoundingClientRect();
     // }
+            /* <AuthStatusView showImmediately={false}/> */
 
     return (
         <>
             {shouldRedirect.length > 0 && <Redirect to={`/repo${shouldRedirect}`} push />}
 
-            {/* <AuthStatusView showImmediately={false}/> */}
 
-            {/* {todo use a RBX-Page Loader for this part...} */}
-            {/* {this.state.loading && <Progress color="info"/>} */}
-
-            {/* <div style={{ gridColumn: '1 / span 2' }}> */}
-            {/* Repo Search */}
             <RepoSearchContainer
                 loadRepoHandler={(repo: Repository) => setShouldRedirect(repo.resourcePath)}
                 loadRecommendedRepo={() => setShouldRedirect('/jludden/ReefLifeSurvey---Species-Explorer')}
             />
-            {/* </div> */}
+            
             <div className="grid">
                 <div>
-                    Search Personal Repositories -> Login prompt Your starred Repos -> Login prompt Hide everything
-                    below / translucent below when searching?
+                    Search Personal Repositories - Login prompt Your starred Repos - Login prompt Hide everything
+                    below or translucent below when searching?
                 </div>
 
                 <div>Grid - Recommended Recent Top Roasted Top Roasters</div>
 
-                <div>Recent -> fresh Popularity Scale: toasted roasted burnt Add fuel to the fire</div>
+                <div>Recent - fresh Popularity Scale: toasted roasted burnt Add fuel to the fire</div>
             </div>
             <h1>Sample `img` of Code + comments w/ roasties</h1>
 
