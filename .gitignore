@@ -20,6 +20,11 @@ codegen.faunaDB.yml
 .env.test.local
 .env.production.local
 
+aws-exports.js
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Local Netlify folder
+.netlify

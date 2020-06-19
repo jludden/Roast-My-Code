@@ -2,8 +2,8 @@ import React from 'react';
 import { ApolloProvider } from 'react-apollo';
 import AWSAppSyncClient, { defaultDataIdFromObject } from 'aws-appsync';
 import { Rehydrated } from 'aws-appsync-react';
-// import EventComments from './Components/EventComments';
-import './App.css';
+import EventComments from './Components/EventComments';
+// import './App.css';
 import appSyncConfig from './aws-exports';
 import { eventId } from './aws-chatroom-id';
 

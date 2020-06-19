@@ -15,6 +15,7 @@ import { AuthWrapper } from './components/AuthWrapper';
 import { Home } from './components/Home';
 import CommentableCode from './components/CommentableCodePage/CommentableCode';
 import CCNavBar from './components/Navbar';
+import ChatApp from './components/RealtimeChat/ChatApp';
 // import logo from './' './logo.svg';
 
 // import { generateGithubSchema } from "../api/generateGithubSchema";
@@ -98,6 +99,9 @@ const AppFooter = () => {
                     <span> github link subreddit link twitter/slack/discord </span>
                 </p>
             </Content>
+            
+            <ChatApp />
+            
         </Footer>
         )
 }
