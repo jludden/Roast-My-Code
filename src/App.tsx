@@ -100,7 +100,7 @@ const AppFooter = () => {
                 </p>
             </Content>
             
-            <ChatApp />
+            {/* <ChatApp /> */}
             
         </Footer>
         )
