@@ -6,7 +6,7 @@ import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { Column, Container, Section, Button } from 'rbx';
 import SyntaxLine from '../SyntaxRenderer';
-import { EndpointTest } from './EndpointTest';
+
 import 'rbx/index.css';
 import * as React from 'react';
 import '../../App.css';
@@ -109,7 +109,6 @@ const DocumentBodyContainer = (props: IDocumentBodyProps) => {
             <Button color="info" onClick={() => cycleTheme()}>
                 Change Theme
             </Button>
-            <EndpointTest></EndpointTest>
             <DocumentBody
                 name={props.name}
                 content={props.content}
@@ -458,6 +457,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
     private findFirstLineNumber(sel: Selection): number {
         const initialElement = sel.getRangeAt(0).startContainer.parentElement;
 
+        // todo can just use e.target.closest('.whatever-line-number-class')?
         const myDiv = this.closestElement(initialElement, (el: HTMLElement) => {
             return el.dataset.index != null;
         });

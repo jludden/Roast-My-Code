@@ -68,30 +68,22 @@ const Document = (props: IDocumentProps) => {
     if (error || !data || !data.repository || !data.repository.object || !data.repository.object.text) {
         return <ErrorMessage />;
     }
-    const doc = props.repoComments.findRepositoryByTitle.documentsList.data.find(
-        x => x && data && x.title === props.queryVariables.path,
-    );
-    // x.title:"master:app/src/main/java/me/jludden/reeflifesurvey/MainActivity.java"
-    // path:"master:local.properties"
 
-    const docCommentsList = doc && doc.commentsList.data[0];
-    const docCommentsInitial: (RoastComment2 | null)[] =
-        (docCommentsList && docCommentsList.comments && docCommentsList.comments.data) || [];
-    const docComments: RoastComment2[] = docCommentsInitial.filter(x => x != null) as RoastComment2[];
-    // todo will this be updated on add new comment input?
-
-    const comments: RoastComment[] = docComments;
-    // const comments: RoastComment[] = docComments.map(
-    //     x =>
-    //         new RoastComment({
-    //             id: Math.round(Math.random() * -1000000),
-    //             data: {
-    //                 lineNumber: Math.round(Math.random() * 50),
-    //                 text: x.text,
-    //             },
-    //         }),
+    // OLD STUFF TO FIND COMMENTS RELATED TO THIS DOC
+    // const doc = props.repoComments.findRepositoryByTitle.documentsList.data.find(
+    //     x => x && data && x.title === props.queryVariables.path,
     // );
+    // // x.title:"master:app/src/main/java/me/jludden/reeflifesurvey/MainActivity.java"
+    // // path:"master:local.properties"
 
+    // const docCommentsList = doc && doc.commentsList.data[0];
+    // const docCommentsInitial: (RoastComment2 | null)[] =
+    //     (docCommentsList && docCommentsList.comments && docCommentsList.comments.data) || [];
+    // const docComments: RoastComment2[] = docCommentsInitial.filter(x => x != null) as RoastComment2[];
+    // // todo will this be updated on add new comment input?
+
+    const comments: RoastComment[] = []; // docComments;
+    
     return (
         <>
             {/* <TestLoadDocumentComments owner= */}
@@ -101,11 +93,12 @@ const Document = (props: IDocumentProps) => {
                 content={data.repository.object.text}
                 comments={comments}
                 repoComments={props.repoComments}
-                repoId={props.repoComments.findRepositoryByTitle._id}
+                repoId={''}
+                // repoId={props.repoComments.findRepositoryByTitle._id}
                 repoTitle={props.repoComments.currentRepoTitle}
-                documentId={(doc && doc._id) || ''}
+                documentId={''}
                 documentTitle={props.queryVariables.path}
-                commentListId={(docCommentsList && docCommentsList._id) || ''}
+                commentListId={''}
                 // onSubmitComment={props.onSubmitComment}
                 // onEditComment={props.onEditComment}
             />

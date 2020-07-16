@@ -474,7 +474,7 @@ export const useAddComment: AddCommentHook = ({
     commentListId: string;
 }) => {
     // Mutation to add a comment to an existing comment list
-    const [submitCommentMutation] = useMutation(createCommentMutation);
+    const [submitCommentMutation] =  (createCommentMutation);
     const doSubmitComment = (commentListId: string, commentContent: RoastComment) => {
         submitCommentMutation({
             variables: {

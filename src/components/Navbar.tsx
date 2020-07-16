@@ -64,7 +64,7 @@ const CCNavbar = () => {
                 <Navbar.Segment align="end">
                     <Navbar.Item>
                         <Button.Group>
-                            <AuthStatusView />
+                            {/* <AuthStatusView /> */}
                             {/* <Button color="primary">
                 <strong>Sign up</strong>
               </Button>

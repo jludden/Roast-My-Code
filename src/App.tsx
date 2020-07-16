@@ -16,6 +16,9 @@ import { Home } from './components/Home';
 import CommentableCode from './components/CommentableCodePage/CommentableCode';
 import CCNavBar from './components/Navbar';
 import ChatApp from './components/RealtimeChat/ChatApp';
+import { EndpointTest } from './components/CommentableDocument/EndpointTest';
+
+
 // import logo from './' './logo.svg';
 
 // import { generateGithubSchema } from "../api/generateGithubSchema";
@@ -32,11 +35,11 @@ export const githubClient: ApolloClient<InMemoryCache> = new ApolloClient({
     cache,
     uri: '/.netlify/functions/repo_github',
 });
-export const faunaDbClient = new ApolloClient({
-    cache,
-    uri: '/.netlify/functions/repo_comments',
-    clientState: { defaults: {}, resolvers: {} },
-});
+// export const faunaDbClient = new ApolloClient({
+//     cache,
+//     uri: '/.netlify/functions/repo_comments',
+//     clientState: { defaults: {}, resolvers: {} },
+// });
 
 //  Router && QueryParamProvider
 // AuthWrapper && ApolloProvider?
@@ -56,7 +59,7 @@ export const App = () => {
     return (
 
             <>
-                <ApolloProvider client={faunaDbClient as any}>
+                <ApolloProvider client={githubClient     as any}>
                     <IdentityContextProvider url={url}>
                         <Router>
                             <QueryParamProvider ReactRouterRoute={Route}>
@@ -100,7 +103,7 @@ const AppFooter = () => {
                 </p>
             </Content>
             
-            {/* <ChatApp /> */}
+            <ChatApp />
             
         </Footer>
         )
@@ -125,9 +128,10 @@ function CommentableCodePage() {
 
             <Section>
                 <Container>
-                    <AuthWrapper>
+                    <EndpointTest />
+                    {/* <AuthWrapper>                     */}
                         <CommentableCode />
-                    </AuthWrapper>
+                    {/* </AuthWrapper> */}
                 </Container>
             </Section>
         </div>

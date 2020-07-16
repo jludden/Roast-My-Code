@@ -51,13 +51,14 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
     //   lineNumberMap.set(comment.data.lineNumber, line);
     // });
 
-    const onSubmit = useAddComment({
-        repoId: props.repoId,
-        repoTitle: props.repoTitle,
-        documentId: props.documentId,
-        documentTitle: props.documentTitle,
-        commentListId: props.commentListId,
-    });
+    const onSubmit = (comment: any) => ''; 
+    // const onSubmit = useAddComment({
+    //     repoId: props.repoId,
+    //     repoTitle: props.repoTitle,
+    //     documentId: props.documentId,
+    //     documentTitle: props.documentTitle,
+    //     commentListId: props.commentListId,
+    // });
 
     const onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse> = async (
         comment: RoastComment,

@@ -4,6 +4,21 @@ const fetch = require('node-fetch');
 const { introspectSchema, makeRemoteExecutableSchema } = require('graphql-tools');
 
 exports.handler = async function(event, context) {
+
+    if (event.httpMethod === 'OPTIONS') {
+             // To enable CORS
+      const corsHeaders = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE'
+      };
+      return {
+        statusCode: 200, // <-- Must be 200 otherwise pre-flight call fails
+        corsHeaders,
+        body: 'This was a preflight call!'
+      };
+    }
+
     // console.log("github secret: "+process.env.RMC_GITHUB_PAT);
 
     /*

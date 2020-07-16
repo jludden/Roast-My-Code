@@ -167,7 +167,7 @@ const CommentableCodeLoadRepoContainer = (props: CCContainerProps) => {
     if (error || !data || !data.repository) return <div>Error</div>; // ErrorMessage
 
     // write current repo to apollo cache
-    client.writeData({ data: { currentRepoTitle: `${owner}/${name}` } });
+    // client.writeData({ data: { currentRepoTitle: `${owner}/${name}` } });
 
     return (
         <>
@@ -213,15 +213,36 @@ const CommentableCodeInnerContainer = ({
             <GraphQLTodoList />
             */}
             <h1>COMMENTS FOR REPO</h1>
-            <FindCommentsForRepo userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} />
+            <FindCommentsForRepo userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} >
+                {({data} : any) => (
+                    <div>
+                    {/* <RepoCommentsListDisplayWithDelete commentListId={commentListId} documentId={documentId} data={data} /> */}
+                    <TraceComponentUpdate>
+                        <CommentableCodeInner3
+                            userIsLoggedIn={userIsLoggedIn}
+                            userName={userName}
+                            repo={repo}
+                            repoComments={data}
+                        />
+                    </TraceComponentUpdate>
+                    </div>
+                )}
+            </FindCommentsForRepo>
             <div>{children}</div>
         </div>
     );
 };
 
-export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo }: CommentableCodeProps) => {
-    const { data, error, loading, refetch } = useQuery<FindRepoResults>(findCommentsForRepoQuery);
-    const client = useApolloClient();
+export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo, children }: any) => {
+    // const { data, error, loading, refetch } = useQuery<FindRepoResults>(findCommentsForRepoQuery);
+    // const client = useApolloClient();
+
+    const { data, error, loading, refetch } = {
+        data: [],
+        error: '',
+        loading: false
+    };
+
 
     if (loading) return <Progress color="info" />;
     if (error || !data) return <div>Error</div>; // ErrorMessage
@@ -236,16 +257,7 @@ export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo }: Commenta
 
     return (
         <div>
-            <RepoCommentsListDisplayWithDelete commentListId={commentListId} documentId={documentId} data={data} />
-
-            <TraceComponentUpdate>
-                <CommentableCodeInner3
-                    userIsLoggedIn={userIsLoggedIn}
-                    userName={userName}
-                    repo={repo}
-                    repoComments={data}
-                />
-            </TraceComponentUpdate>
+            {children({data})}
 
             {/* <CommentableCodeInner userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} /> */}
         </div>

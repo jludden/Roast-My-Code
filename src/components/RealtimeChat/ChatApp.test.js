@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { App } from './ChatApp';
+import { ChatApp } from './ChatApp';
 import { EventComments, Comment } from './Components/EventComments';
 import { NewComment } from './Components/NewComment';
 import '@testing-library/jest-dom/extend-expect';
