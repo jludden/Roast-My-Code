@@ -1,12 +1,7 @@
 import * as React from 'react';
 import '../../App.css';
 import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub, FaCommentAlt } from 'react-icons/fa';
-import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
-
-// import RepoSearch from "./RepoSearch/RepoSearch";
-// import RepoExplorer from "./RepoSearch/RepoExplorer";
 import { Blob } from '../../generated/graphql';
-// import ICCProps from './CommentableCode';
 import 'rbx/index.css';
 import {
     Section,
@@ -50,20 +45,26 @@ import {
 //             },
 //         },
 //     };
-const DocumentHeader = ({ documentName, commentsCount }: { documentName: string; commentsCount: number }) => {
-    // const [fileName, setUrl] = useQueryParam('file', StringParam);
+const DocumentHeader = ({ documentName, commentsCount, cycleTheme }: 
+    { documentName: string; commentsCount: number; cycleTheme: () => void; }) => {
+
+        const mgRight = {
+            marginRight: "5px"
+        }
 
     return (
         <Section>
             <Container>
                 <Title>{documentName}</Title>
                 <Title subtitle>
-                    <FaGithub /> number of comments: {commentsCount}
-                    <Button badge={commentsCount} badgeColor="danger" badgeOutlined color="danger" outlined>
+                    <Button color="info" onClick={() => cycleTheme()} style={mgRight} >
+                        Change Theme
+                    </Button>
+                    <Button color="primary" disabled style={mgRight} >Request Public Code Review</Button>
+                    <Button badge={commentsCount} badgeColor="primary" badgeOutlined color="primary" outlinedstyle={mgRight}>
                         <FaCommentAlt />
                     </Button>
                 </Title>
-                <Button color="primary">Request Public Code Review</Button>
             </Container>
         </Section>
     );

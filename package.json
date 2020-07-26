@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.0.2",
     "@apollo/react-hooks": "^3.0.0",
     "@apollo/react-testing": "^3.0.0",
     "@graphql-codegen/introspection": "^1.2.0",
@@ -56,6 +57,7 @@
     "react-scripts": "^3.0.1",
     "react-syntax-highlighter": "^12.2.1",
     "react-use": "^15.1.0",
+    "subscriptions-transport-ws": "^0.9.17",
     "typescript": "^3.9.3",
     "use-query-params": "^1.1.3"
   },

@@ -15,9 +15,10 @@ import { AuthWrapper } from './components/AuthWrapper';
 import { Home } from './components/Home';
 import CommentableCode from './components/CommentableCodePage/CommentableCode';
 import CCNavBar from './components/Navbar';
-import ChatApp from './components/RealtimeChat/ChatApp';
+import { ChatAppApolloProvider } from './components/RealtimeChat/ChatApp';
 import { EndpointTest } from './components/CommentableDocument/EndpointTest';
-
+import ErrorBoundary from './components/Common/ErrorBoundary';
+import About from './pages/About';
 
 // import logo from './' './logo.svg';
 
@@ -59,7 +60,8 @@ export const App = () => {
     return (
 
             <>
-                <ApolloProvider client={githubClient     as any}>
+                <ChatAppApolloProvider>
+                {/* <ApolloProvider client={githubClient     as any}> */}
                     <IdentityContextProvider url={url}>
                         <Router>
                             <QueryParamProvider ReactRouterRoute={Route}>
@@ -86,7 +88,8 @@ export const App = () => {
                         </Router>
                         <AppFooter />
                     </IdentityContextProvider>
-                </ApolloProvider>
+                    </ChatAppApolloProvider>
+                {/* </ApolloProvider> */}
             </>
     );
     
@@ -121,16 +124,13 @@ const AppFooter = () => {
 function CommentableCodePage() {
     return (
         <div className="App">
-            {/* <header className="App-header">
-        * <img src={logo} className="App-logo" alt="logo" /> }
-        <h1 className="App-title">Welcome to React</h1>
-      </header> */}
-
             <Section>
                 <Container>
-                    <EndpointTest />
                     {/* <AuthWrapper>                     */}
+                    <ErrorBoundary >
+                        {/* <EndpointTest /> */}
                         <CommentableCode />
+                    </ErrorBoundary>
                     {/* </AuthWrapper> */}
                 </Container>
             </Section>
@@ -158,9 +158,7 @@ function Index({ match }: RouteComponentProps<TParams>) {
 //     ;
 // }
 
-function About() {
-    return <h2>About</h2>;
-}
+
 
 function Users() {
     return <h2>Users</h2>;

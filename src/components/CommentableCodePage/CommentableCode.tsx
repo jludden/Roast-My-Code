@@ -38,6 +38,7 @@ import { useWindowPath } from './hooks/useWindowPath';
 import { useLocation } from './hooks/useLocation';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import { useParams } from 'react-router-dom';
+import ErrorBoundary from '../Common/ErrorBoundary';
 
 // todo type instead of interface? is this being used?
 export interface CommentableCodeProps {
@@ -212,7 +213,6 @@ const CommentableCodeInnerContainer = ({
             <CompletedTodos />
             <GraphQLTodoList />
             */}
-            <h1>COMMENTS FOR REPO</h1>
             <FindCommentsForRepo userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} >
                 {({data} : any) => (
                     <div>
@@ -399,17 +399,22 @@ export const CommentableCodeInner2 = ({
         <>
             {/* /{this.state.loading && <Progress color="info" />} */}
 
-            <RepoContents repo={repo} repoComments={repoComments} loadFileHandler={loadFileHandler} />
+            <ErrorBoundary>
+             <RepoContents repo={repo} repoComments={repoComments} loadFileHandler={loadFileHandler} />
+            </ErrorBoundary>
 
-            {fileName && (
-                <Document
-                    queryVariables={currentDocVars}
-                    documentName={fileName}
-                    repoComments={repoComments}
-                    // onSubmitComment={onSubmitComment}
-                    // onEditComment={onEditComment}
-                />
-            )}
+            <ErrorBoundary>
+                {fileName && (
+                    <Document
+                        queryVariables={currentDocVars}
+                        documentName={fileName}
+                        repoComments={repoComments}
+                        // onSubmitComment={onSubmitComment}
+                        // onEditComment={onEditComment}
+                    />
+                )}
+            </ErrorBoundary>
+
         </>
     );
 };

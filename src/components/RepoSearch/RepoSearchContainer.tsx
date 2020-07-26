@@ -50,7 +50,7 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
         <Section>
             <Container>
                 <Panel>
-                    <Panel.Heading>Github Repositories</Panel.Heading>
+                    <Panel.Heading><FaGithub/> Github Repositories</Panel.Heading>
                     <Panel.Tab.Group>
                         <Panel.Tab active>search all</Panel.Tab>
                         <Panel.Tab onClick={() => props.loadRecommendedRepo()}>recommended</Panel.Tab>

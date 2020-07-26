@@ -10,12 +10,12 @@ module.exports = app => {
   //   next();
   // });
 
-  app.use(createProxyMiddleware('/.netlify/functions/', { 
-    target: 'http://localhost:8080/',
-    "pathRewrite": {
-      "^/\\.netlify/functions": ""
-    }
-  }));
+  // app.use(createProxyMiddleware('/.netlify/functions/', { 
+  //   target: 'http://localhost:8080/',
+  //   "pathRewrite": {
+  //     "^/\\.netlify/functions": ""
+  //   }
+  // }));
 
   app.use(morgan('combined'));
 };

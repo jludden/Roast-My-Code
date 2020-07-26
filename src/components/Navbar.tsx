@@ -1,7 +1,7 @@
 import * as React from 'react';
 import '../App.css';
 import 'rbx/index.css';
-import { Navbar, Button } from 'rbx';
+import { Navbar, Button, Title } from 'rbx';
 import {
     BrowserRouter as Router,
     Switch,
@@ -12,6 +12,10 @@ import {
     RouteComponentProps,
 } from 'react-router-dom';
 import AuthStatusView from './AuthStatusView';
+import logo from '../static/favicon.ico';
+
+// import logo from '../static/emergency-fire-hazard.svg';
+// import logo from '../static/noun_Roasting_Marshmallows.svg';
 
 // will not be needed after react router v6
 const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => <Link innerRef={ref} {...props} />);
@@ -22,12 +26,15 @@ const CCNavbar = () => {
             <Navbar.Brand>
                 <Navbar.Item href="/">
                     <img
-                        src="https://bulma.io/images/bulma-logo.png"
-                        alt=""
+                        src={logo}
+                        alt="Roast My Code Logo"
                         role="presentation"
                         width="medium"
                         height="medium"
                     />
+                    <Title style={{ color: '#209cee', marginLeft: '1rem' }}>
+                        Roast My Code
+                    </Title>
                 </Navbar.Item>
                 <Navbar.Burger />
             </Navbar.Brand>

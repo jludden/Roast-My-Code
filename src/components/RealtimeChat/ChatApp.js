@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ApolloProvider } from 'react-apollo';
 
 import { createAuthLink } from 'aws-appsync-auth-link';
@@ -7,6 +7,7 @@ import ApolloClient from 'apollo-boost';
 import { ApolloLink } from 'apollo-link';
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import ErrorBoundary from '../Common/ErrorBoundary';
 
 // import AWSAppSyncClient, { defaultDataIdFromObject } from 'aws-appsync';
 // import { Rehydrated } from 'aws-appsync-react';
@@ -15,21 +16,6 @@ import EventComments from './Components/EventComments';
 import appSyncConfig from './aws-exports';
 import { eventId } from './aws-chatroom-id';
 
-export const ChatApp = () => {
-  
-  const event = {
-    id: eventId, 
-    comments: []
-  }
-  
-  return (
-    <div className='App'>
-    hello world - put comments here
-    
-    </div>
-  );
-  //   <EventComments eventId={event.id} comments={event.comments} />
-}
 
 // old version of graphql client using aws-appsync. 
 // as of july 2020 (and for something like a whole year now)
@@ -43,12 +29,12 @@ export const ChatApp = () => {
 //   },
 //   cacheOptions: {
 //     dataIdFromObject: (obj) => {
-//       let id = defaultDataIdFromObject(obj);
+  //       let id = defaultDataIdFromObject(obj);
 
 //       if (!id) {
-//         const { __typename: typename } = obj;
+  //         const { __typename: typename } = obj;
 //         switch (typename) {
-//           case 'Comment':
+  //           case 'Comment':
 //             return `${typename}:${obj.commentId}`;
 //           default:
 //             return id;
@@ -78,12 +64,42 @@ export const awsClient = new ApolloClient({
   cache: new InMemoryCache() // todo may want to re-use cache created in App.tsx
 });
 
-const WithProvider = () => (
-  <ApolloProvider client={awsClient}>
-    {/* <Rehydrated> */}
-      <ChatApp />
-    {/* </Rehydrated> */}
-  </ApolloProvider>
-);
+// const WithProvider = () => (
+//   <ApolloProvider client={awsClient}>
+//     {/* <Rehydrated> */}
+//       <ChatApp />
+//     {/* </Rehydrated> */}
+//   </ApolloProvider>
+// );
 
-export default WithProvider;
+export const ChatApp = () => {
+  
+  const [loadEventsComments, setShow] = useState(false);
+
+  const event = {
+    id: eventId, 
+    comments: []
+  }
+  
+  return (
+    <div className='App'>  
+      <button onClick={() => setShow(!loadEventsComments)}>ShowComments</button>
+      {loadEventsComments &&
+        <ErrorBoundary>
+          <EventComments eventId={event.id} comments={event.comments} />
+        </ErrorBoundary>
+      }
+    </div>
+  );
+}
+
+export const ChatAppApolloProvider = ({children}) => {
+  return (
+    <ErrorBoundary>
+          <ApolloProvider client={awsClient}>
+            {children}
+            <ChatApp />
+          </ApolloProvider>
+        </ErrorBoundary>
+  );
+}

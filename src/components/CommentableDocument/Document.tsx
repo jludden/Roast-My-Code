@@ -12,6 +12,9 @@ import { githubClient } from '../../App';
 import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment2 } from '../CommentableCodePage/types/findRepositoryByTitle';
 
+import { tomorrow, ghcolors, darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+
 export interface IDocumentProps {
     queryVariables: IGithubDocQueryVariables;
     documentName: string;
@@ -55,7 +58,7 @@ interface IGithubDocQueryVariables {
     path: string;
 }
 
-const Document = (props: IDocumentProps) => {
+const DocumentLoader = (props: IDocumentProps) => {
     const { data, error, loading } = useQuery<IGithubDocResponse, IGithubDocQueryVariables>(GITHUB_DOCUMENT_QUERY, {
         variables: props.queryVariables,
         client: githubClient as any,
@@ -68,8 +71,9 @@ const Document = (props: IDocumentProps) => {
     if (error || !data || !data.repository || !data.repository.object || !data.repository.object.text) {
         return <ErrorMessage />;
     }
-
+    
     // OLD STUFF TO FIND COMMENTS RELATED TO THIS DOC
+    //const comments: RoastComment[] = docComments;
     // const doc = props.repoComments.findRepositoryByTitle.documentsList.data.find(
     //     x => x && data && x.title === props.queryVariables.path,
     // );
@@ -81,17 +85,32 @@ const Document = (props: IDocumentProps) => {
     //     (docCommentsList && docCommentsList.comments && docCommentsList.comments.data) || [];
     // const docComments: RoastComment2[] = docCommentsInitial.filter(x => x != null) as RoastComment2[];
     // // todo will this be updated on add new comment input?
+    return <DocumentView data={data} comments={[]} {...props} />;
+}
 
-    const comments: RoastComment[] = []; // docComments;
+
+
+
+const DocumentView = (props: IDocumentProps & {data: any, comments: any}) => {
+
+
+    const availableThemes = [tomorrow, ghcolors, darcula];
+    const [theme, setTheme] = React.useState(tomorrow);
+
+    const cycleTheme = () => {
+        const currentIndex = availableThemes.indexOf(theme);
+        const newIndex = availableThemes.length - currentIndex > 1 ? currentIndex + 1 : 0;
+        setTheme(availableThemes[newIndex]);
+    };
     
     return (
         <>
             {/* <TestLoadDocumentComments owner= */}
-            <DocumentHeader documentName={props.documentName} commentsCount={comments.length} />
+            <DocumentHeader documentName={props.documentName} commentsCount={props.comments.length} cycleTheme={cycleTheme}/>
             <DocumentBody
                 name={props.documentName}
-                content={data.repository.object.text}
-                comments={comments}
+                content={props.data.repository.object.text}
+                comments={[]}
                 repoComments={props.repoComments}
                 repoId={''}
                 // repoId={props.repoComments.findRepositoryByTitle._id}
@@ -99,6 +118,7 @@ const Document = (props: IDocumentProps) => {
                 documentId={''}
                 documentTitle={props.queryVariables.path}
                 commentListId={''}
+                theme={theme}
                 // onSubmitComment={props.onSubmitComment}
                 // onEditComment={props.onEditComment}
             />
@@ -117,4 +137,4 @@ export function ErrorMessage() {
     );
 }
 
-export default Document;
+export default DocumentLoader;

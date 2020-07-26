@@ -12,7 +12,6 @@ import * as React from 'react';
 import '../../App.css';
 
 import createElement from 'react-syntax-highlighter/dist/esm/create-element';
-import { tomorrow, ghcolors, darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 // import tomorrow from 'react-syntax-highlighter/dist/styles/prism/tomorrow';
 // import ghcolors from 'react-syntax-highlighter/dist/styles/prism/ghcolors';
 // import darcula from 'react-syntax-highlighter/dist/styles/prism/darcula';
@@ -58,18 +57,6 @@ SyntaxHighlighter.registerLanguage('typescript', typescript);
 // import myRenderer from './SyntaxRenderer' todo delete that whole class, have function local
 // import IGithubRepo from './CommentableCode';
 
-export interface IDocumentBodyProps {
-    name: string; // github data - refactor to new interface
-    content: string;
-    comments: RoastComment[];
-
-    repoComments: FindRepoResults;
-    repoId: string;
-    repoTitle: string;
-    documentId: string;
-    documentTitle: string;
-    commentListId: string;
-}
 export interface IDocumentBodyPropsWithTheme {
     name: string; // github data - refactor to new interface
     content: string;
@@ -94,21 +81,9 @@ interface IDocumentBodyState {
     inProgressComment?: UnsubmittedComment;
 }
 
-const DocumentBodyContainer = (props: IDocumentBodyProps) => {
-    const availableThemes = [tomorrow, ghcolors, darcula];
-    const [theme, setTheme] = React.useState(tomorrow);
-
-    const cycleTheme = () => {
-        const currentIndex = availableThemes.indexOf(theme);
-        const newIndex = availableThemes.length - currentIndex > 1 ? currentIndex + 1 : 0;
-        setTheme(availableThemes[newIndex]);
-    };
-
+const DocumentBodyContainer = (props: IDocumentBodyPropsWithTheme) => {
     return (
         <>
-            <Button color="info" onClick={() => cycleTheme()}>
-                Change Theme
-            </Button>
             <DocumentBody
                 name={props.name}
                 content={props.content}
@@ -119,7 +94,7 @@ const DocumentBodyContainer = (props: IDocumentBodyProps) => {
                 documentId={props.documentId}
                 documentTitle={props.documentTitle}
                 commentListId={props.commentListId}
-                theme={theme}
+                theme={props.theme}
             />
         </>
     );
