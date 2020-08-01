@@ -19,6 +19,10 @@ import { ChatAppApolloProvider } from './components/RealtimeChat/ChatApp';
 import { EndpointTest } from './components/CommentableDocument/EndpointTest';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import About from './pages/About';
+import { auth } from './services/firebase';
+import FirebaseChat from './components/FirebaseChat/Chat';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
 
 // import logo from './' './logo.svg';
 
@@ -82,6 +86,15 @@ export const App = () => {
                                         <Route path="/" exact component={Home} />
                                         <Route path="/about/" component={About} />
                                         <Route path="/repo/" component={CommentableCodePage} />
+                                        <Route path="/chat/" component={FirebaseChat} />
+                                        <Route path="/signup/" component={Signup} />
+                                        <Route path="/login/" component={Login} />
+                                        {/* //  TODO only render signup, login if authenticated not true!
+                                            // render={(props) => authenticated === false
+                                            //     ? <Component {...props} />
+                                            //     : <Redirect to='/chat' />}
+                                            // />
+                                        */}
                                     </Switch>
                                 </Section>
                             </QueryParamProvider>
@@ -106,8 +119,9 @@ const AppFooter = () => {
                 </p>
             </Content>
             
-            <ChatApp />
             
+            {/* <ChatApp /> */}
+            <FirebaseChat />
         </Footer>
         )
 }

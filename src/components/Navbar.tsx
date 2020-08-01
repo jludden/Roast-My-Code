@@ -25,16 +25,8 @@ const CCNavbar = () => {
         <Navbar>
             <Navbar.Brand>
                 <Navbar.Item href="/">
-                    <img
-                        src={logo}
-                        alt="Roast My Code Logo"
-                        role="presentation"
-                        width="medium"
-                        height="medium"
-                    />
-                    <Title style={{ color: '#209cee', marginLeft: '1rem' }}>
-                        Roast My Code
-                    </Title>
+                    <img src={logo} alt="Roast My Code Logo" role="presentation" width="medium" height="medium" />
+                    <Title style={{ color: '#209cee', marginLeft: '1rem' }}>Roast My Code</Title>
                 </Navbar.Item>
                 <Navbar.Burger />
             </Navbar.Brand>
@@ -47,10 +39,8 @@ const CCNavbar = () => {
                         Search
                     </Navbar.Item>
 
-                    <Navbar.Item>
-                        {' '}
-                        Documentation
-                        {/* <Link to="/repo/">Repo</Link> */}
+                    <Navbar.Item as={AdapterLink} to="/chat">
+                        Chat
                     </Navbar.Item>
 
                     <Navbar.Item dropdown>
@@ -60,8 +50,12 @@ const CCNavbar = () => {
                             <Navbar.Item as={AdapterLink} to="/about">
                                 About
                             </Navbar.Item>
-                            <Navbar.Item>Jobs</Navbar.Item>
-                            <Navbar.Item>Contact</Navbar.Item>
+                            <Navbar.Item as={AdapterLink} to="/signup">
+                                Sign up
+                            </Navbar.Item>
+                            <Navbar.Item as={AdapterLink} to="/login">
+                                Log in
+                            </Navbar.Item>
                             <Navbar.Divider />
                             <Navbar.Item>Report an issue</Navbar.Item>
                         </Navbar.Dropdown>
