@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
-import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
-import SingleCommentView from './SingleCommentView';
+import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
+import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
+import SingleCommentView from '../SingleCommentView';
 import 'rbx/index.css';
 import { Container, Card, Button, Content, Heading, Message, Icon, Delete, Textarea } from 'rbx';
 import { FaAngleDown, FaAngleUp, FaCommentAlt } from 'react-icons/fa';
 import { Collapse } from 'react-collapse';
-import '../App.css';
-import { CommentAuthorAvatar } from './Avatar';
+import '../../App.css';
+import { CommentAuthorAvatar } from '../Avatar';
 
 export interface ICommentContainerProps {
     comments: RoastComment[]; // comments belonging to this line number

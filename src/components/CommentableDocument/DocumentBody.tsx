@@ -61,7 +61,7 @@ export interface IDocumentBodyPropsWithTheme {
     name: string; // github data - refactor to new interface
     content: string;
     comments: RoastComment[];
-
+    onSubmitComment: (comment: RoastComment) => Promise<boolean>;
     repoComments: FindRepoResults;
     repoId: string;
     repoTitle: string;
@@ -84,18 +84,7 @@ interface IDocumentBodyState {
 const DocumentBodyContainer = (props: IDocumentBodyPropsWithTheme) => {
     return (
         <>
-            <DocumentBody
-                name={props.name}
-                content={props.content}
-                comments={props.comments}
-                repoComments={props.repoComments}
-                repoId={props.repoId}
-                repoTitle={props.repoTitle}
-                documentId={props.documentId}
-                documentTitle={props.documentTitle}
-                commentListId={props.commentListId}
-                theme={props.theme}
-            />
+            <DocumentBody {...props} />
         </>
     );
 };
@@ -130,30 +119,6 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
 
         return (
             <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
-                {/* {decoded && (
-                    <SyntaxHighlighter
-                        language={language}
-                        style={this.props.theme}
-                        className="left-align"
-                        showLineNumbers
-                        renderer={this.renderSyntaxLines}
-                    >
-                        {decoded}
-                    </SyntaxHighlighter>
-                )}
-                <div style={{ marginLeft: '-100px' }}>
-                    <DocumentCommentsView
-                        lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
-                        lineRefs={this.state.lineRefs}
-                        inProgressComment={this.state.inProgressComment}
-                        repoId={this.props.repoId}
-                        repoTitle={this.props.repoTitle}
-                        documentId={this.props.documentId}
-                        documentTitle={this.props.documentTitle}
-                        commentListId={this.props.commentListId}
-                    />
-                </div> */}
-
                 <Section backgroundColor="dark" gradient="warning">
                     <Container color="dark">
                         <Column.Group>
@@ -180,6 +145,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
                                     documentId={this.props.documentId}
                                     documentTitle={this.props.documentTitle}
                                     commentListId={this.props.commentListId}
+                                    onSubmitComment={this.props.onSubmitComment}
                                     onSubmitCommentFinish={this.onSubmitCommentFinish}
                                 />
                             </Column>

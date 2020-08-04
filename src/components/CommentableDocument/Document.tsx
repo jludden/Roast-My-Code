@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import DocumentBody from './DocumentBody';
@@ -11,9 +11,8 @@ import { Container, Message, Progress } from 'rbx';
 import { githubClient } from '../../App';
 import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment2 } from '../CommentableCodePage/types/findRepositoryByTitle';
-
+import { db } from '../../services/firebase';
 import { tomorrow, ghcolors, darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
-
 
 export interface IDocumentProps {
     queryVariables: IGithubDocQueryVariables;
@@ -58,7 +57,44 @@ interface IGithubDocQueryVariables {
     path: string;
 }
 
-const DocumentLoader = (props: IDocumentProps) => {
+const DocCommentsLoader = (props: IDocumentProps) => {
+    const [comments, setComments] = useState([] as RoastComment[]);
+    const [loadCommentsError, setLoadCommentsError] = useState();
+    const commentsId = useMemo(() => btoa(props.queryVariables.path), [props.queryVariables]);
+
+    const onSubmitComment = async (comment: RoastComment) => {
+        await db.ref('file-comments/' + commentsId).push({
+            text: comment.text,
+            lineNumber: comment.lineNumber,
+            timestamp: Date.now(),
+            uid: 'DiKOhKk9smZC6g0IpCDUd6RJ7el2', //TODO user.uid,
+        });
+        return true;
+    };
+
+    useEffect(() => {
+        try {
+            db.ref('file-comments/' + commentsId).on('value', (snapshot) => {
+                const chats: RoastComment[] = [];
+                snapshot.forEach((snap) => {
+                    chats.push({
+                        _id: snap.key,
+                        ...snap.val(),
+                    });
+                });
+                setComments(chats);
+            });
+        } catch (error) {
+            setLoadCommentsError(error.message);
+        }
+    }, [commentsId]);
+
+    if (loadCommentsError) return <ErrorMessage message="failed to load comments for doc" />;
+
+    return <DocumentLoader comments={comments} onSubmitComment={onSubmitComment} {...props} />;
+};
+
+const DocumentLoader = (props: IDocumentProps & { comments: any; onSubmitComment: (comment: RoastComment) => Promise<boolean> }) => {
     const { data, error, loading } = useQuery<IGithubDocResponse, IGithubDocQueryVariables>(GITHUB_DOCUMENT_QUERY, {
         variables: props.queryVariables,
         client: githubClient as any,
@@ -71,7 +107,7 @@ const DocumentLoader = (props: IDocumentProps) => {
     if (error || !data || !data.repository || !data.repository.object || !data.repository.object.text) {
         return <ErrorMessage />;
     }
-    
+
     // OLD STUFF TO FIND COMMENTS RELATED TO THIS DOC
     //const comments: RoastComment[] = docComments;
     // const doc = props.repoComments.findRepositoryByTitle.documentsList.data.find(
@@ -85,15 +121,10 @@ const DocumentLoader = (props: IDocumentProps) => {
     //     (docCommentsList && docCommentsList.comments && docCommentsList.comments.data) || [];
     // const docComments: RoastComment2[] = docCommentsInitial.filter(x => x != null) as RoastComment2[];
     // // todo will this be updated on add new comment input?
-    return <DocumentView data={data} comments={[]} {...props} />;
-}
+    return <DocumentView data={data} {...props} />;
+};
 
-
-
-
-const DocumentView = (props: IDocumentProps & {data: any, comments: any}) => {
-
-
+const DocumentView = (props: IDocumentProps & { data: any; comments: any; onSubmitComment: (comment: RoastComment) => Promise<boolean> }) => {
     const availableThemes = [tomorrow, ghcolors, darcula];
     const [theme, setTheme] = React.useState(tomorrow);
 
@@ -102,15 +133,19 @@ const DocumentView = (props: IDocumentProps & {data: any, comments: any}) => {
         const newIndex = availableThemes.length - currentIndex > 1 ? currentIndex + 1 : 0;
         setTheme(availableThemes[newIndex]);
     };
-    
+
     return (
         <>
             {/* <TestLoadDocumentComments owner= */}
-            <DocumentHeader documentName={props.documentName} commentsCount={props.comments.length} cycleTheme={cycleTheme}/>
+            <DocumentHeader
+                documentName={props.documentName}
+                commentsCount={props.comments.length}
+                cycleTheme={cycleTheme}
+            />
             <DocumentBody
                 name={props.documentName}
                 content={props.data.repository.object.text}
-                comments={[]}
+                comments={props.comments}
                 repoComments={props.repoComments}
                 repoId={''}
                 // repoId={props.repoComments.findRepositoryByTitle._id}
@@ -119,22 +154,23 @@ const DocumentView = (props: IDocumentProps & {data: any, comments: any}) => {
                 documentTitle={props.queryVariables.path}
                 commentListId={''}
                 theme={theme}
-                // onSubmitComment={props.onSubmitComment}
+                onSubmitComment={props.onSubmitComment}
                 // onEditComment={props.onEditComment}
             />
         </>
     );
 };
 
-export function ErrorMessage() {
+export function ErrorMessage({ message }) {
     return (
         <Container>
             <Message color="danger">
                 <Message.Header>Unexpected Error</Message.Header>
-                <Message.Body>Failed to load document</Message.Body>
+                {message && <Message.Body>{message}</Message.Body>}
+                {!message && <Message.Body>Failed to load document</Message.Body>}
             </Message>
         </Container>
     );
 }
 
-export default DocumentLoader;
+export default DocCommentsLoader;

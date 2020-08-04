@@ -40,7 +40,7 @@ class FirebaseChat extends Component {
                 <span>authenticated: {this.state.authenticated}</span>
 
                 <ErrorBoundary message="failed to render firebase chat">
-                    <Chat />
+                    <Chat fileId={'12345'} />
                 </ErrorBoundary>
 
                 <h1>chat exit</h1>
@@ -66,27 +66,27 @@ export class Chat extends Component {
 
     handleChange(event) {
         this.setState({
-          content: event.target.value
+            content: event.target.value,
         });
-      }
-      async handleSubmit(event) {
+    }
+    async handleSubmit(event) {
         event.preventDefault();
         this.setState({ writeError: null });
         try {
-          await db.ref("chats").push({
-            content: this.state.content,
-            timestamp: Date.now(),
-            uid: this.state.user.uid
-          });
-          this.setState({ content: '' });
+            await db.ref('file-comments/' + this.props.fileId).push({
+                content: this.state.content,
+                timestamp: Date.now(),
+                uid: this.state.user.uid,
+            });
+            this.setState({ content: '' });
         } catch (error) {
-          this.setState({ writeError: error.message });
+            this.setState({ writeError: error.message });
         }
-      }
+    }
     async componentDidMount() {
         this.setState({ readError: null });
         try {
-            db.ref('chats').on('value', (snapshot) => {
+            db.ref('file-comments/' + this.props.fileId).on('value', (snapshot) => {
                 let chats = [];
                 snapshot.forEach((snap) => {
                     chats.push(snap.val());
@@ -99,29 +99,24 @@ export class Chat extends Component {
     }
     render() {
         return (
-          <div>
-            <div className="chats">
-              {this.state.chats.map(chat => {
-                return <p key={chat.timestamp}>{chat.content}</p>
-              })}
-            </div>
-            <form onSubmit={this.handleSubmit}>
-                <input onChange={this.handleChange} value={this.state.content}></input>
-                {this.state.error ? <p>{this.state.writeError}</p> : null}
-                <button type="submit">Send</button>
-            </form>
             <div>
-                Login in as: 
-                
-                <strong>{
-                    this.state.user && this.state.user.email
-                    ? this.state.user.email
-                    : "unknown"
-                    }</strong>
+                <div className="chats">
+                    {this.state.chats.map((chat) => {
+                        return <p key={chat.timestamp}>{chat.content}</p>;
+                    })}
+                </div>
+                <form onSubmit={this.handleSubmit}>
+                    <input onChange={this.handleChange} value={this.state.content}></input>
+                    {this.state.error ? <p>{this.state.writeError}</p> : null}
+                    <button type="submit">Send</button>
+                </form>
+                <div>
+                    Login in as:
+                    <strong>{this.state.user && this.state.user.email ? this.state.user.email : 'unknown'}</strong>
+                </div>
             </div>
-          </div>
         );
-      }
+    }
 }
 
 export default FirebaseChat;

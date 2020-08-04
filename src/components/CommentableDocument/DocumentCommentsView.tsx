@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import { useAddComment } from '../CommentableCodePage/CommentsGqlQueries';
@@ -20,13 +20,15 @@ import {
     Progress,
 } from 'rbx';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
+import { db } from '../../services/firebase';
 
-import CommentContainer from '../CommentContainer';
+import CommentContainer from './CommentContainer';
 
 export interface CommentsViewProps {
     lineNumberMap: Map<number | undefined, RoastComment[]>;
     lineRefs: HTMLDivElement[];
     inProgressComment?: UnsubmittedComment;
+    onSubmitComment: (comment: RoastComment) => Promise<boolean>;
     onSubmitCommentFinish: () => void; // either submit or cancel, close in progress comment
     repoId: string;
     repoTitle: string;
@@ -50,8 +52,8 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
     //   line.push(comment);
     //   lineNumberMap.set(comment.data.lineNumber, line);
     // });
+    const [writeCommentError, setWriteCommentError] = useState();
 
-    const onSubmit = (comment: any) => ''; 
     // const onSubmit = useAddComment({
     //     repoId: props.repoId,
     //     repoTitle: props.repoTitle,
@@ -66,11 +68,15 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
         // todo check logged in
         try {
             if (comment.text) {
-                await onSubmit(comment);
+                setWriteCommentError(undefined);
+                await props.onSubmitComment(comment);
                 props.onSubmitCommentFinish(); // notify parent
                 return SubmitCommentResponse.Success;
             }
-        } catch (e) {}
+        } catch (e) {
+            setWriteCommentError(e.message);
+            console.log(e.message);
+        }
         return SubmitCommentResponse.Error;
     };
 
@@ -98,6 +104,11 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
             {/* also display the comment in progress if any */}
             {props.inProgressComment && (
                 <>
+                    {writeCommentError && 
+                        <div>
+                            {writeCommentError}
+                        </div>
+                    }
                     <CommentContainer
                         key={`unsubmitted ${props.inProgressComment.lineRef}`}
                         onEditComment={onEditComment}
