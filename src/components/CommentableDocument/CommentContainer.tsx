@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import SingleCommentView from '../SingleCommentView';
@@ -34,6 +34,20 @@ interface ICommentContainerState {
 
 // }
 
+// const CommentContainer2 = (props: ICommentContainerProps) => {
+//     const {comments} = props;
+
+//     return (
+//         <div>{message}</div>
+//     )
+// }
+
+// get the top offset of the associated line of code
+function computeTopOffset(ref: HTMLDivElement): string {
+    if (!ref) return '0px';
+    return `${ref.offsetTop}px`;
+}
+
 export default class CommentContainer extends React.PureComponent<ICommentContainerProps, ICommentContainerState> {
     constructor(props: ICommentContainerProps) {
         super(props);
@@ -52,15 +66,28 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         this.setState({ expanded: !this.state.expanded });
     };
 
-    public componentWillReceiveProps(nextProps: ICommentContainerProps) {
+    static getDerivedStateFromProps(nextProps: ICommentContainerProps, prevState: ICommentContainerState){
         const styles: React.CSSProperties = {
             // backgroundColor: 'red',
             // border: '1px solid black',
             position: 'absolute',
-            top: this.computeTopOffset(nextProps.lineRef || this.props.lineRef),
+            top: computeTopOffset(nextProps.lineRef),
         };
-        this.setState({ styles });
-    }
+        return {
+            ...prevState,
+            styles,
+        }
+     }
+
+    // public componentWillReceiveProps(nextProps: ICommentContainerProps) {
+    //     const styles: React.CSSProperties = {
+    //         // backgroundColor: 'red',
+    //         // border: '1px solid black',
+    //         position: 'absolute',
+    //         top: this.computeTopOffset(nextProps.lineRef || this.props.lineRef),
+    //     };
+    //     this.setState({ styles });
+    // }
 
     public render() {
         const { comments } = this.props;
@@ -200,20 +227,17 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
       </Message>
 */
 
-    // get the top offset of the associated line of code
-    public computeTopOffset(ref: HTMLDivElement): string {
-        if (!ref) return '0px';
-        return `${ref.offsetTop}px`;
-    }
+
 }
 
-export const CardHeader = ({ comment }: { comment: RoastComment }) => {
+export const CardHeader = ({ comment }: { comment: RoastCommupdatedAtent }) => {
     return (
         <>
             <CommentAuthorAvatar comment={comment} />
             <div className="commentHeader">
                 <div style={{ fontWeight: 'bold', fontSize: '14px' }}>Jason Ludden</div>
-                <div style={{ fontWeight: 'lighter', fontSize: '12px' }}>7:45 AM Nov 28</div>
+                <div style={{ fontWeight: 'lighter', fontSize: '12px' }}>{comment.updatedAt ? comment.updatedAt.toLocaleString() : "Just now"}</div> 
+                {/* 7:45 AM Nov 28 */}
             </div>
         </>
     );

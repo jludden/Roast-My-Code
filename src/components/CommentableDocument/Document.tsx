@@ -77,9 +77,11 @@ const DocCommentsLoader = (props: IDocumentProps) => {
             db.ref('file-comments/' + commentsId).on('value', (snapshot) => {
                 const chats: RoastComment[] = [];
                 snapshot.forEach((snap) => {
+                    const val = snap.val();
                     chats.push({
                         _id: snap.key,
-                        ...snap.val(),
+                        updatedAt: new Date(val.timestamp),
+                        ...val,
                     });
                 });
                 setComments(chats);
@@ -161,7 +163,7 @@ const DocumentView = (props: IDocumentProps & { data: any; comments: any; onSubm
     );
 };
 
-export function ErrorMessage({ message }) {
+export function ErrorMessage({ message } = { message: ''}) {
     return (
         <Container>
             <Message color="danger">
