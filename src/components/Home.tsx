@@ -17,7 +17,6 @@ import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from 
 import { RepositoryOwner, StargazerConnection, Language } from '../generated/graphql'; // todo shouldnt really need
 import RepoSearchContainer from './RepoSearch/RepoSearchContainer';
 import RepoContents from './RepoContents';
-import AuthStatusView from './AuthStatusView';
 import './Home.css';
 
 export interface IHomeProps {
@@ -38,7 +37,6 @@ export function Home(props: IHomeProps) {
     //   grid-column: "absolute",
     //   left: `${node.offsetWidth}px`  // node.getBoundingClientRect();
     // }
-            /* <AuthStatusView showImmediately={false}/> */
 
     return (
         <>

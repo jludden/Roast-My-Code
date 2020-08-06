@@ -11,7 +11,6 @@ import {
     NavLink,
     RouteComponentProps,
 } from 'react-router-dom';
-import AuthStatusView from './AuthStatusView';
 import logo from '../static/favicon.ico';
 
 // import logo from '../static/emergency-fire-hazard.svg';
@@ -65,7 +64,6 @@ const CCNavbar = () => {
                 <Navbar.Segment align="end">
                     <Navbar.Item>
                         <Button.Group>
-                            {/* <AuthStatusView /> */}
                             {/* <Button color="primary">
                 <strong>Sign up</strong>
               </Button>

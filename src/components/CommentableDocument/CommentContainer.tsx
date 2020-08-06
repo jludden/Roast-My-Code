@@ -230,7 +230,7 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
 
 }
 
-export const CardHeader = ({ comment }: { comment: RoastCommupdatedAtent }) => {
+export const CardHeader = ({ comment }: { comment: RoastComment }) => {
     return (
         <>
             <CommentAuthorAvatar comment={comment} />

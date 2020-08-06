@@ -51,8 +51,6 @@
     "react-dom": "16.13.1",
     "react-icons": "^3.7.0",
     "react-motion": "^0.5.2",
-    "react-netlify-identity": "^0.2.5",
-    "react-netlify-identity-widget": "^0.2.7",
     "react-router": "5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.0.1",
