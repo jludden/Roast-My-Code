@@ -40,7 +40,7 @@ export interface IAppProps {
     name: string;
 }
 
-export default function Avatar(props: IAppProps) {
+export default function AvatarPicker(props: IAppProps) {
     const [showMore, setShowMore] = React.useState(false);
     // const identity = useIdentityContext();
     // const name =
@@ -68,6 +68,6 @@ export default function Avatar(props: IAppProps) {
     );
 }
 
-export const CommentAuthorAvatar = ({ comment }: { comment: RoastComment }) => {
+export const UserAvatar = () => {
     return <FaUserAstronaut />;
 };

@@ -1,11 +1,10 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
 import '../App.css';
 
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 
 import ApolloClient from 'apollo-boost';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
-import { useIdentityContext } from 'react-netlify-identity-widget';
 import update from 'immutability-helper';
 import { BrowserRouter as Router, Switch, Route, Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import { Container, Message, Progress, Table } from 'rbx';
@@ -17,6 +16,8 @@ import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from 
 import { RepositoryOwner, StargazerConnection, Language } from '../generated/graphql'; // todo shouldnt really need
 import RepoSearchContainer from './RepoSearch/RepoSearchContainer';
 import RepoContents from './RepoContents';
+import { db, auth } from '../services/firebase';
+
 import './Home.css';
 
 export interface IHomeProps {
@@ -29,6 +30,35 @@ export interface IHomeProps {
 // RepoSearchContainer -> set URL w/ useQueryParam
 // instead of returning repo, can return repo.resourcePath
 // redirect URL: repo/resourcePath
+
+export const RecentlyUpdated = () => {
+
+    // useEffect(() => {
+    //     try {
+    //         db.ref('file-comments/' + commentsId).on('value', (snapshot) => {
+    //             const chats: RoastComment[] = [];
+    //             snapshot.forEach((snap) => {
+    //                 const val = snap.val();
+    //                 chats.push({
+    //                     _id: snap.key,
+    //                     updatedAt: new Date(val.timestamp),
+    //                     ...val,
+    //                 });
+    //             });
+    //             setComments(chats);
+    //         });
+    //     } catch (error) {
+    //         setLoadCommentsError(error.message);
+    //     }
+    // }, []);
+
+    return (
+        <div>
+            Add Recently Updated Repositories...
+        </div>
+
+    )
+}
 
 export function Home(props: IHomeProps) {
     const [shouldRedirect, setShouldRedirect] = React.useState('');
@@ -57,6 +87,8 @@ export function Home(props: IHomeProps) {
                 <div>Grid - Recommended Recent Top Roasted Top Roasters</div>
 
                 <div>Recent - fresh Popularity Scale: toasted roasted burnt Add fuel to the fire</div>
+                <div><RecentlyUpdated /></div>
+
             </div>
             <h1>Sample `img` of Code + comments w/ roasties</h1>
 
