@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import DocumentBody from './DocumentBody';
@@ -11,8 +11,9 @@ import { Container, Message, Progress } from 'rbx';
 import { githubClient } from '../../App';
 import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment2 } from '../CommentableCodePage/types/findRepositoryByTitle';
-import { db } from '../../services/firebase';
+import { db, auth } from '../../services/firebase';
 import { tomorrow, ghcolors, darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { firebaseStore } from '../../FirebaseChat/SigninModal';
 
 export interface IDocumentProps {
     queryVariables: IGithubDocQueryVariables;
@@ -58,19 +59,45 @@ interface IGithubDocQueryVariables {
 }
 
 const DocCommentsLoader = (props: IDocumentProps) => {
+    const [authenticated, setAuth] = useState(false);
     const [comments, setComments] = useState([] as RoastComment[]);
     const [loadCommentsError, setLoadCommentsError] = useState();
     const commentsId = useMemo(() => btoa(props.queryVariables.path), [props.queryVariables]);
 
+    //firebaseStore -> set docCommentsId
+
     const onSubmitComment = async (comment: RoastComment) => {
+
+        if (!authenticated) {
+            console.log("can't add comment - not authenticated")
+            return false;
+        }
+
+        const user = auth().currentUser;
+        if (!user) {
+            console.log("can't add comment - not logged in")
+            return false;
+        }
+
         await db.ref('file-comments/' + commentsId).push({
             text: comment.text,
             lineNumber: comment.lineNumber,
             timestamp: Date.now(),
-            uid: 'DiKOhKk9smZC6g0IpCDUd6RJ7el2', //TODO user.uid,
+            uid: user.uid,
         });
         return true;
     };
+
+    useEffect(() => {
+        const unsubscribe = auth().onAuthStateChanged((user) => { 
+            if (user) {
+                setAuth(true);
+            } else {
+                setAuth(false);
+            }
+        });
+        return () => unsubscribe();
+    }, []);
 
     useEffect(() => {
         try {
@@ -93,10 +120,17 @@ const DocCommentsLoader = (props: IDocumentProps) => {
 
     if (loadCommentsError) return <ErrorMessage message="failed to load comments for doc" />;
 
-    return <DocumentLoader comments={comments} onSubmitComment={onSubmitComment} {...props} />;
+    return <DocumentLoader comments={comments} authenticated={authenticated} user={{uid: 1234}} onSubmitComment={onSubmitComment} {...props} />;
 };
 
-const DocumentLoader = (props: IDocumentProps & { comments: any; onSubmitComment: (comment: RoastComment) => Promise<boolean> }) => {
+export interface IDocumentCommentProps {
+    comments: RoastComment[],
+    onSubmitComment: (comment: RoastComment) => Promise<boolean>,
+    authenticated: boolean,
+    user: any
+}
+
+const DocumentLoader = (props: IDocumentProps & IDocumentCommentProps) => {
     const { data, error, loading } = useQuery<IGithubDocResponse, IGithubDocQueryVariables>(GITHUB_DOCUMENT_QUERY, {
         variables: props.queryVariables,
         client: githubClient as any,
@@ -126,7 +160,7 @@ const DocumentLoader = (props: IDocumentProps & { comments: any; onSubmitComment
     return <DocumentView data={data} {...props} />;
 };
 
-const DocumentView = (props: IDocumentProps & { data: any; comments: any; onSubmitComment: (comment: RoastComment) => Promise<boolean> }) => {
+const DocumentView = (props: IDocumentProps & IDocumentCommentProps & { data: any; }) => {
     const availableThemes = [tomorrow, ghcolors, darcula];
     const [theme, setTheme] = React.useState(tomorrow);
 
@@ -145,6 +179,7 @@ const DocumentView = (props: IDocumentProps & { data: any; comments: any; onSubm
                 cycleTheme={cycleTheme}
             />
             <DocumentBody
+                {...props}
                 name={props.documentName}
                 content={props.data.repository.object.text}
                 comments={props.comments}
@@ -163,7 +198,7 @@ const DocumentView = (props: IDocumentProps & { data: any; comments: any; onSubm
     );
 };
 
-export function ErrorMessage({ message } = { message: ''}) {
+export function ErrorMessage({ message }: { message?: string}) {
     return (
         <Container>
             <Message color="danger">

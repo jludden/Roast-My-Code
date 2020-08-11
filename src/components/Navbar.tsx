@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useContext} from 'react';
 import '../App.css';
 import 'rbx/index.css';
 import { Navbar, Button, Title } from 'rbx';
@@ -12,6 +12,8 @@ import {
     RouteComponentProps,
 } from 'react-router-dom';
 import logo from '../static/favicon.ico';
+import { firebaseStore } from './FirebaseChat/SigninModal';
+import { LoggedInStatus } from './FirebaseChat/LoggedInStatus';
 
 // import logo from '../static/emergency-fire-hazard.svg';
 // import logo from '../static/noun_Roasting_Marshmallows.svg';
@@ -20,10 +22,12 @@ import logo from '../static/favicon.ico';
 const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => <Link innerRef={ref} {...props} />);
 
 const CCNavbar = () => {
+    const { dispatch } = useContext(firebaseStore);
+
     return (
         <Navbar>
             <Navbar.Brand>
-                <Navbar.Item href="/">
+                <Navbar.Item as={AdapterLink} to="/">
                     <img src={logo} alt="Roast My Code Logo" role="presentation" width="medium" height="medium" />
                     <Title style={{ color: '#209cee', marginLeft: '1rem' }}>Roast My Code</Title>
                 </Navbar.Item>
@@ -49,6 +53,9 @@ const CCNavbar = () => {
                             <Navbar.Item as={AdapterLink} to="/about">
                                 About
                             </Navbar.Item>
+                            <Navbar.Item onClick={() => dispatch({type: 'showModal'})}>
+                                Sign in Modal
+                            </Navbar.Item>
                             <Navbar.Item as={AdapterLink} to="/signup">
                                 Sign up
                             </Navbar.Item>
@@ -63,12 +70,13 @@ const CCNavbar = () => {
 
                 <Navbar.Segment align="end">
                     <Navbar.Item>
-                        <Button.Group>
+                    <LoggedInStatus />
+                        {/* <Button.Group> */}
                             {/* <Button color="primary">
                 <strong>Sign up</strong>
               </Button>
               <Button color="light">Log in</Button> */}
-                        </Button.Group>
+                        {/* </Button.Group> */}
                     </Navbar.Item>
                 </Navbar.Segment>
             </Navbar.Menu>

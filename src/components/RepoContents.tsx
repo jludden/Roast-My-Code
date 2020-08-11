@@ -282,15 +282,16 @@ const RepoContentsPanelFrame = ({
             </Panel.Tab.Group>
 
             {filesTabActive && children && React.cloneElement(children)}
-            {!filesTabActive && (
+            {/* {!filesTabActive && (
                 <Panel.Block>
+                    
                     <RepoCommentsListDisplayWithDelete
                         commentListId={commentListId}
                         documentId={documentId}
                         data={repoComments}
                     />
                 </Panel.Block>
-            )}
+            )} */}
         </Panel>
     );
 };

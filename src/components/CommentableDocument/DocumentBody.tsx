@@ -1,5 +1,6 @@
 import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
+import { IDocumentCommentProps } from './Document';
 import DocumentCommentsView, { UnsubmittedComment } from './DocumentCommentsView';
 import SubmitComment from '../SubmitCommentForm';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
@@ -81,17 +82,18 @@ interface IDocumentBodyState {
     inProgressComment?: UnsubmittedComment;
 }
 
-const DocumentBodyContainer = (props: IDocumentBodyPropsWithTheme) => {
-    return (
-        <>
-            <DocumentBody {...props} />
-        </>
-    );
-};
+// const DocumentBodyContainer = (props: IDocumentBodyPropsWithTheme & IDocumentCommentProps) => {
+//     return (
+//         <>
+//             <DocumentBody {...props} />
+//         </>
+//     );
+// };
 
-export default DocumentBodyContainer;
+// export default DocumentBodyContainer;
 
-export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, IDocumentBodyState> {
+
+export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme & IDocumentCommentProps, IDocumentBodyState> {
     public state: IDocumentBodyState = {
         clicksCnt: 0,
         currentlySelected: false,
@@ -137,6 +139,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
                             </Column>
                             <Column size="one-quarter" backgroundColor="light">
                                 <DocumentCommentsView
+                                    authenticated={this.props.authenticated}
                                     lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
                                     lineRefs={this.state.lineRefs}
                                     inProgressComment={this.state.inProgressComment}
@@ -245,7 +248,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
           stylesheet,
           useInlineStyles
         })} */}
-                <SyntaxLine lineNumber={i} handleCommentAdd={this.handleCommentAdd}>
+                <SyntaxLine lineNumber={i} handleCommentAdd={this.handleCommentAdd} >
                     {createElement({
                         key: `code-segement${i}`,
                         node,
@@ -437,3 +440,4 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
     //     // script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/prettify.js';
     // }
 }
+export default DocumentBody;

@@ -11,7 +11,6 @@ import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';
 import RepoContents from '../RepoContents';
 import { CompletedTodos, GraphQLTodoList, SubmitTodosMutation, LoadTodosTestWithDelete } from './GraphQLTodos';
 import { FindRepoResults, RepoCommentsListDisplayWithDelete } from './CommentsGqlQueries';
-import { useIdentityContext } from 'react-netlify-identity-widget';
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import { deleteCommentMutation, createCommentMutation, findCommentsForRepoQuery } from './GraphQL/CommentsGraphQL';
 import {
@@ -155,7 +154,7 @@ const CommentableCodeLoadRepoContainer = (props: CCContainerProps) => {
     // const testxxxx = loadFileName;
 
     // Load Repo
-    const { data, error, loading, client, refetch } = useQuery<LoadGithubQueryResponse, LoadGithubQueryVars>(
+    const { data, error, loading, client } = useQuery<LoadGithubQueryResponse, LoadGithubQueryVars>(
         LOAD_REPO_QUERY,
         {
             variables: { owner, name },
@@ -215,7 +214,6 @@ const CommentableCodeInnerContainer = ({
             <FindCommentsForRepo userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} >
                 {({data} : any) => (
                     <div>
-                    {/* <RepoCommentsListDisplayWithDelete commentListId={commentListId} documentId={documentId} data={data} /> */}
                     <TraceComponentUpdate>
                         <CommentableCodeInner3
                             userIsLoggedIn={userIsLoggedIn}
@@ -233,10 +231,10 @@ const CommentableCodeInnerContainer = ({
 };
 
 export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo, children }: any) => {
-    // const { data, error, loading, refetch } = useQuery<FindRepoResults>(findCommentsForRepoQuery);
+    // const { data, error, loading } = useQuery<FindRepoResults>(findCommentsForRepoQuery);
     // const client = useApolloClient();
 
-    const { data, error, loading, refetch } = {
+    const { data, error, loading } = {
         data: [],
         error: '',
         loading: false
