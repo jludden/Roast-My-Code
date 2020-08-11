@@ -1,7 +1,23 @@
+import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
+import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
+import { IDocumentCommentProps } from './Document';
+import DocumentCommentsView, { UnsubmittedComment } from './DocumentCommentsView';
+import SubmitComment from '../SubmitCommentForm';
+import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
+// import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
+import { Column, Container, Section, Button } from 'rbx';
+import SyntaxLine from '../SyntaxRenderer';
+
+import 'rbx/index.css';
 import * as React from 'react';
 import '../../App.css';
-// import SyntaxHighlighter from 'react-syntax-highlighter';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+
+import createElement from 'react-syntax-highlighter/dist/esm/create-element';
+// import tomorrow from 'react-syntax-highlighter/dist/styles/prism/tomorrow';
+// import ghcolors from 'react-syntax-highlighter/dist/styles/prism/ghcolors';
+// import darcula from 'react-syntax-highlighter/dist/styles/prism/darcula';
+
+import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 
 // import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
@@ -13,47 +29,40 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 // import dark from 'react-syntax-highlighter/dist/esm/styles/prism/dark'; // todo
 // "react-syntax-highlighter/dist/styles/prism"
 
-import tomorrow from 'react-syntax-highlighter/dist/styles/prism/tomorrow';
-import ghcolors from 'react-syntax-highlighter/dist/styles/prism/ghcolors';
-import darcula from 'react-syntax-highlighter/dist/styles/prism/darcula';
+
+// TODO! Register languages: https://github.com/storybookjs/storybook/issues/9279
+// also see https://github.com/storybookjs/storybook/blob/b6136e1539c85d253504391a7d3f65e2c1239143/lib/components/src/syntaxhighlighter/syntaxhighlighter.tsx
+import jsx from 'react-syntax-highlighter/dist/cjs/languages/prism/jsx';
+import bash from 'react-syntax-highlighter/dist/cjs/languages/prism/bash';
+import css from 'react-syntax-highlighter/dist/cjs/languages/prism/css';
+import json from 'react-syntax-highlighter/dist/cjs/languages/prism/json';
+import html from 'react-syntax-highlighter/dist/cjs/languages/prism/markup';
+import md from 'react-syntax-highlighter/dist/cjs/languages/prism/markdown';
+import yml from 'react-syntax-highlighter/dist/cjs/languages/prism/yaml';
+import tsx from 'react-syntax-highlighter/dist/cjs/languages/prism/tsx';
+import typescript from 'react-syntax-highlighter/dist/cjs/languages/prism/typescript';
+
+SyntaxHighlighter.registerLanguage('jsx', jsx);
+SyntaxHighlighter.registerLanguage('json', json);
+SyntaxHighlighter.registerLanguage('yml', yml);
+SyntaxHighlighter.registerLanguage('md', md);
+SyntaxHighlighter.registerLanguage('bash', bash);
+SyntaxHighlighter.registerLanguage('css', css);
+SyntaxHighlighter.registerLanguage('html', html);
+SyntaxHighlighter.registerLanguage('tsx', tsx);
+SyntaxHighlighter.registerLanguage('typescript', typescript);
 
 // import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism'; // todo
 
-import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
-
-import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
-
-import DocumentCommentsView, { UnsubmittedComment } from './DocumentCommentsView';
-import SubmitComment from '../SubmitCommentForm';
-
-import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
-// import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
-
-import 'rbx/index.css';
-import { Column, Container, Section, Button } from 'rbx';
-import SyntaxLine from '../SyntaxRenderer';
-import { EndpointTest } from './EndpointTest';
 
 // import myRenderer from './SyntaxRenderer' todo delete that whole class, have function local
 // import IGithubRepo from './CommentableCode';
 
-export interface IDocumentBodyProps {
-    name: string; // github data - refactor to new interface
-    content: string;
-    comments: RoastComment[];
-
-    repoComments: FindRepoResults;
-    repoId: string;
-    repoTitle: string;
-    documentId: string;
-    documentTitle: string;
-    commentListId: string;
-}
 export interface IDocumentBodyPropsWithTheme {
     name: string; // github data - refactor to new interface
     content: string;
     comments: RoastComment[];
-
+    onSubmitComment: (comment: RoastComment) => Promise<boolean>;
     repoComments: FindRepoResults;
     repoId: string;
     repoTitle: string;
@@ -73,41 +82,18 @@ interface IDocumentBodyState {
     inProgressComment?: UnsubmittedComment;
 }
 
-const DocumentBodyContainer = (props: IDocumentBodyProps) => {
-    const availableThemes = [tomorrow, ghcolors, darcula];
-    const [theme, setTheme] = React.useState(tomorrow);
+// const DocumentBodyContainer = (props: IDocumentBodyPropsWithTheme & IDocumentCommentProps) => {
+//     return (
+//         <>
+//             <DocumentBody {...props} />
+//         </>
+//     );
+// };
 
-    const cycleTheme = () => {
-        const currentIndex = availableThemes.indexOf(theme);
-        const newIndex = availableThemes.length - currentIndex > 1 ? currentIndex + 1 : 0;
-        setTheme(availableThemes[newIndex]);
-    };
+// export default DocumentBodyContainer;
 
-    return (
-        <>
-            <Button color="info" onClick={() => cycleTheme()}>
-                Change Theme
-            </Button>
-            <EndpointTest></EndpointTest>
-            <DocumentBody
-                name={props.name}
-                content={props.content}
-                comments={props.comments}
-                repoComments={props.repoComments}
-                repoId={props.repoId}
-                repoTitle={props.repoTitle}
-                documentId={props.documentId}
-                documentTitle={props.documentTitle}
-                commentListId={props.commentListId}
-                theme={theme}
-            />
-        </>
-    );
-};
 
-export default DocumentBodyContainer;
-
-export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, IDocumentBodyState> {
+export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme & IDocumentCommentProps, IDocumentBodyState> {
     public state: IDocumentBodyState = {
         clicksCnt: 0,
         currentlySelected: false,
@@ -135,30 +121,6 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
 
         return (
             <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
-                {/* {decoded && (
-                    <SyntaxHighlighter
-                        language={language}
-                        style={this.props.theme}
-                        className="left-align"
-                        showLineNumbers
-                        renderer={this.renderSyntaxLines}
-                    >
-                        {decoded}
-                    </SyntaxHighlighter>
-                )}
-                <div style={{ marginLeft: '-100px' }}>
-                    <DocumentCommentsView
-                        lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
-                        lineRefs={this.state.lineRefs}
-                        inProgressComment={this.state.inProgressComment}
-                        repoId={this.props.repoId}
-                        repoTitle={this.props.repoTitle}
-                        documentId={this.props.documentId}
-                        documentTitle={this.props.documentTitle}
-                        commentListId={this.props.commentListId}
-                    />
-                </div> */}
-
                 <Section backgroundColor="dark" gradient="warning">
                     <Container color="dark">
                         <Column.Group>
@@ -177,6 +139,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
                             </Column>
                             <Column size="one-quarter" backgroundColor="light">
                                 <DocumentCommentsView
+                                    authenticated={this.props.authenticated}
                                     lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
                                     lineRefs={this.state.lineRefs}
                                     inProgressComment={this.state.inProgressComment}
@@ -185,6 +148,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
                                     documentId={this.props.documentId}
                                     documentTitle={this.props.documentTitle}
                                     commentListId={this.props.commentListId}
+                                    onSubmitComment={this.props.onSubmitComment}
                                     onSubmitCommentFinish={this.onSubmitCommentFinish}
                                 />
                             </Column>
@@ -266,7 +230,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
         stylesheet?: any;
         useInlineStyles?: any;
     }): JSX.Element => {
-        const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
+        // const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
 
         // using the index as a key should be okay in this case, we are never insertering or deleting elements
         return rows.map((node: any, i: number) => (
@@ -284,7 +248,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
           stylesheet,
           useInlineStyles
         })} */}
-                <SyntaxLine lineNumber={i} handleCommentAdd={this.handleCommentAdd}>
+                <SyntaxLine lineNumber={i} handleCommentAdd={this.handleCommentAdd} >
                     {createElement({
                         key: `code-segement${i}`,
                         node,
@@ -437,6 +401,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
     private findFirstLineNumber(sel: Selection): number {
         const initialElement = sel.getRangeAt(0).startContainer.parentElement;
 
+        // todo can just use e.target.closest('.whatever-line-number-class')?
         const myDiv = this.closestElement(initialElement, (el: HTMLElement) => {
             return el.dataset.index != null;
         });
@@ -475,3 +440,4 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme, I
     //     // script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/prettify.js';
     // }
 }
+export default DocumentBody;

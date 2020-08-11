@@ -1,19 +1,26 @@
-import * as React from 'react';
+import React, {useContext} from 'react';
 import './App.css';
 import { Container, Hero, Title, Section, Button, Footer, Content } from 'rbx';
 import 'rbx/index.css';
-import { IdentityContextProvider } from 'react-netlify-identity-widget';
-import 'react-netlify-identity-widget/styles.css';
 import { BrowserRouter as Router, Switch, Route, Link, RouteComponentProps } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
-import { ApolloProvider } from '@apollo/react-hooks';
+// import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from './generated/graphql';
-import { AuthWrapper } from './components/AuthWrapper';
 import { Home } from './components/Home';
 import CommentableCode from './components/CommentableCodePage/CommentableCode';
 import CCNavBar from './components/Navbar';
+import { EndpointTest } from './components/CommentableDocument/EndpointTest';
+import ErrorBoundary from './components/Common/ErrorBoundary';
+import About from './pages/About';
+import { auth } from './services/firebase';
+import FirebaseChat from './components/FirebaseChat/Chat';
+import { SigninModal, FirebaseCommentsProvider, firebaseStore } from './components/FirebaseChat/SigninModal';
+import Signup from './pages/Signup';
+import Login, {FirebaseLogin} from './pages/Login';
+
 // import logo from './' './logo.svg';
 
 // import { generateGithubSchema } from "../api/generateGithubSchema";
@@ -30,11 +37,11 @@ export const githubClient: ApolloClient<InMemoryCache> = new ApolloClient({
     cache,
     uri: '/.netlify/functions/repo_github',
 });
-export const faunaDbClient = new ApolloClient({
-    cache,
-    uri: '/.netlify/functions/repo_comments',
-    clientState: { defaults: {}, resolvers: {} },
-});
+// export const faunaDbClient = new ApolloClient({
+//     cache,
+//     uri: '/.netlify/functions/repo_comments',
+//     clientState: { defaults: {}, resolvers: {} },
+// });
 
 //  Router && QueryParamProvider
 // AuthWrapper && ApolloProvider?
@@ -47,77 +54,84 @@ export const faunaDbClient = new ApolloClient({
 
 // Code - /repo/jludden/ReefLifeSurvey---Species-Explorer
 
-class App extends React.Component {
+
+export const App = () => {
     // // <div className="App_Background">
 
-    public render() {
         const url = 'https://jludden-react.netlify.com/';
 
-        return (
+        // const { state: { showModal }} = useContext(firebaseStore);
+
+    return (
+
             <>
-                <ApolloProvider client={faunaDbClient}>
-                    <IdentityContextProvider url={url}>
+                <ApolloProvider client={githubClient as any}>
                         <Router>
                             <QueryParamProvider ReactRouterRoute={Route}>
                                 <CCNavBar />
 
-                                {/* 
-              <Hero color="primary" size="medium" gradient>
-              <Hero.Body>
-                <Container>
-                  <Title>
-                    Welcome to Roast My Code!
-                  </Title>
-                </Container>
-              </Hero.Body>
-              </Hero> */}
+                                <SigninModal />
+
                                 <Section color="dark">
                                     <Switch>
                                         <Route path="/" exact component={Home} />
                                         <Route path="/about/" component={About} />
                                         <Route path="/repo/" component={CommentableCodePage} />
+                                        <Route path="/chat/" component={FirebaseChat} />
+                                        <Route path="/signup/" component={Signup} />
+                                        <Route path="/login/" component={Login} />
+                                        {/* //  TODO only render signup, login if authenticated not true!
+                                            // render={(props) => authenticated === false
+                                            //     ? <Component {...props} />
+                                            //     : <Redirect to='/chat' />}
+                                            // />
+                                        */}
                                     </Switch>
                                 </Section>
                             </QueryParamProvider>
                         </Router>
-                        <Footer>
-                            <Content textAlign="centered">
-                                <p>
-                                    <strong>Roast My Code</strong> by
-                                    <a href="https://github.com/jludden"> Jason Ludden</a>
-                                    <span> github link subreddit link twitter/slack/discord </span>
-                                </p>
-                            </Content>
-                        </Footer>
-                    </IdentityContextProvider>
+                        <AppFooter />
                 </ApolloProvider>
             </>
-        );
-    }
+    );
+}
+
+export const AppContext = () => (
+    <FirebaseCommentsProvider>
+        <App />
+    </FirebaseCommentsProvider>
+)
+
+export default AppContext;
+
+const AppFooter = () => {
+    return (
+        <Footer>
+            <Content textAlign="centered">
+                <p>&copy; Jason Ludden 2020</p>
+            </Content>
+        </Footer>
+    )
 }
 
 //
 //
 
-function HomePage() {
+// function HomePage() {
     // welcome
     // repo explorer
     // Link repo explorer => Commentable Code
-}
+// }
 
 function CommentableCodePage() {
     return (
         <div className="App">
-            {/* <header className="App-header">
-        * <img src={logo} className="App-logo" alt="logo" /> }
-        <h1 className="App-title">Welcome to React</h1>
-      </header> */}
-
             <Section>
                 <Container>
-                    <AuthWrapper>
+                    <ErrorBoundary >
+                        {/* <EndpointTest /> */}
                         <CommentableCode />
-                    </AuthWrapper>
+                    </ErrorBoundary>
                 </Container>
             </Section>
         </div>
@@ -144,9 +158,7 @@ function Index({ match }: RouteComponentProps<TParams>) {
 //     ;
 // }
 
-function About() {
-    return <h2>About</h2>;
-}
+
 
 function Users() {
     return <h2>Users</h2>;
@@ -178,4 +190,3 @@ function AppRouter() {
     );
 }
 
-export default App;

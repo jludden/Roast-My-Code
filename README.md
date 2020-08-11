@@ -14,3 +14,19 @@ Github repository search and file tree:
 
 Code viewing and commenting:
 <img src="screenshots/rmc_code_review.png" with="90%">
+favicon:
+https://gauger.io/fonticon/
+ * fire-alt
+
+images:
+undraw.co
+ * annotation
+
+https://thenounproject.com/search/?q=smores
+ * ehh
+
+https://delesign.com/free-designs/graphics
+ * emergency fire
+
+colors:
+ffa000 favicon

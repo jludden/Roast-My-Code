@@ -1,7 +1,8 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
+import { IDocumentCommentProps } from './Document';
+
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
-import { useAddComment } from '../CommentableCodePage/CommentsGqlQueries';
 import {
     Section,
     Title,
@@ -20,13 +21,15 @@ import {
     Progress,
 } from 'rbx';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
+import { db } from '../../services/firebase';
 
-import CommentContainer from '../CommentContainer';
+import CommentContainer from './CommentContainer';
 
 export interface CommentsViewProps {
     lineNumberMap: Map<number | undefined, RoastComment[]>;
     lineRefs: HTMLDivElement[];
     inProgressComment?: UnsubmittedComment;
+    onSubmitComment: (comment: RoastComment) => Promise<boolean>;
     onSubmitCommentFinish: () => void; // either submit or cancel, close in progress comment
     repoId: string;
     repoTitle: string;
@@ -42,7 +45,7 @@ export interface UnsubmittedComment {
     author: string;
 }
 
-const DocumentCommentsView = (props: CommentsViewProps) => {
+const DocumentCommentsView = (props: CommentsViewProps & IDocumentCommentProps) => {
     // Group comments into Comment Containers based their associated line number TODO this could be state or something
     // const lineNumberMap = new Map<number|undefined, RoastComment[]>();
     // this.props.comments.map((comment: RoastComment) => {
@@ -50,14 +53,15 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
     //   line.push(comment);
     //   lineNumberMap.set(comment.data.lineNumber, line);
     // });
+    const [writeCommentError, setWriteCommentError] = useState();
 
-    const onSubmit = useAddComment({
-        repoId: props.repoId,
-        repoTitle: props.repoTitle,
-        documentId: props.documentId,
-        documentTitle: props.documentTitle,
-        commentListId: props.commentListId,
-    });
+    // const onSubmit = useAddComment({
+    //     repoId: props.repoId,
+    //     repoTitle: props.repoTitle,
+    //     documentId: props.documentId,
+    //     documentTitle: props.documentTitle,
+    //     commentListId: props.commentListId,
+    // });
 
     const onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse> = async (
         comment: RoastComment,
@@ -65,11 +69,15 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
         // todo check logged in
         try {
             if (comment.text) {
-                await onSubmit(comment);
+                setWriteCommentError(undefined);
+                await props.onSubmitComment(comment);
                 props.onSubmitCommentFinish(); // notify parent
                 return SubmitCommentResponse.Success;
             }
-        } catch (e) {}
+        } catch (e) {
+            setWriteCommentError(e.message);
+            console.log(e.message);
+        }
         return SubmitCommentResponse.Error;
     };
 
@@ -97,6 +105,14 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
             {/* also display the comment in progress if any */}
             {props.inProgressComment && (
                 <>
+                    {writeCommentError && 
+                        <div>
+                            {writeCommentError}
+                            user: {props.user}
+                            authenticated: {props.authenticated}
+                            
+                        </div>
+                    }
                     <CommentContainer
                         key={`unsubmitted ${props.inProgressComment.lineRef}`}
                         onEditComment={onEditComment}

@@ -111,7 +111,7 @@ function RemoveCommentById(
                 doc.commentsList &&
                 doc.commentsList.data &&
                 doc.commentsList.data.forEach(commentsList => {
-                    commentsList && commentsList.comments.data && R.reject(eqByCommentId, commentsList.comments.data);
+                    commentsList && commentsList.comments.data && R.reject(eqByCommentId, commentsList.comments.data as any);
                     // commentsList.comments.data.forEach(comment => {
 
                     //     R.reject(eqByCommentId, commentsList.comments.data)
@@ -474,7 +474,7 @@ export const useAddComment: AddCommentHook = ({
     commentListId: string;
 }) => {
     // Mutation to add a comment to an existing comment list
-    const [submitCommentMutation] = useMutation(createCommentMutation);
+    const [submitCommentMutation] =  (createCommentMutation);
     const doSubmitComment = (commentListId: string, commentContent: RoastComment) => {
         submitCommentMutation({
             variables: {
