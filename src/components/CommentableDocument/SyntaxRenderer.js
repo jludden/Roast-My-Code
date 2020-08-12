@@ -122,7 +122,7 @@ const SyntaxLine = (props) => {
         }
     }, []);
 
-    const element = (hovered: boolean) => (
+    const element = (hovered) => (
         <div>
             {hovered && (
                 <Button.Group style={styles} align="right">
