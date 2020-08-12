@@ -13,7 +13,8 @@ import * as React from 'react';
 import '../../App.css';
 import createElement from 'react-syntax-highlighter/dist/cjs/create-element';
 
-// import createElement from 'react-syntax-highlighter/dist/esm/create-element';
+import createElement from 'react-syntax-highlighter/dist/cjs/create-element';
+
 // import tomorrow from 'react-syntax-highlighter/dist/styles/prism/tomorrow';
 // import ghcolors from 'react-syntax-highlighter/dist/styles/prism/ghcolors';
 // import darcula from 'react-syntax-highlighter/dist/styles/prism/darcula';
