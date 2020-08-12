@@ -6,7 +6,6 @@ import { shallow, mount, ShallowWrapper } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { Progress } from 'rbx';
 import { useQuery } from '@apollo/react-hooks';
-import { IdentityContextProvider } from 'react-netlify-identity-widget';
 import RepoContents, { REPO_CONTENTS_QUERY } from './components/RepoContents';
 import App from './App';
 

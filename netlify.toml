@@ -2,3 +2,8 @@
   command = "yarn build"
   functions = "built-lambda"
   publish = "build"
+  
+[dev]
+  port = 8080
+
+  

@@ -1,7 +1,7 @@
-import * as React from 'react';
+import React, {useContext} from 'react';
 import '../App.css';
 import 'rbx/index.css';
-import { Navbar, Button } from 'rbx';
+import { Navbar, Button, Title } from 'rbx';
 import {
     BrowserRouter as Router,
     Switch,
@@ -11,23 +11,25 @@ import {
     NavLink,
     RouteComponentProps,
 } from 'react-router-dom';
-import AuthStatusView from './AuthStatusView';
+import logo from '../static/favicon.ico';
+import { firebaseStore } from './FirebaseChat/SigninModal';
+import { LoggedInStatus } from './FirebaseChat/LoggedInStatus';
+
+// import logo from '../static/emergency-fire-hazard.svg';
+// import logo from '../static/noun_Roasting_Marshmallows.svg';
 
 // will not be needed after react router v6
 const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => <Link innerRef={ref} {...props} />);
 
 const CCNavbar = () => {
+    const { dispatch } = useContext(firebaseStore);
+
     return (
         <Navbar>
             <Navbar.Brand>
-                <Navbar.Item href="/">
-                    <img
-                        src="https://bulma.io/images/bulma-logo.png"
-                        alt=""
-                        role="presentation"
-                        width="medium"
-                        height="medium"
-                    />
+                <Navbar.Item as={AdapterLink} to="/">
+                    <img src={logo} alt="Roast My Code Logo" role="presentation" width="medium" height="medium" />
+                    <Title style={{ color: '#209cee', marginLeft: '1rem' }}>Roast My Code</Title>
                 </Navbar.Item>
                 <Navbar.Burger />
             </Navbar.Brand>
@@ -40,10 +42,8 @@ const CCNavbar = () => {
                         Search
                     </Navbar.Item>
 
-                    <Navbar.Item>
-                        {' '}
-                        Documentation
-                        {/* <Link to="/repo/">Repo</Link> */}
+                    <Navbar.Item as={AdapterLink} to="/chat">
+                        Chat
                     </Navbar.Item>
 
                     <Navbar.Item dropdown>
@@ -53,8 +53,15 @@ const CCNavbar = () => {
                             <Navbar.Item as={AdapterLink} to="/about">
                                 About
                             </Navbar.Item>
-                            <Navbar.Item>Jobs</Navbar.Item>
-                            <Navbar.Item>Contact</Navbar.Item>
+                            <Navbar.Item onClick={() => dispatch({type: 'showModal'})}>
+                                Sign in Modal
+                            </Navbar.Item>
+                            <Navbar.Item as={AdapterLink} to="/signup">
+                                Sign up
+                            </Navbar.Item>
+                            <Navbar.Item as={AdapterLink} to="/login">
+                                Log in
+                            </Navbar.Item>
                             <Navbar.Divider />
                             <Navbar.Item>Report an issue</Navbar.Item>
                         </Navbar.Dropdown>
@@ -63,13 +70,13 @@ const CCNavbar = () => {
 
                 <Navbar.Segment align="end">
                     <Navbar.Item>
-                        <Button.Group>
-                            <AuthStatusView />
+                    <LoggedInStatus />
+                        {/* <Button.Group> */}
                             {/* <Button color="primary">
                 <strong>Sign up</strong>
               </Button>
               <Button color="light">Log in</Button> */}
-                        </Button.Group>
+                        {/* </Button.Group> */}
                     </Navbar.Item>
                 </Navbar.Segment>
             </Navbar.Menu>

@@ -153,7 +153,7 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
         REPO_CONTENTS_QUERY,
         {
             variables: { ...vars, path: filePath },
-            client: githubClient,
+            client: githubClient as any,
         },
     );
 
@@ -282,15 +282,16 @@ const RepoContentsPanelFrame = ({
             </Panel.Tab.Group>
 
             {filesTabActive && children && React.cloneElement(children)}
-            {!filesTabActive && (
+            {/* {!filesTabActive && (
                 <Panel.Block>
+                    
                     <RepoCommentsListDisplayWithDelete
                         commentListId={commentListId}
                         documentId={documentId}
                         data={repoComments}
                     />
                 </Panel.Block>
-            )}
+            )} */}
         </Panel>
     );
 };

@@ -56,7 +56,7 @@ export interface IGithubQueryResponse {
 const RepoSearch = (props: IGithubQueryProps) => {
     const { data, error, loading, refetch } = useQuery<IGithubQueryResponse, IGithubQueryVariables>(REPO_SEARCH_QUERY, {
         variables: props.queryVariables,
-        client: githubClient,
+        client: githubClient as any,
     });
 
     // const [hasSearched, setHasSearched] = useState(false);
@@ -78,7 +78,7 @@ const RepoSearch = (props: IGithubQueryProps) => {
     if (props.queryVariables.queryString === '')
         return (
             <Panel.Block>
-                <span>Try searching "React" or "language:JavaScript stars:>10000"...</span>
+                <span>{`Try searching "React" or "language:JavaScript stars:>10000"...`}</span>
             </Panel.Block>
         );
     if (data.search.repositoryCount < 1) return <PanelWarningLine text="No Results" color="warning" />;

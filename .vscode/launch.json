@@ -3,7 +3,18 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [
+    "configurations": [    
+        {
+            // Some additional steps needed to get chrome debug to work over remote ssh
+            // In the chrome shortcut "target" field, append --remote-debugging-port=9222
+            // Or in a command prompt, execute <path to chrome>/chrome.exe --remote-debugging-port=9222
+            "name": "remote chrome debug",
+            "type": "chrome",
+            "request": "attach",
+            "port": 8080,
+            "urlFilter": "localhost:*",
+            "webRoot": "${workspaceFolder}/*",            
+        },
         {
             "type": "chrome",
             "request": "launch",

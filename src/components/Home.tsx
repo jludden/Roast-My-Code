@@ -17,7 +17,6 @@ import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from 
 import { RepositoryOwner, StargazerConnection, Language } from '../generated/graphql'; // todo shouldnt really need
 import RepoSearchContainer from './RepoSearch/RepoSearchContainer';
 import RepoContents from './RepoContents';
-import AuthStatusView from './AuthStatusView';
 import './Home.css';
 
 export interface IHomeProps {
@@ -43,27 +42,21 @@ export function Home(props: IHomeProps) {
         <>
             {shouldRedirect.length > 0 && <Redirect to={`/repo${shouldRedirect}`} push />}
 
-            {/* <AuthStatusView showImmediately={false}/> */}
 
-            {/* {todo use a RBX-Page Loader for this part...} */}
-            {/* {this.state.loading && <Progress color="info"/>} */}
-
-            {/* <div style={{ gridColumn: '1 / span 2' }}> */}
-            {/* Repo Search */}
             <RepoSearchContainer
                 loadRepoHandler={(repo: Repository) => setShouldRedirect(repo.resourcePath)}
                 loadRecommendedRepo={() => setShouldRedirect('/jludden/ReefLifeSurvey---Species-Explorer')}
             />
-            {/* </div> */}
+            
             <div className="grid">
                 <div>
-                    Search Personal Repositories -> Login prompt Your starred Repos -> Login prompt Hide everything
-                    below / translucent below when searching?
+                    Search Personal Repositories - Login prompt Your starred Repos - Login prompt Hide everything
+                    below or translucent below when searching?
                 </div>
 
                 <div>Grid - Recommended Recent Top Roasted Top Roasters</div>
 
-                <div>Recent -> fresh Popularity Scale: toasted roasted burnt Add fuel to the fire</div>
+                <div>Recent - fresh Popularity Scale: toasted roasted burnt Add fuel to the fire</div>
             </div>
             <h1>Sample `img` of Code + comments w/ roasties</h1>
 

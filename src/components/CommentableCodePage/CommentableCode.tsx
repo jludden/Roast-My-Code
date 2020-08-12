@@ -9,10 +9,8 @@ import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from 
 import { RepositoryOwner, StargazerConnection, Language } from '../../generated/graphql'; // todo shouldnt really need
 import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';
 import RepoContents from '../RepoContents';
-import AuthStatusView from '../AuthStatusView';
 import { CompletedTodos, GraphQLTodoList, SubmitTodosMutation, LoadTodosTestWithDelete } from './GraphQLTodos';
 import { FindRepoResults, RepoCommentsListDisplayWithDelete } from './CommentsGqlQueries';
-import { useIdentityContext } from 'react-netlify-identity-widget';
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import { deleteCommentMutation, createCommentMutation, findCommentsForRepoQuery } from './GraphQL/CommentsGraphQL';
 import {
@@ -38,6 +36,7 @@ import { useWindowPath } from './hooks/useWindowPath';
 import { useLocation } from './hooks/useLocation';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import { useParams } from 'react-router-dom';
+import ErrorBoundary from '../Common/ErrorBoundary';
 
 // todo type instead of interface? is this being used?
 export interface CommentableCodeProps {
@@ -155,11 +154,11 @@ const CommentableCodeLoadRepoContainer = (props: CCContainerProps) => {
     // const testxxxx = loadFileName;
 
     // Load Repo
-    const { data, error, loading, client, refetch } = useQuery<LoadGithubQueryResponse, LoadGithubQueryVars>(
+    const { data, error, loading, client } = useQuery<LoadGithubQueryResponse, LoadGithubQueryVars>(
         LOAD_REPO_QUERY,
         {
             variables: { owner, name },
-            client: githubClient,
+            client: githubClient as any,
         },
     );
 
@@ -167,7 +166,7 @@ const CommentableCodeLoadRepoContainer = (props: CCContainerProps) => {
     if (error || !data || !data.repository) return <div>Error</div>; // ErrorMessage
 
     // write current repo to apollo cache
-    client.writeData({ data: { currentRepoTitle: `${owner}/${name}` } });
+    // client.writeData({ data: { currentRepoTitle: `${owner}/${name}` } });
 
     return (
         <>
@@ -212,16 +211,35 @@ const CommentableCodeInnerContainer = ({
             <CompletedTodos />
             <GraphQLTodoList />
             */}
-            <h1>COMMENTS FOR REPO</h1>
-            <FindCommentsForRepo userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} />
+            <FindCommentsForRepo userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} >
+                {({data} : any) => (
+                    <div>
+                    <TraceComponentUpdate>
+                        <CommentableCodeInner3
+                            userIsLoggedIn={userIsLoggedIn}
+                            userName={userName}
+                            repo={repo}
+                            repoComments={data}
+                        />
+                    </TraceComponentUpdate>
+                    </div>
+                )}
+            </FindCommentsForRepo>
             <div>{children}</div>
         </div>
     );
 };
 
-export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo }: CommentableCodeProps) => {
-    const { data, error, loading, refetch } = useQuery<FindRepoResults>(findCommentsForRepoQuery);
-    const client = useApolloClient();
+export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo, children }: any) => {
+    // const { data, error, loading } = useQuery<FindRepoResults>(findCommentsForRepoQuery);
+    // const client = useApolloClient();
+
+    const { data, error, loading } = {
+        data: [],
+        error: '',
+        loading: false
+    };
+
 
     if (loading) return <Progress color="info" />;
     if (error || !data) return <div>Error</div>; // ErrorMessage
@@ -236,16 +254,7 @@ export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo }: Commenta
 
     return (
         <div>
-            <RepoCommentsListDisplayWithDelete commentListId={commentListId} documentId={documentId} data={data} />
-
-            <TraceComponentUpdate>
-                <CommentableCodeInner3
-                    userIsLoggedIn={userIsLoggedIn}
-                    userName={userName}
-                    repo={repo}
-                    repoComments={data}
-                />
-            </TraceComponentUpdate>
+            {children({data})}
 
             {/* <CommentableCodeInner userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} /> */}
         </div>
@@ -387,17 +396,22 @@ export const CommentableCodeInner2 = ({
         <>
             {/* /{this.state.loading && <Progress color="info" />} */}
 
-            <RepoContents repo={repo} repoComments={repoComments} loadFileHandler={loadFileHandler} />
+            <ErrorBoundary>
+             <RepoContents repo={repo} repoComments={repoComments} loadFileHandler={loadFileHandler} />
+            </ErrorBoundary>
 
-            {fileName && (
-                <Document
-                    queryVariables={currentDocVars}
-                    documentName={fileName}
-                    repoComments={repoComments}
-                    // onSubmitComment={onSubmitComment}
-                    // onEditComment={onEditComment}
-                />
-            )}
+            <ErrorBoundary>
+                {fileName && (
+                    <Document
+                        queryVariables={currentDocVars}
+                        documentName={fileName}
+                        repoComments={repoComments}
+                        // onSubmitComment={onSubmitComment}
+                        // onEditComment={onEditComment}
+                    />
+                )}
+            </ErrorBoundary>
+
         </>
     );
 };
