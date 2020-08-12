@@ -12,10 +12,13 @@ import {
     FaSearchPlus,
     FaComment,
 } from 'react-icons/fa';
-import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
-import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
-import SubmitComment from './SubmitCommentForm';
+import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
+import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
+import SubmitComment from '../SubmitCommentForm';
+import createElement from 'react-syntax-highlighter/dist/cjs/create-element';
 
+
+export { createElement };
 // todo delete this whole thing
 
 // interface IRenderProps {
@@ -101,16 +104,16 @@ import SubmitComment from './SubmitCommentForm';
 //  same as DocumentCommentsView
 // todo handle window resizing - the measured offset width will be out of date
 //  react-use window size hook?
-interface IAppProps {
-    lineNumber: number;
-    handleCommentAdd: (lineNumber: number) => void;
-}
+// interface IAppProps {
+//     lineNumber: number;
+//     handleCommentAdd: (lineNumber: number) => void;
+// }
 
-const SyntaxLine: React.FunctionComponent<IAppProps> = props => {
-    const [styles, setStyles] = useState<React.CSSProperties>();
+const SyntaxLine = (props) => {
+    const [styles, setStyles] = useState();
     const measuredRef = useCallback(node => {
         if (node !== null) {
-            const styles: React.CSSProperties = {
+            const styles = {
                 position: 'absolute',
                 left: `${node.offsetWidth}px`, // node.getBoundingClientRect();
             };

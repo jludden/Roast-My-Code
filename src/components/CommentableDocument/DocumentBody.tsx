@@ -6,12 +6,12 @@ import SubmitComment from '../SubmitCommentForm';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { Column, Container, Section, Button } from 'rbx';
-import SyntaxLine from '../SyntaxRenderer';
+import SyntaxLine, { createElement } from './SyntaxRenderer';
 
 import 'rbx/index.css';
 import * as React from 'react';
 import '../../App.css';
-import createElement from 'react-syntax-highlighter/dist/cjs/create-element';
+// import createElement from 'react-syntax-highlighter/dist/esm/create-element';
 
 // import tomorrow from 'react-syntax-highlighter/dist/styles/prism/tomorrow';
 // import ghcolors from 'react-syntax-highlighter/dist/styles/prism/ghcolors';
