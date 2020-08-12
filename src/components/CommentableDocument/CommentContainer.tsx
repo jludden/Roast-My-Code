@@ -7,7 +7,7 @@ import { Container, Card, Button, Content, Heading, Message, Icon, Delete, Texta
 import { FaAngleDown, FaAngleUp, FaCommentAlt } from 'react-icons/fa';
 import { Collapse } from 'react-collapse';
 import '../../App.css';
-import { CommentAuthorAvatar } from '../Avatar';
+import { UserAvatar } from '../Avatar';
 
 export interface ICommentContainerProps {
     comments: RoastComment[]; // comments belonging to this line number
@@ -233,7 +233,7 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
 export const CardHeader = ({ comment }: { comment: RoastComment }) => {
     return (
         <>
-            <CommentAuthorAvatar comment={comment} />
+            <UserAvatar />
             <div className="commentHeader">
                 <div style={{ fontWeight: 'bold', fontSize: '14px' }}>Jason Ludden</div>
                 <div style={{ fontWeight: 'lighter', fontSize: '12px' }}>{comment.updatedAt ? comment.updatedAt.toLocaleString() : "Just now"}</div> 

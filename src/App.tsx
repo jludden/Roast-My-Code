@@ -17,7 +17,7 @@ import ErrorBoundary from './components/Common/ErrorBoundary';
 import About from './pages/About';
 import { auth } from './services/firebase';
 import FirebaseChat from './components/FirebaseChat/Chat';
-import { SigninModal, FirebaseCommentsProvider, firebaseStore } from './components/FirebaseChat/SigninModal';
+import { SigninModal, UserDetailsModal,  FirebaseCommentsProvider, firebaseStore } from './components/FirebaseChat/SigninModal';
 import Signup from './pages/Signup';
 import Login, {FirebaseLogin} from './pages/Login';
 
@@ -60,8 +60,6 @@ export const App = () => {
 
         const url = 'https://jludden-react.netlify.com/';
 
-        // const { state: { showModal }} = useContext(firebaseStore);
-
     return (
 
             <>
@@ -71,6 +69,7 @@ export const App = () => {
                                 <CCNavBar />
 
                                 <SigninModal />
+                                <UserDetailsModal />
 
                                 <Section color="dark">
                                     <Switch>
