@@ -12,8 +12,8 @@ import { githubClient } from '../../App';
 import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment2 } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { db, auth } from '../../services/firebase';
-import { tomorrow, ghcolors, darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { firebaseStore } from '../../FirebaseChat/SigninModal';
+import { tomorrow, ghcolors, darcula } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { firebaseStore } from '../FirebaseChat/SigninModal';
 
 export interface IDocumentProps {
     queryVariables: IGithubDocQueryVariables;

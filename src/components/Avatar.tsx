@@ -32,9 +32,6 @@ import {
 } from 'react-icons/fa';
 import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
 
-// import { useIdentityContext } from "react-netlify-identity-widget"
-// import "react-netlify-identity-widget/styles.css"
-
 export interface IAppProps {
     isLoggedIn: boolean;
     name: string;
