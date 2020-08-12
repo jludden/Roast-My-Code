@@ -53,7 +53,7 @@ const CCNavbar = () => {
                             <Navbar.Item as={AdapterLink} to="/about">
                                 About
                             </Navbar.Item>
-                            <Navbar.Item onClick={() => dispatch({type: 'showModal'})}>
+                            <Navbar.Item onClick={() => dispatch({type: 'showSignIn'})}>
                                 Sign in Modal
                             </Navbar.Item>
                             <Navbar.Item as={AdapterLink} to="/signup">
