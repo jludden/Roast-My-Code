@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as R from 'ramda';
 import ApolloClient, { gql, ExecutionResult } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import {

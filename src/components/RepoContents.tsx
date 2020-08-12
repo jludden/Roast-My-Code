@@ -35,11 +35,10 @@ import {
     Icon,
     Progress,
 } from 'rbx';
-import { RepoCommentsListDisplayWithDelete } from './CommentableCodePage/CommentsGqlQueries';
+import { FindRepoResults } from './CommentableCodePage/CommentsGqlQueries';
 import { url } from 'inspector';
 import { Blob, Repository } from '../generated/graphql';
 import { cache, githubClient } from '../App';
-import { FindRepoResults } from './CommentableCodePage/CommentsGqlQueries';
 
 export interface RepoContentsProps {
     repo: Repository;

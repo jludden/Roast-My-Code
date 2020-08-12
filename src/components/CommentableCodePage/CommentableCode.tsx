@@ -10,7 +10,7 @@ import { RepositoryOwner, StargazerConnection, Language } from '../../generated/
 import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';
 import RepoContents from '../RepoContents';
 import { CompletedTodos, GraphQLTodoList, SubmitTodosMutation, LoadTodosTestWithDelete } from './GraphQLTodos';
-import { FindRepoResults, RepoCommentsListDisplayWithDelete } from './CommentsGqlQueries';
+import { FindRepoResults } from './CommentsGqlQueries';
 import { FaComments, FaCommentDots, FaComment, FaCommentAlt, FaCodeBranch, FaGithub } from 'react-icons/fa';
 import { deleteCommentMutation, createCommentMutation, findCommentsForRepoQuery } from './GraphQL/CommentsGraphQL';
 import {
