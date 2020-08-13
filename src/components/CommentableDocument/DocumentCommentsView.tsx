@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
-import { IDocumentCommentProps } from './Document';
-
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import {
     Section,
@@ -36,6 +34,8 @@ export interface CommentsViewProps {
     documentId: string;
     documentTitle: string;
     commentListId: string;
+    authenticated: boolean;
+    user: any;
 }
 
 export interface UnsubmittedComment {
@@ -45,7 +45,7 @@ export interface UnsubmittedComment {
     author: string;
 }
 
-const DocumentCommentsView = (props: CommentsViewProps & IDocumentCommentProps) => {
+const DocumentCommentsView = (props: CommentsViewProps) => {
     // Group comments into Comment Containers based their associated line number TODO this could be state or something
     // const lineNumberMap = new Map<number|undefined, RoastComment[]>();
     // this.props.comments.map((comment: RoastComment) => {

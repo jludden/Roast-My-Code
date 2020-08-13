@@ -150,6 +150,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme & 
                                     commentListId={this.props.commentListId}
                                     onSubmitComment={this.props.onSubmitComment}
                                     onSubmitCommentFinish={this.onSubmitCommentFinish}
+                                    user={this.props.user}
                                 />
                             </Column>
                         </Column.Group>
