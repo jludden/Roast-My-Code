@@ -11,7 +11,7 @@ import {
     NavLink,
     RouteComponentProps,
 } from 'react-router-dom';
-import logo from '../static/favicon.ico';
+import {logo} from '../images';
 import { firebaseStore } from './FirebaseChat/SigninModal';
 import { LoggedInStatus } from './FirebaseChat/LoggedInStatus';
 

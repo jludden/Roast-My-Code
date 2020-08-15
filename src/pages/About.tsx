@@ -1,6 +1,6 @@
 import * as React from 'react';
 import '../App.css';
-import annotationImage from '../static/undraw_annotation_7das.png';
+import {annotationImage} from '../images';
 
 const About = () => {
     return (

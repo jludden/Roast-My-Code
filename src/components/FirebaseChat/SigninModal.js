@@ -16,8 +16,8 @@ const initialState = {
 };
 export const firebaseStore = createContext({
     state: initialState,
-    dispatch: () => {},
-    submitComment: () => {},
+    dispatch: (action) => {},
+    submitComment: (comment, commentsId) => {},
 });
 
 export const FirebaseCommentsProvider = ({ children }) => {
