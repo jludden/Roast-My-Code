@@ -131,7 +131,7 @@ a.card-footer-item {
 /* comment card header  */
 .commentHeader {
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   flex-direction: column;
   justify-content: center;
   padding-left: 10px;

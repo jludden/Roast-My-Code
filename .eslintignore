@@ -3,6 +3,6 @@
 
 # Ignore built files except build/index.js
 build/*
-built-lamba/*
+built-lambda/*
 
 # !build/index.js
