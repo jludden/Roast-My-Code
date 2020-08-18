@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { SigninModal, FirebaseCommentsProvider, firebaseStore } from './SigninModal';
-import { Navbar, Button, Title } from 'rbx';
-import { UserAvatar } from '../Avatar';
+import { Navbar, Button, Modal, Title, Textarea } from 'rbx';
+import { UserAvatar, UserHeader, AvatarPicker } from '../Avatar';
 import '../../App.css';
 
 export const LoggedInStatus = () => {
@@ -32,32 +32,99 @@ export const LoggedInStatus = () => {
     );
 };
 
-const ChangeDisplayName = ({onClickHandler}) => {
+const ChangeDisplayName = ({ onClickHandler }) => {
     return (
         <div className="hover-in">
-            <Button color="primary" onClick={onClickHandler}>Change Display Name</Button>
+            <Button color="primary" onClick={onClickHandler}>
+                Change Display Name
+            </Button>
         </div>
     );
 };
 
+export function firebaseUserToRoastUserName(user) {
+    return user.displayName || (user.isAnonymous ? 'Anonymous' : user.email) || 'Anon';
+}
+
 const LoggedInUserDetails = ({ user }) => {
-    const name = user.displayName || user.isAnonymous ? 'Anonymous' : user.email || 'Anon';
+    const name = firebaseUserToRoastUserName(user);
 
     const textStub = {
         height: '2em',
-        lineHeight: '2em',
+        // lineHeight: '2em',
         paddingRight: '1em',
     };
 
     return (
         <div className="hover-out" style={textStub}>
-            <UserAvatar />
+            <UserHeader
+                user={{
+                    name,
+                    uid: user.uid,
+                    avatar: user.avatar,
+                }}
+            />
+            {/* <UserAvatar />
             <span
                 style={{paddingLeft: '10px'}}
                 title={`display: ${user.displayName} \n email: ${user.email} \n photoURL: ${user.photoURL} \n uid: ${user.uid}`}
             >
                 {name}
-            </span>
+            </span> */}
         </div>
+    );
+};
+
+export const UserDetailsModal = () => {
+    const {
+        dispatch,
+        updateUserDetails,
+        state: { showUserDetails, user },
+    } = useContext(firebaseStore);
+
+    const [dname, setDname] = useState(user ? user.displayName : 'Set display name');
+    const [avatar, setAvatar] = useState(user ? user.avatar : 1);
+
+    return (
+        <Modal active={showUserDetails} onClose={() => dispatch({ type: 'hideUserDetails' })} closeOnBlur={true}>
+            <Modal.Background />
+            <Modal.Close />
+            <Modal.Card>
+                <Modal.Card.Head>
+                    <Modal.Card.Title>User Details</Modal.Card.Title>
+                </Modal.Card.Head>
+                <Modal.Card.Body>
+                    More coming soon!
+                    <br />
+                    <br />
+                    <span>
+                        {user && (
+                            <>
+                                <span>{`display: ${user.displayName} \n email: ${user.email} \n photoURL: ${user.photoURL} \n uid: ${user.uid}`}</span>
+                                <br />
+                                <label for="displayname">Display name:</label>
+                                <input
+                                    type="text"
+                                    id="displayname"
+                                    name="displayname"
+                                    value={dname}
+                                    onChange={(event) => setDname(event.target.value)}
+                                />
+                            </>
+                        )}
+                    </span>
+                    <AvatarPicker setAvatar={(avatar) => setAvatar(avatar)} />
+                </Modal.Card.Body>
+                <Modal.Card.Foot>
+                    <Button
+                        color="success"
+                        onClick={() => updateUserDetails({ avatar: avatar, displayName: dname, ...user })}
+                    >
+                        Save changes
+                    </Button>
+                    <Button onClick={() => dispatch({ type: 'hideUserDetails' })}>Cancel</Button>
+                </Modal.Card.Foot>
+            </Modal.Card>
+        </Modal>
     );
 };

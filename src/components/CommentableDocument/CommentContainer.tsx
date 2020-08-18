@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
-import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
+import RoastComment, { User } from '../CommentableCodePage/types/findRepositoryByTitle';
 import SingleCommentView from '../SingleCommentView';
 import 'rbx/index.css';
 import { Container, Card, Button, Content, Heading, Message, Icon, Delete, Textarea } from 'rbx';
 import { FaAngleDown, FaAngleUp, FaCommentAlt } from 'react-icons/fa';
 import { Collapse } from 'react-collapse';
 import '../../App.css';
-import { UserAvatar } from '../Avatar';
+import { UserAvatar, UserHeader } from '../Avatar';
 
 export interface ICommentContainerProps {
     comments: RoastComment[]; // comments belonging to this line number
@@ -232,13 +232,12 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
 
 export const CardHeader = ({ comment }: { comment: RoastComment }) => {
     return (
-        <>
-            <UserAvatar />
-            <div className="commentHeader">
-                <div style={{ fontWeight: 'bold', fontSize: '14px' }}>Jason Ludden</div>
-                <div style={{ fontWeight: 'lighter', fontSize: '12px' }}>{comment.updatedAt ? comment.updatedAt.toLocaleString() : "Just now"}</div> 
-                {/* 7:45 AM Nov 28 */}
-            </div>
-        </>
+        <div className="commentHeader">
+            <UserHeader user={comment.author} />
+            <div style={{ fontWeight: 'lighter', fontSize: '12px' }}>{comment.updatedAt ? comment.updatedAt.toLocaleString() : "Just now"}</div> 
+            {/* 7:45 AM Nov 28 */}
+        </div>
     );
 };
+
+

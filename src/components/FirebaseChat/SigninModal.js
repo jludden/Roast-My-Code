@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useReducer } fro
 import Signup from '../../pages/Signup';
 import Login, { Logout, FirebaseLogin } from '../../pages/Login';
 import { db, auth } from '../../services/firebase';
+import { firebaseUserToRoastUserName } from './LoggedInStatus';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 
 import { Modal, Container, Hero, Title, Section, Button, Footer, Content } from 'rbx';
@@ -19,6 +20,14 @@ export const firebaseStore = createContext({
     dispatch: (action) => {},
     submitComment: (comment, commentsId) => {},
 });
+
+// function getLoggedInUser(user) {
+//     return {
+//         name: string;
+//         uid: number;
+//         avatar: number | undefined;
+//     }
+// }
 
 export const FirebaseCommentsProvider = ({ children }) => {
     const [state, dispatch] = useReducer((state, action) => {
@@ -41,8 +50,12 @@ export const FirebaseCommentsProvider = ({ children }) => {
                     showSignIn: false,
                     authenticated: true,
                     user: auth().currentUser,
+                    // roastUser: getLoggedInUser(user)
                 };
                 return newState;
+
+            case 'updateUserDetails':
+                return { ...state, user: action.payload };
 
             case 'error':
                 console.log(action.payload);
@@ -71,13 +84,36 @@ export const FirebaseCommentsProvider = ({ children }) => {
             return false;
         }
 
-        await db.ref('file-comments/' + state.docCommentsId).push({
+        await db.ref('file-comments/' + commentsId).push({
             text: comment.text,
             lineNumber: comment.lineNumber,
             timestamp: Date.now(),
             uid: user.uid,
+            author: {
+                name: firebaseUserToRoastUserName(user),
+                uid: user.uid,
+                avatar: user.photoURL || 0,
+            },
         });
         return true;
+    };
+
+    const updateUserDetails = async (newUserDetails) => {
+        if (!state.user) {
+            dispatch({ type: 'error', payload: "can't update user details: user is not logged in" });
+            return;
+        }
+
+        try {
+            await state.user.updateProfile({
+                displayName: 'Jane Q. User',
+                photoURL: 'https://example.com/jane-q-user/profile.jpg',
+            });
+
+            dispatch({ type: 'updateUserDetails', payload: { user: newUserDetails } });
+        } catch (error) {
+            dispatch({ type: 'error', payload: "can't update user details: " + error });
+        }
     };
 
     useEffect(() => {
@@ -91,7 +127,11 @@ export const FirebaseCommentsProvider = ({ children }) => {
         return () => unsubscribe();
     }, []);
 
-    return <firebaseStore.Provider value={{ state, submitComment, dispatch }}>{children}</firebaseStore.Provider>;
+    return (
+        <firebaseStore.Provider value={{ state, submitComment, updateUserDetails, dispatch }}>
+            {children}
+        </firebaseStore.Provider>
+    );
 };
 
 export const SigninModal = () => {
@@ -111,38 +151,6 @@ export const SigninModal = () => {
                 <Modal.Card.Body>
                     <FirebaseLogin />
                 </Modal.Card.Body>
-            </Modal.Card>
-        </Modal>
-    );
-};
-
-export const UserDetailsModal = () => {
-    const {
-        dispatch,
-        state: { showUserDetails, user },
-    } = useContext(firebaseStore);
-
-    return (
-        <Modal active={showUserDetails} onClose={() => dispatch({ type: 'hideUserDetails' })} closeOnBlur={true}>
-            <Modal.Background />
-            <Modal.Close />
-            <Modal.Card>
-                <Modal.Card.Head>
-                    <Modal.Card.Title>User Details</Modal.Card.Title>
-                </Modal.Card.Head>
-                <Modal.Card.Body>
-                    More coming soon!
-                    <br />
-                    <br />
-                    <span>
-                        {user &&
-                            `display: ${user.displayName} \n email: ${user.email} \n photoURL: ${user.photoURL} \n uid: ${user.uid}`}
-                    </span>
-                </Modal.Card.Body>
-                <Modal.Card.Foot>
-                    <Button color="success">Save changes</Button>
-                    <Button onClick={() => dispatch({ type: 'hideUserDetails' })}>Cancel</Button>
-                </Modal.Card.Foot>
             </Modal.Card>
         </Modal>
     );

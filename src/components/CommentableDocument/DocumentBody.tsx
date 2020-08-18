@@ -4,6 +4,7 @@ import { IDocumentCommentProps } from './Document';
 import DocumentCommentsView, { UnsubmittedComment } from './DocumentCommentsView';
 import SubmitComment from '../SubmitCommentForm';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
+import { firebaseUserToRoastUserName } from '../FirebaseChat/LoggedInStatus';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { Column, Container, Section, Button } from 'rbx';
 import SyntaxLine, { createElement } from './SyntaxRenderer';
@@ -69,7 +70,6 @@ export interface IDocumentBodyPropsWithTheme {
     documentId: string;
     documentTitle: string;
     commentListId: string;
-
     theme: any;
 }
 
@@ -298,14 +298,18 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme & 
 
     private handleCommentAdd = (lineNumber: number) => {
         const selectedText = this.state.currentlySelected ? this.state.selectedText : '';
-        const author = 'zuozhe';
+        const author = {
+            uid: this.props.user.uid,
+            avatar: 1,
+            name: 'wild child'
+        }
 
         this.setState({
             inProgressComment: {
                 lineRef: this.state.lineRefs[lineNumber],
                 lineNumber,
                 selectedText,
-                author,
+                author: firebaseUserToRoastUserName(this.props.user),
             },
         });
     };

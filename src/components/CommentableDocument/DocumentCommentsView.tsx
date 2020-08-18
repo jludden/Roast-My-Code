@@ -108,9 +108,13 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                     {writeCommentError && 
                         <div>
                             {writeCommentError}
-                            user: {props.user}
-                            authenticated: {props.authenticated}
-                            
+                            <span>
+                                authenticated: {props.authenticated}
+                            </span>
+                            {props.user && <span>
+                                user: {props.user.uid}
+                                name: {props.user.name}
+                            </span>}
                         </div>
                     }
                     <CommentContainer

@@ -30,14 +30,24 @@ import {
     FaUserGraduate,
     FaUserNinja,
 } from 'react-icons/fa';
-import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
+import RoastComment, { User } from './CommentableCodePage/types/findRepositoryByTitle';
 
 export interface IAppProps {
     isLoggedIn: boolean;
     name: string;
 }
 
-export default function AvatarPicker(props: IAppProps) {
+const AvatarMap = [
+    <FaUserCircle />,
+    <FaUserAstronaut />,
+    <FaUser />,
+    <FaUserAlt />,
+    <FaUserTie />,
+    <FaUserNinja />,
+    <FaUserSecret />,
+]
+
+export const AvatarPicker = ({avatar, setAvatar}: any) => {
     const [showMore, setShowMore] = React.useState(false);
     // const identity = useIdentityContext();
     // const name =
@@ -45,26 +55,55 @@ export default function AvatarPicker(props: IAppProps) {
     // const isLoggedIn = identity && identity.isLoggedIn;
 
     return (
-        <Title>
-            {props.isLoggedIn && <FaUserAstronaut onClick={() => setShowMore(!showMore)} />}
+        <Title>            
+            <span id="avatar" name="avatar" onClick={() => setShowMore(!showMore)}>
+                <label for="avatar">Change Avatar</label>
+                {AvatarMap[avatar || 0]}                
+            </span>
+            
+            {/* {props.isLoggedIn && <FaUserAstronaut onClick={() => setShowMore(!showMore)} />}
             {!props.isLoggedIn && <FaUserSecret onClick={() => setShowMore(!showMore)} />}
-            {props.isLoggedIn ? ` ${props.name}` : ' Anonymous'}
+            {props.isLoggedIn ? ` ${props.name}` : ' Anonymous'} */}
 
             {showMore && (
                 <>
-                    <FaUserCircle />
-                    <FaUserAstronaut />
-                    <FaUser />
-                    <FaUserAlt />
-                    <FaUserTie />
-                    <FaUserNinja />
-                    <FaUserSecret />
+                    {AvatarMap.map((a, i) => (
+                        <div>
+                            {a}
+                            <Button onClick={() => setAvatar(i)} />
+                        </div>
+                    ))}
                 </>
             )}
         </Title>
     );
 }
 
-export const UserAvatar = () => {
+export const UserAvatar = ({ avatar }: { avatar?: number }) => {
     return <FaUserAstronaut />;
 };
+export const UserHeader = ({ user }: { user?: User }) => {
+    const style = {
+        display: 'flex',
+    };
+
+    if (!user)
+        return (
+            <div style={style}>
+                <UserAvatar />
+                <div style={{ fontWeight: 'bold', fontSize: '14px', paddingLeft: '10px' }} title={'unknown'}>
+                    Unknown user
+                </div>
+            </div>
+        );
+
+    return (
+        <div style={style}>
+            <UserAvatar avatar={user.avatar} />
+            <div style={{ fontWeight: 'bold', fontSize: '14px', paddingLeft: '10px' }} title={user.uid}>
+                {user.name}
+            </div>
+        </div>
+    );
+};
+

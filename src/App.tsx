@@ -17,7 +17,8 @@ import ErrorBoundary from './components/Common/ErrorBoundary';
 import About from './pages/About';
 import { auth } from './services/firebase';
 import FirebaseChat from './components/FirebaseChat/Chat';
-import { SigninModal, UserDetailsModal,  FirebaseCommentsProvider, firebaseStore } from './components/FirebaseChat/SigninModal';
+import { SigninModal, FirebaseCommentsProvider, firebaseStore } from './components/FirebaseChat/SigninModal';
+import { UserDetailsModal } from './components/FirebaseChat/LoggedInStatus';
 import Signup from './pages/Signup';
 import Login, {FirebaseLogin} from './pages/Login';
 

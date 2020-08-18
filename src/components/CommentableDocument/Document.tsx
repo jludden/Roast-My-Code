@@ -58,46 +58,17 @@ interface IGithubDocQueryVariables {
     path: string;
 }
 
+
 const DocCommentsLoader = (props: IDocumentProps) => {
-    const [authenticated, setAuth] = useState(false);
-    const [comments, setComments] = useState([] as RoastComment[]);
-    const [loadCommentsError, setLoadCommentsError] = useState();
     const commentsId = useMemo(() => btoa(props.queryVariables.path), [props.queryVariables]);
+    const {
+        dispatch,
+        submitComment,
+        state: { showUserDetails, user, authenticated, firebaseError },
+    } = useContext(firebaseStore);
 
-    //firebaseStore -> set docCommentsId
-
-    const onSubmitComment = async (comment: RoastComment) => {
-
-        if (!authenticated) {
-            console.log("can't add comment - not authenticated")
-            return false;
-        }
-
-        const user = auth().currentUser;
-        if (!user) {
-            console.log("can't add comment - not logged in")
-            return false;
-        }
-
-        await db.ref('file-comments/' + commentsId).push({
-            text: comment.text,
-            lineNumber: comment.lineNumber,
-            timestamp: Date.now(),
-            uid: user.uid,
-        });
-        return true;
-    };
-
-    useEffect(() => {
-        const unsubscribe = auth().onAuthStateChanged((user) => { 
-            if (user) {
-                setAuth(true);
-            } else {
-                setAuth(false);
-            }
-        });
-        return () => unsubscribe();
-    }, []);
+    const [loadCommentsError, setLoadCommentsError] = useState();   
+    const [comments, setComments] = useState([] as RoastComment[]);
 
     useEffect(() => {
         try {
@@ -117,11 +88,11 @@ const DocCommentsLoader = (props: IDocumentProps) => {
             setLoadCommentsError(error.message);
         }
     }, [commentsId]);
+    
+    if (firebaseError) return <ErrorMessage message="failed to load comments for doc" />;
 
-    if (loadCommentsError) return <ErrorMessage message="failed to load comments for doc" />;
-
-    return <DocumentLoader comments={comments} authenticated={authenticated} user={{uid: 1234}} onSubmitComment={onSubmitComment} {...props} />;
-};
+    return <DocumentLoader comments={comments} authenticated={authenticated} user={{uid: 1234}} onSubmitComment={(comment) => submitComment(comment, commentsId)} {...props} />;
+}
 
 export interface IDocumentCommentProps {
     comments: RoastComment[],
