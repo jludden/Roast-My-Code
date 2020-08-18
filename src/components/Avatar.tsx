@@ -56,9 +56,9 @@ export const AvatarPicker = ({avatar, setAvatar}: any) => {
 
     return (
         <Title>            
-            <span id="avatar" name="avatar" onClick={() => setShowMore(!showMore)}>
-                <label for="avatar">Change Avatar</label>
-                {AvatarMap[avatar || 0]}                
+            <span id="avatar" onClick={() => setShowMore(!showMore)}>
+                <label>Change Avatar</label>
+                <UserAvatar avatar={avatar} />                
             </span>
             
             {/* {props.isLoggedIn && <FaUserAstronaut onClick={() => setShowMore(!showMore)} />}
@@ -68,7 +68,7 @@ export const AvatarPicker = ({avatar, setAvatar}: any) => {
             {showMore && (
                 <>
                     {AvatarMap.map((a, i) => (
-                        <div>
+                        <div key={i}>
                             {a}
                             <Button onClick={() => setAvatar(i)} />
                         </div>
@@ -80,7 +80,7 @@ export const AvatarPicker = ({avatar, setAvatar}: any) => {
 }
 
 export const UserAvatar = ({ avatar }: { avatar?: number }) => {
-    return <FaUserAstronaut />;
+    return AvatarMap[avatar || 0];
 };
 export const UserHeader = ({ user }: { user?: User }) => {
     const style = {

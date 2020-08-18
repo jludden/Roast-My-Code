@@ -42,6 +42,14 @@ const ChangeDisplayName = ({ onClickHandler }) => {
     );
 };
 
+export function firebasePhotoURLToRoastAvatar(user) {
+    if (user.photoURL) {
+        const parts = user.photoURL.split('/');
+        return parts[parts.length-1];
+    }
+    return 0;
+}
+
 export function firebaseUserToRoastUserName(user) {
     return user.displayName || (user.isAnonymous ? 'Anonymous' : user.email) || 'Anon';
 }
@@ -61,7 +69,7 @@ const LoggedInUserDetails = ({ user }) => {
                 user={{
                     name,
                     uid: user.uid,
-                    avatar: user.avatar,
+                    avatar: firebasePhotoURLToRoastAvatar(user),
                 }}
             />
             {/* <UserAvatar />
@@ -83,7 +91,7 @@ export const UserDetailsModal = () => {
     } = useContext(firebaseStore);
 
     const [dname, setDname] = useState(user ? user.displayName : 'Set display name');
-    const [avatar, setAvatar] = useState(user ? user.avatar : 1);
+    const [avatar, setAvatar] = useState(user ? firebasePhotoURLToRoastAvatar(user) : 1);
 
     return (
         <Modal active={showUserDetails} onClose={() => dispatch({ type: 'hideUserDetails' })} closeOnBlur={true}>
@@ -102,7 +110,7 @@ export const UserDetailsModal = () => {
                             <>
                                 <span>{`display: ${user.displayName} \n email: ${user.email} \n photoURL: ${user.photoURL} \n uid: ${user.uid}`}</span>
                                 <br />
-                                <label for="displayname">Display name:</label>
+                                <label htmlFor="displayname">Display name:</label>
                                 <input
                                     type="text"
                                     id="displayname"
@@ -113,12 +121,12 @@ export const UserDetailsModal = () => {
                             </>
                         )}
                     </span>
-                    <AvatarPicker setAvatar={(avatar) => setAvatar(avatar)} />
+                    <AvatarPicker avatar={avatar} setAvatar={(avatar) => setAvatar(avatar)} />
                 </Modal.Card.Body>
                 <Modal.Card.Foot>
                     <Button
                         color="success"
-                        onClick={() => updateUserDetails({ avatar: avatar, displayName: dname, ...user })}
+                        onClick={() => updateUserDetails({ photoURL: `rbx/${avatar}`, displayName: dname })}
                     >
                         Save changes
                     </Button>

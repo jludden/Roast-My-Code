@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useReducer } fro
 import Signup from '../../pages/Signup';
 import Login, { Logout, FirebaseLogin } from '../../pages/Login';
 import { db, auth } from '../../services/firebase';
-import { firebaseUserToRoastUserName } from './LoggedInStatus';
+import { firebaseUserToRoastUserName, firebasePhotoURLToRoastAvatar } from './LoggedInStatus';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 
 import { Modal, Container, Hero, Title, Section, Button, Footer, Content } from 'rbx';
@@ -55,7 +55,7 @@ export const FirebaseCommentsProvider = ({ children }) => {
                 return newState;
 
             case 'updateUserDetails':
-                return { ...state, user: action.payload };
+                return { ...state, user: action.payload, showUserDetails: false };
 
             case 'error':
                 console.log(action.payload);
@@ -105,12 +105,14 @@ export const FirebaseCommentsProvider = ({ children }) => {
         }
 
         try {
-            await state.user.updateProfile({
-                displayName: 'Jane Q. User',
-                photoURL: 'https://example.com/jane-q-user/profile.jpg',
+            await auth().currentUser.updateProfile({
+                ...newUserDetails,
+                // ...auth().currentUser,
+                // displayName: 'Jane Q. User',
+                // photoURL: 'https://example.com/jane-q-user/profile.jpg',
             });
 
-            dispatch({ type: 'updateUserDetails', payload: { user: newUserDetails } });
+            dispatch({ type: 'updateUserDetails', payload: newUserDetails });
         } catch (error) {
             dispatch({ type: 'error', payload: "can't update user details: " + error });
         }
