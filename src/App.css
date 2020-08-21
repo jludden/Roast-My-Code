@@ -89,6 +89,10 @@ span.boxclose{
 
 }
 
+.comment-container:hover {
+  z-index: 99;
+}
+
 .float-comment-pane {
   background: pink;
   position: absolute;

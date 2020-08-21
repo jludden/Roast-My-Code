@@ -16,6 +16,7 @@ export interface ICommentContainerProps {
     onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
     onCancelComment: () => void;
     inProgress: boolean; // flag for a new, unsubmitted comment
+    startMinimized: boolean;
 }
 
 interface ICommentContainerState {
@@ -48,12 +49,14 @@ function computeTopOffset(ref: HTMLDivElement): string {
     return `${ref.offsetTop}px`;
 }
 
+
+
 export default class CommentContainer extends React.PureComponent<ICommentContainerProps, ICommentContainerState> {
     constructor(props: ICommentContainerProps) {
         super(props);
         this.state = {
             inputText: '',
-            expanded: props.inProgress,
+            expanded: props.startMinimized,
             editMode: false,
             styles: {
                 top: 0,
@@ -79,6 +82,8 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         }
      }
 
+     
+
     // public componentWillReceiveProps(nextProps: ICommentContainerProps) {
     //     const styles: React.CSSProperties = {
     //         // backgroundColor: 'red',
@@ -93,7 +98,7 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         const { comments } = this.props;
 
         return (
-            <div style={this.state.styles}>
+            <div className='comment-container' style={this.state.styles}>
                 {/* <Button onClick={this.onMinimizeClicked} color="light">
                     <FaCommentAlt />
                 </Button> */}
@@ -109,35 +114,36 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                             </Icon>
                         </Card.Header.Icon>
                     </Card.Header>
-                    <Card.Content>
-                        <Content>
-                            {/* {comments.map(comment => (
-                                <SingleCommentView
-                                    key={comment.id}
-                                    comment={comment}
-                                    onEditComment={this.props.onEditComment}
-                                    inProgress={this.props.inProgress}
-                                />
-                            ))} */}
-
-                            {!this.props.inProgress &&
-                                comments.map(comment => <SingleCommentView key={comment._id} comment={comment} />)}
-
-                            {this.props.inProgress && (
-                                <Textarea
-                                    fixedSize
-                                    readOnly={false}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                        this.setState({ inputText: e.target.value })
-                                    }
-                                />
-                            )}
-
-                            {this.props.children}
-                        </Content>
-                    </Card.Content>
-
                     <Collapse isOpened={this.state.expanded}>
+
+                        <Card.Content>
+                            <Content>
+                                {/* {comments.map(comment => (
+                                    <SingleCommentView
+                                        key={comment.id}
+                                        comment={comment}
+                                        onEditComment={this.props.onEditComment}
+                                        inProgress={this.props.inProgress}
+                                    />
+                                ))} */}
+
+                                {!this.props.inProgress &&
+                                    comments.map(comment => <SingleCommentView key={comment._id} comment={comment} />)}
+
+                                {this.props.inProgress && (
+                                    <Textarea
+                                        fixedSize
+                                        readOnly={false}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                            this.setState({ inputText: e.target.value })
+                                        }
+                                    />
+                                )}
+
+                                {this.props.children}
+                            </Content>
+                        </Card.Content>
+
                         <Card.Footer>
                             {this.props.inProgress && (
                                 <>
@@ -165,7 +171,9 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                             )}
                             {!this.props.inProgress && !this.state.editMode && (
                                 <>
-                                    <Card.Footer.Item as="a" onClick={() => this.setState({ editMode: true })}>
+                                    <Card.Footer.Item as="a" 
+                                     onClick={() => this.setState({ editMode: true })}
+                                    >
                                         Edit
                                     </Card.Footer.Item>
                                     <Card.Footer.Item as="a">Reply</Card.Footer.Item>

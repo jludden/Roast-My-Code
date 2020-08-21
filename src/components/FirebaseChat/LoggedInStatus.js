@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { SigninModal, FirebaseCommentsProvider, firebaseStore } from './SigninModal';
 import { Navbar, Button, Modal, Title, Textarea } from 'rbx';
 import { UserAvatar, UserHeader, AvatarPicker } from '../Avatar';
+import ErrorBoundary from '../Common/ErrorBoundary';
 import '../../App.css';
 
 export const LoggedInStatus = () => {
@@ -12,15 +13,17 @@ export const LoggedInStatus = () => {
 
     if (user)
         return (
-            <div>
-                <div className="hover-container">
-                    <ChangeDisplayName onClickHandler={() => dispatch({ type: 'showUserDetails' })} />
-                    <LoggedInUserDetails user={user} />
+            <ErrorBoundary message="Unable to resolve auth" >
+                <div>
+                    <div className="hover-container">
+                        <ChangeDisplayName onClickHandler={() => dispatch({ type: 'showUserDetails' })} />
+                        <LoggedInUserDetails user={user} />
+                    </div>
+                    <Button color="light" onClick={() => dispatch({ type: 'signOut' })}>
+                        Sign out
+                    </Button>
                 </div>
-                <Button color="light" onClick={() => dispatch({ type: 'signOut' })}>
-                    Sign out
-                </Button>
-            </div>
+            </ErrorBoundary>
         );
 
     return (
@@ -65,6 +68,7 @@ const LoggedInUserDetails = ({ user }) => {
 
     return (
         <div className="hover-out" style={textStub}>
+            
             <UserHeader
                 user={{
                     name,

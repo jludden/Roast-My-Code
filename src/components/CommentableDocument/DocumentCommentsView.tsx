@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
+import { ICommentGrouping } from './DocumentBody';
 import {
     Section,
     Title,
@@ -24,9 +25,10 @@ import { db } from '../../services/firebase';
 import CommentContainer from './CommentContainer';
 
 export interface CommentsViewProps {
-    lineNumberMap: Map<number | undefined, RoastComment[]>;
+    lineNumberMap: Map<number | undefined, ICommentGrouping>;
     lineRefs: HTMLDivElement[];
     inProgressComment?: UnsubmittedComment;
+    onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<boolean>;
     onSubmitComment: (comment: RoastComment) => Promise<boolean>;
     onSubmitCommentFinish: () => void; // either submit or cancel, close in progress comment
     repoId: string;
@@ -85,16 +87,32 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
         props.onSubmitCommentFinish();
     };
 
-    const onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse> = () =>
-        Promise.resolve(SubmitCommentResponse.Success);
+    const onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse> = async (
+        comment: RoastComment, isDelete?: boolean
+    ) => {
+        // todo check logged in
+        try {
+            if (comment.text) {
+                setWriteCommentError(undefined);
+                await props.onEditComment(comment, isDelete);
+                return SubmitCommentResponse.Success;
+            }
+        } catch (e) {
+            setWriteCommentError(e.message);
+            console.log(e.message);
+        }
+        return SubmitCommentResponse.Error;
+    };
+
 
     return (
         <ul className="flex-item comments-pane">
             {/* display all the saved comments */}
-            {Array.from(props.lineNumberMap, ([lineNumber, comments]) => (
+            {Array.from(props.lineNumberMap, ([lineNumber, grouping]) => (
                 <CommentContainer
                     key={lineNumber}
-                    comments={comments}
+                    comments={grouping.comments}
+                    startMinimized={grouping.startMinized} 
                     onEditComment={onEditComment}
                     onSubmitComment={onSubmitComment}
                     onCancelComment={onCancelComment}
@@ -118,6 +136,7 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                         </div>
                     }
                     <CommentContainer
+                        startMinimized={false}
                         key={`unsubmitted ${props.inProgressComment.lineRef}`}
                         onEditComment={onEditComment}
                         onSubmitComment={onSubmitComment}

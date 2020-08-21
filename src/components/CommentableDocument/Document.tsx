@@ -58,6 +58,21 @@ interface IGithubDocQueryVariables {
     path: string;
 }
 
+const updateComment = async (comment: RoastComment, commentsId: number, isDelete?: boolean) => {
+    const ref = db.ref('file-comments/' + commentsId + '/' + comment._id);
+
+    if (isDelete) {
+         await ref.remove();
+    } else {
+        await ref.update({
+            timestamp: Date.now(),
+            text: comment.text,
+        });
+    }
+
+    return true;
+}
+
 
 const DocCommentsLoader = (props: IDocumentProps) => {
     const commentsId = useMemo(() => btoa(props.queryVariables.path), [props.queryVariables]);
@@ -91,12 +106,17 @@ const DocCommentsLoader = (props: IDocumentProps) => {
     
     if (firebaseError) return <ErrorMessage message="failed to load comments for doc" />;
 
-    return <DocumentLoader comments={comments} authenticated={authenticated} user={{uid: 1234}} onSubmitComment={(comment) => submitComment(comment, commentsId)} {...props} />;
+    return <DocumentLoader comments={comments} authenticated={authenticated} user={{uid: 1234}} 
+        onSubmitComment={(comment) => submitComment(comment, commentsId)} 
+        onEditComment={(comment, isDelete) => updateComment(comment, commentsId, isDelete ?? false)}
+        
+        {...props} />;
 }
 
 export interface IDocumentCommentProps {
     comments: RoastComment[],
     onSubmitComment: (comment: RoastComment) => Promise<boolean>,
+    onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<boolean>,
     authenticated: boolean,
     user: any
 }
@@ -163,7 +183,7 @@ const DocumentView = (props: IDocumentProps & IDocumentCommentProps & { data: an
                 commentListId={''}
                 theme={theme}
                 onSubmitComment={props.onSubmitComment}
-                // onEditComment={props.onEditComment}
+                onEditComment={props.onEditComment}
             />
         </>
     );

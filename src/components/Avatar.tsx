@@ -32,6 +32,7 @@ import {
 } from 'react-icons/fa';
 import RoastComment, { User } from './CommentableCodePage/types/findRepositoryByTitle';
 
+
 export interface IAppProps {
     isLoggedIn: boolean;
     name: string;
@@ -80,7 +81,11 @@ export const AvatarPicker = ({avatar, setAvatar}: any) => {
 }
 
 export const UserAvatar = ({ avatar }: { avatar?: number }) => {
-    return AvatarMap[avatar || 0];
+    return (
+        <div>
+            {AvatarMap[avatar || 0]}
+        </div>
+    )
 };
 export const UserHeader = ({ user }: { user?: User }) => {
     const style = {

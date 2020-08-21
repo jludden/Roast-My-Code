@@ -30,7 +30,6 @@ import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 // import dark from 'react-syntax-highlighter/dist/esm/styles/prism/dark'; // todo
 // "react-syntax-highlighter/dist/styles/prism"
 
-
 // TODO! Register languages: https://github.com/storybookjs/storybook/issues/9279
 // also see https://github.com/storybookjs/storybook/blob/b6136e1539c85d253504391a7d3f65e2c1239143/lib/components/src/syntaxhighlighter/syntaxhighlighter.tsx
 import jsx from 'react-syntax-highlighter/dist/cjs/languages/prism/jsx';
@@ -55,7 +54,6 @@ SyntaxHighlighter.registerLanguage('typescript', typescript);
 
 // import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism'; // todo
 
-
 // import myRenderer from './SyntaxRenderer' todo delete that whole class, have function local
 // import IGithubRepo from './CommentableCode';
 
@@ -64,6 +62,7 @@ export interface IDocumentBodyPropsWithTheme {
     content: string;
     comments: RoastComment[];
     onSubmitComment: (comment: RoastComment) => Promise<boolean>;
+    onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<boolean>;
     repoComments: FindRepoResults;
     repoId: string;
     repoTitle: string;
@@ -82,6 +81,11 @@ interface IDocumentBodyState {
     inProgressComment?: UnsubmittedComment;
 }
 
+export interface ICommentGrouping {
+    comments: RoastComment[];
+    startMinized: boolean;
+}
+
 // const DocumentBodyContainer = (props: IDocumentBodyPropsWithTheme & IDocumentCommentProps) => {
 //     return (
 //         <>
@@ -92,8 +96,10 @@ interface IDocumentBodyState {
 
 // export default DocumentBodyContainer;
 
-
-export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme & IDocumentCommentProps, IDocumentBodyState> {
+export class DocumentBody extends React.Component<
+    IDocumentBodyPropsWithTheme & IDocumentCommentProps,
+    IDocumentBodyState
+> {
     public state: IDocumentBodyState = {
         clicksCnt: 0,
         currentlySelected: false,
@@ -150,6 +156,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme & 
                                     commentListId={this.props.commentListId}
                                     onSubmitComment={this.props.onSubmitComment}
                                     onSubmitCommentFinish={this.onSubmitCommentFinish}
+                                    onEditComment={this.props.onEditComment}
                                     user={this.props.user}
                                 />
                             </Column>
@@ -200,13 +207,29 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme & 
 
     // Group comments into Comment Containers based their associated line number TODO this could be state or something
     private groupCommentsByLineNumber = (comments: RoastComment[]) => {
-        const lineNumberMap = new Map<number, RoastComment[]>();
+        const lineNumberMap = new Map<number, ICommentGrouping>();
+
+        let previousLineNum = -10;
         comments.map((comment: RoastComment) => {
             const lineNumber = comment.lineNumber || 0;
-            const line: RoastComment[] = lineNumberMap.get(lineNumber) || [];
-            line.push(comment);
+            const line = lineNumberMap.get(lineNumber) || {
+                comments: [],
+                startMinized: lineNumber - previousLineNum > 5,
+            };
+            line.comments.push(comment);
             lineNumberMap.set(lineNumber, line);
+            previousLineNum = lineNumber;
         });
+
+        // todo 1
+        // if there is a comment on the same line,
+        // or just a few lines above comment
+        // start the comment in a minimized state
+
+        // todo 2
+        // if addnewcomment button clicked,
+        // minimize nearby comments
+
         return lineNumberMap;
     };
 
@@ -249,7 +272,7 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme & 
           stylesheet,
           useInlineStyles
         })} */}
-                <SyntaxLine lineNumber={i} handleCommentAdd={this.handleCommentAdd} >
+                <SyntaxLine lineNumber={i} handleCommentAdd={this.handleCommentAdd}>
                     {createElement({
                         key: `code-segement${i}`,
                         node,
@@ -298,12 +321,6 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme & 
 
     private handleCommentAdd = (lineNumber: number) => {
         const selectedText = this.state.currentlySelected ? this.state.selectedText : '';
-        const author = {
-            uid: this.props.user.uid,
-            avatar: 1,
-            name: 'wild child'
-        }
-
         this.setState({
             inProgressComment: {
                 lineRef: this.state.lineRefs[lineNumber],
@@ -445,4 +462,5 @@ export class DocumentBody extends React.Component<IDocumentBodyPropsWithTheme & 
     //     // script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/prettify.js';
     // }
 }
+
 export default DocumentBody;
