@@ -84,6 +84,7 @@ interface IDocumentBodyState {
 export interface ICommentGrouping {
     comments: RoastComment[];
     startMinized: boolean;
+    inProgress: boolean;
 }
 
 // const DocumentBodyContainer = (props: IDocumentBodyPropsWithTheme & IDocumentCommentProps) => {
@@ -157,6 +158,7 @@ export class DocumentBody extends React.Component<
                                     onSubmitComment={this.props.onSubmitComment}
                                     onSubmitCommentFinish={this.onSubmitCommentFinish}
                                     onEditComment={this.props.onEditComment}
+                                    handleCommentAdd={this.handleCommentAdd}
                                     user={this.props.user}
                                 />
                             </Column>
@@ -215,11 +217,34 @@ export class DocumentBody extends React.Component<
             const line = lineNumberMap.get(lineNumber) || {
                 comments: [],
                 startMinized: lineNumber - previousLineNum > 5,
+                inProgress: false,
             };
             line.comments.push(comment);
             lineNumberMap.set(lineNumber, line);
             previousLineNum = lineNumber;
         });
+
+        const inProgressComment = this.state.inProgressComment;
+        if (inProgressComment)
+        {
+            const line = lineNumberMap.get(inProgressComment.lineNumber) || {
+                comments: [],
+                startMinized: false,
+                inProgress: true,
+            };
+            line.comments.push({
+                __typename: 'Comment',
+                _id: '-1',
+                text: inProgressComment.selectedText || '',
+                lineNumber: inProgressComment.lineNumber,
+                selectedText: inProgressComment.selectedText,
+                createdAt: null,
+                updatedAt: null,
+                author: null, // todo inProgress.author
+            });
+            line.inProgress = true;
+            line.startMinized = false;
+        }
 
         // todo 1
         // if there is a comment on the same line,

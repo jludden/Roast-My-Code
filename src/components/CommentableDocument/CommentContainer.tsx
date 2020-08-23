@@ -7,7 +7,7 @@ import { Container, Card, Button, Content, Heading, Message, Icon, Delete, Texta
 import { FaAngleDown, FaAngleUp, FaCommentAlt } from 'react-icons/fa';
 import { Collapse } from 'react-collapse';
 import '../../App.css';
-import { UserAvatar, UserHeader } from '../Avatar';
+import { UserAvatar,UserAvatarBadge, UserHeader } from '../Avatar';
 
 export interface ICommentContainerProps {
     comments: RoastComment[]; // comments belonging to this line number
@@ -15,6 +15,7 @@ export interface ICommentContainerProps {
     onEditComment: (details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
     onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
     onCancelComment: () => void;
+    onReplyComment: () => void;
     inProgress: boolean; // flag for a new, unsubmitted comment
     startMinimized: boolean;
 }
@@ -49,14 +50,12 @@ function computeTopOffset(ref: HTMLDivElement): string {
     return `${ref.offsetTop}px`;
 }
 
-
-
 export default class CommentContainer extends React.PureComponent<ICommentContainerProps, ICommentContainerState> {
     constructor(props: ICommentContainerProps) {
         super(props);
         this.state = {
             inputText: '',
-            expanded: props.startMinimized,
+            expanded: !props.startMinimized,
             editMode: false,
             styles: {
                 top: 0,
@@ -69,7 +68,7 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         this.setState({ expanded: !this.state.expanded });
     };
 
-    static getDerivedStateFromProps(nextProps: ICommentContainerProps, prevState: ICommentContainerState){
+    static getDerivedStateFromProps(nextProps: ICommentContainerProps, prevState: ICommentContainerState) {
         const styles: React.CSSProperties = {
             // backgroundColor: 'red',
             // border: '1px solid black',
@@ -79,10 +78,8 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         return {
             ...prevState,
             styles,
-        }
-     }
-
-     
+        };
+    }
 
     // public componentWillReceiveProps(nextProps: ICommentContainerProps) {
     //     const styles: React.CSSProperties = {
@@ -98,10 +95,33 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         const { comments } = this.props;
 
         return (
-            <div className='comment-container' style={this.state.styles}>
+            <div className="comment-container" style={this.state.styles}>
+
+                <UserAvatarBadge 
+                    avatar={comments[0].author?.avatar || 0}
+                    badge={comments.length}
+                    onClickHandler={this.onMinimizeClicked}
+                    tooltip={comments[0].text}
+                    />
+{/* containerStyle={{ marginLeft: '-35px', position: 'absolute' }} */}
+{/* // iconStyle={{fill: 'tomato', backgroundColor: 'white', borderRadius: '100%'}} */}
+{/* 
+<Button badge={commentsCount} badgeColor="primary" badgeOutlined color="primary" outlinedstyle={mgRight}>
+                        <FaCommentAlt />
+                    </Button>
+
+                <UserAvatar 
+                    avatar={0}
+                    onClickHandler={this.onMinimizeClicked}
+                    containerStyle={{ marginLeft: '-35px', position: 'absolute' }}
+                    iconStyle={{fill: 'tomato', backgroundColor: 'white', borderRadius: '100%'}}
+                      /> */}
+
                 {/* <Button onClick={this.onMinimizeClicked} color="light">
                     <FaCommentAlt />
                 </Button> */}
+                                    <Collapse isOpened={this.state.expanded}>
+
                 <Card size="medium">
                     <Card.Header>
                         <Card.Header.Title>
@@ -114,8 +134,6 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                             </Icon>
                         </Card.Header.Icon>
                     </Card.Header>
-                    <Collapse isOpened={this.state.expanded}>
-
                         <Card.Content>
                             <Content>
                                 {/* {comments.map(comment => (
@@ -127,8 +145,10 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                                     />
                                 ))} */}
 
-                                {!this.props.inProgress &&
-                                    comments.map(comment => <SingleCommentView key={comment._id} comment={comment} />)}
+                                {/* {!this.props.inProgress && */}
+                                {comments.map((comment) => (
+                                    <SingleCommentView key={comment._id} comment={comment} />
+                                ))}
 
                                 {this.props.inProgress && (
                                     <Textarea
@@ -147,11 +167,6 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                         <Card.Footer>
                             {this.props.inProgress && (
                                 <>
-                                    {/* <Card.Footer.Item as="a">Cancel</Card.Footer.Item>
-                                    <Card.Footer.Item as="a" onClick={() => this.props.onSubmitComment(comments[0])}>
-                                        Submit
-                                    </Card.Footer.Item> */}
-
                                     <Card.Footer.Item as="a" onClick={() => this.props.onCancelComment()}>
                                         <Button color="light">Cancel</Button>
                                     </Card.Footer.Item>
@@ -162,7 +177,6 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                                             this.props.onSubmitComment(comments[0]);
                                         }}
                                     >
-                                        {/* Submit */}
                                         <Button color="info" type="submit">
                                             Submit
                                         </Button>
@@ -171,12 +185,12 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                             )}
                             {!this.props.inProgress && !this.state.editMode && (
                                 <>
-                                    <Card.Footer.Item as="a" 
-                                     onClick={() => this.setState({ editMode: true })}
-                                    >
+                                    <Card.Footer.Item as="a" onClick={() => this.setState({ editMode: true })}>
                                         Edit
                                     </Card.Footer.Item>
-                                    <Card.Footer.Item as="a">Reply</Card.Footer.Item>
+                                    <Card.Footer.Item as="a" onClick={() => this.props.onReplyComment()}>
+                                        Reply
+                                    </Card.Footer.Item>
                                 </>
                             )}
                             {!this.props.inProgress && this.state.editMode && (
@@ -198,8 +212,9 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                                 </>
                             )}
                         </Card.Footer>
-                    </Collapse>
                 </Card>
+                </Collapse>
+
             </div>
 
             // <li className="float-comment-pane" style={this.state.styles}>
@@ -234,18 +249,16 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         </Message.Body>
       </Message>
 */
-
-
 }
 
 export const CardHeader = ({ comment }: { comment: RoastComment }) => {
     return (
         <div className="commentHeader">
             <UserHeader user={comment.author} />
-            <div style={{ fontWeight: 'lighter', fontSize: '12px' }}>{comment.updatedAt ? comment.updatedAt.toLocaleString() : "Just now"}</div> 
+            <div style={{ fontWeight: 'lighter', fontSize: '12px' }}>
+                {comment.updatedAt ? comment.updatedAt.toLocaleString() : 'Just now'}
+            </div>
             {/* 7:45 AM Nov 28 */}
         </div>
     );
 };
-
-

@@ -32,7 +32,6 @@ import {
 } from 'react-icons/fa';
 import RoastComment, { User } from './CommentableCodePage/types/findRepositoryByTitle';
 
-
 export interface IAppProps {
     isLoggedIn: boolean;
     name: string;
@@ -46,9 +45,30 @@ const AvatarMap = [
     <FaUserTie />,
     <FaUserNinja />,
     <FaUserSecret />,
-]
+];
 
-export const AvatarPicker = ({avatar, setAvatar}: any) => {
+const Avatars = ({ index, style }: { index: number; style?: any }) => {
+    switch (index) {
+        case 0:
+            return <FaUserCircle style={style} />;
+        case 1:
+            return <FaUserAstronaut style={style} />;
+        case 2:
+            return <FaUser style={style} />;
+        case 3:
+            return <FaUserAlt style={style} />;
+        case 4:
+            return <FaUserTie style={style} />;
+        case 5:
+            return <FaUserNinja style={style} />;
+        case 6:
+            return <FaUserSecret style={style} />;
+    }
+
+    return <FaUser style={style} />;
+};
+
+export const AvatarPicker = ({ avatar, setAvatar }: any) => {
     const [showMore, setShowMore] = React.useState(false);
     // const identity = useIdentityContext();
     // const name =
@@ -56,12 +76,12 @@ export const AvatarPicker = ({avatar, setAvatar}: any) => {
     // const isLoggedIn = identity && identity.isLoggedIn;
 
     return (
-        <Title>            
+        <Title>
             <span id="avatar" onClick={() => setShowMore(!showMore)}>
                 <label>Change Avatar</label>
-                <UserAvatar avatar={avatar} />                
+                <UserAvatar avatar={avatar} />
             </span>
-            
+
             {/* {props.isLoggedIn && <FaUserAstronaut onClick={() => setShowMore(!showMore)} />}
             {!props.isLoggedIn && <FaUserSecret onClick={() => setShowMore(!showMore)} />}
             {props.isLoggedIn ? ` ${props.name}` : ' Anonymous'} */}
@@ -78,14 +98,57 @@ export const AvatarPicker = ({avatar, setAvatar}: any) => {
             )}
         </Title>
     );
-}
+};
 
-export const UserAvatar = ({ avatar }: { avatar?: number }) => {
+export const UserAvatarBadge = ({
+    avatar,
+    onClickHandler,
+    badge,
+    tooltip,
+}: {
+    avatar?: number;
+    onClickHandler?: any;
+    badge?: number;
+    tooltip: string;
+}) => (
+    <div      className={"comment-badge"}
+>
+     
+    <Button
+        badge={badge || 1}
+        badgeColor="primary"
+        badgeOutlined
+        color="primary"
+        size="small"
+        onClick={onClickHandler}
+        outlinedstyle={{
+            marginRight: '5px',            
+        }}
+        tooltip={tooltip}
+        tooltipPosition="right"
+        tooltipMultiline
+    >
+        <Avatars index={avatar || 0} />
+    </Button>
+    </div>
+);
+
+export const UserAvatar = ({
+    avatar,
+    onClickHandler,
+    containerStyle,
+    iconStyle,
+}: {
+    avatar?: number;
+    onClickHandler?: any;
+    containerStyle?: any;
+    iconStyle?: any;
+}) => {
     return (
-        <div>
-            {AvatarMap[avatar || 0]}
+        <div style={containerStyle} onClick={onClickHandler}>
+            <Avatars index={avatar || 0} style={iconStyle} />
         </div>
-    )
+    );
 };
 export const UserHeader = ({ user }: { user?: User }) => {
     const style = {
@@ -111,4 +174,3 @@ export const UserHeader = ({ user }: { user?: User }) => {
         </div>
     );
 };
-

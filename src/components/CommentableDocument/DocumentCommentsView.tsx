@@ -31,6 +31,7 @@ export interface CommentsViewProps {
     onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<boolean>;
     onSubmitComment: (comment: RoastComment) => Promise<boolean>;
     onSubmitCommentFinish: () => void; // either submit or cancel, close in progress comment
+    handleCommentAdd: (lineNumber: number) => void;
     repoId: string;
     repoTitle: string;
     documentId: string;
@@ -116,8 +117,9 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                     onEditComment={onEditComment}
                     onSubmitComment={onSubmitComment}
                     onCancelComment={onCancelComment}
+                    onReplyComment={() => props.handleCommentAdd(lineNumber || 0)}
                     lineRef={props.lineRefs[lineNumber || 0]}
-                    inProgress={false}
+                    inProgress={grouping.inProgress}
                 />
             ))}
             {/* also display the comment in progress if any */}
@@ -135,7 +137,7 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                             </span>}
                         </div>
                     }
-                    <CommentContainer
+                    {/* <CommentContainer
                         startMinimized={false}
                         key={`unsubmitted ${props.inProgressComment.lineRef}`}
                         onEditComment={onEditComment}
@@ -155,7 +157,7 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                                 author: null, // todo inProgress.author
                             },
                         ]}
-                    />
+                    /> */}
                 </>
             )}
         </ul>
