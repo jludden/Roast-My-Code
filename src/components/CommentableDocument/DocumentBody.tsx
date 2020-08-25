@@ -202,9 +202,11 @@ export class DocumentBody extends React.Component<
 
     // get rid of the in-progress comment when the submission goes through or is cancelled
     private onSubmitCommentFinish = () => {
-        this.setState({
-            inProgressComment: undefined,
-        });
+        if (this.state.inProgressComment !== undefined) {
+            this.setState({
+                inProgressComment: undefined,
+            });
+        }
     };
 
     // Group comments into Comment Containers based their associated line number TODO this could be state or something

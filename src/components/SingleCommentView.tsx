@@ -24,6 +24,11 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
     const [editMode, setEditMode] = useState(false);
     const [inputText, setInputText] = useState(comment.text);
 
+    const updateCommentText = async () => {
+       await onEditComment({ ...comment, text: inputText }, false);
+       setEditMode(false);
+    }
+
     return (
         <Card size="small" className="card-rounded" style={style}>
             <Card.Header>
@@ -56,7 +61,10 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                                     color="primary"
                                     size="small"
                                     rounded
-                                    onClick={() => setEditMode(true)}
+                                    onClick={() => {
+                                        onCancelComment();
+                                        setEditMode(true);
+                                    }}
                                     tooltip={'Edit'}
                                 >
                                     <FaWrench />
@@ -70,6 +78,7 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                             <Textarea
                                 fixedSize
                                 readOnly={false}
+                                value={inputText}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)}
                             />
                             <Button.Group size="small" className="button-group-end">
@@ -79,7 +88,7 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                                 <Button
                                     color="primary"
                                     rounded
-                                    onClick={() => onEditComment({ ...comment, text: inputText }, false)}
+                                    onClick={() => updateCommentText()}
                                 >
                                     Save
                                 </Button>
@@ -95,7 +104,7 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)}
                             />
                             <Button.Group size="small" className="button-group-end">
-                                <Button color="warning" rounded onClick={() => onCancelComment}>
+                                <Button color="warning" rounded onClick={() => onCancelComment()}>
                                     Cancel
                                 </Button>
                                 <Button

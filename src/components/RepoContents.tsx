@@ -359,14 +359,14 @@ function RepoContentsPanel({
                         key={file.oid}
                         file={file}
                         onLineClicked={handleLineClicked}
-                        onMouseOver={() => {
-                            // prefetch folder on hover
-                            if (file.object.__typename === 'Tree')
-                                client.query({
-                                    query: REPO_CONTENTS_QUERY,
-                                    variables: { ...vars, path: `${filePath}${file.name}/` },
-                                });
-                        }}
+                        // onMouseOver={() => {
+                        //     // prefetch folder on hover
+                        //     if (file.object.__typename === 'Tree')
+                        //         client.query({
+                        //             query: REPO_CONTENTS_QUERY,
+                        //             variables: { ...vars, path: `${filePath}${file.name}/` },
+                        //         });
+                        // }}
                     />
                 ))}
         </>

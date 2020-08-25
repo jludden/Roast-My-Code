@@ -191,10 +191,19 @@ a.card-footer-item {
   overflow: hidden;
 }
 
+.comment-container:hover .button-group-end {
+  visibility: visible;
+}
+
+.card:hover .float-button-pane {
+  visibility: visible;
+}
+
 .button-group-end {
   display: flex !important;
   justify-content: flex-end !important;
   border-radius: 10px;
+  visibility: hidden;
 }
 
 .float-button-pane {
@@ -203,6 +212,7 @@ a.card-footer-item {
   right: 0px;
   margin-top: -3rem;
   margin-right: -1.25rem;
+  visibility: hidden;
 }
 
 .float-button-pane > button {

@@ -7,6 +7,7 @@ import {
     Section,
     Title,
     Tag,
+    Box,
     Container,
     Input,
     Button,
@@ -55,6 +56,9 @@ const DocumentHeader = ({ documentName, commentsCount, cycleTheme }:
     return (
         <Section>
             <Container>
+
+                <Box>
+
                 <Title>{documentName}</Title>
                 <Title subtitle>
                     <Button color="info" onClick={() => cycleTheme()} style={mgRight} >
@@ -65,6 +69,7 @@ const DocumentHeader = ({ documentName, commentsCount, cycleTheme }:
                         <FaCommentAlt />
                     </Button>
                 </Title>
+                </Box>
             </Container>
         </Section>
     );

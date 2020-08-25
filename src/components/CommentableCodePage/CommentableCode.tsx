@@ -298,7 +298,15 @@ export const CommentableCodeInner3 = ({
 
     const params = new URLSearchParams(window.location.search);
     const filePath = params.get('path');
-    const fileName = params.get('file');
+    let fileName = params.get('file');
+
+    // todo 1 - load readme by default
+    if (!fileName) {
+        // if (repo.)
+        fileName = "README.md";
+    }
+
+    // todo 2 - include whole path before file (1 path for search dir, 1 for loaded file)
 
     const loadFileHandler = (name: string, path: string) => {
         //window.history.pushState({ 'file': fileName, 'path': filePath }, '', '');

@@ -71,7 +71,7 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                     badge={comments.length}
                     onClickHandler={this.onMinimizeClicked}
                     tooltip={comments[0].text}
-                    hideTooltip={this.state.expanded}
+                    isActive={this.state.expanded}
                 />
                 <Collapse isOpened={this.state.expanded}>
                     {comments.map((comment) => (

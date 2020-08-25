@@ -105,33 +105,31 @@ export const UserAvatarBadge = ({
     onClickHandler,
     badge,
     tooltip,
-    hideTooltip,
+    isActive,
 }: {
     avatar?: number;
     onClickHandler?: any;
     badge?: number;
     tooltip: string;
-    hideTooltip: boolean;
+    isActive: boolean;
 }) => (
-    <div      className={"comment-badge"}
->
-     
-    <Button
-        badge={badge || 1}
-        badgeColor="primary"
-        badgeOutlined
-        color="primary"
-        size="small"
-        onClick={onClickHandler}
-        outlinedstyle={{
-            marginRight: '5px',            
-        }}
-        tooltip={hideTooltip ? '' : tooltip}
-        tooltipPosition="right"
-        tooltipMultiline
-    >
-        <Avatars index={avatar || 0} />
-    </Button>
+    <div className={'comment-badge'}>
+        <Button
+            badge={badge || 1}
+            badgeColor="primary"
+            badgeOutlined
+            color={isActive ? 'light' : 'primary'}
+            size="small"
+            onClick={onClickHandler}
+            outlinedstyle={{
+                marginRight: '5px',
+            }}
+            tooltip={isActive ? '' : tooltip}
+            tooltipPosition="right"
+            tooltipMultiline
+        >
+            <Avatars index={avatar || 0} />
+        </Button>
     </div>
 );
 
