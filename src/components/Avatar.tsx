@@ -105,11 +105,13 @@ export const UserAvatarBadge = ({
     onClickHandler,
     badge,
     tooltip,
+    hideTooltip,
 }: {
     avatar?: number;
     onClickHandler?: any;
     badge?: number;
     tooltip: string;
+    hideTooltip: boolean;
 }) => (
     <div      className={"comment-badge"}
 >
@@ -124,7 +126,7 @@ export const UserAvatarBadge = ({
         outlinedstyle={{
             marginRight: '5px',            
         }}
-        tooltip={tooltip}
+        tooltip={hideTooltip ? '' : tooltip}
         tooltipPosition="right"
         tooltipMultiline
     >
@@ -168,7 +170,7 @@ export const UserHeader = ({ user }: { user?: User }) => {
     return (
         <div style={style}>
             <UserAvatar avatar={user.avatar} />
-            <div style={{ fontWeight: 'bold', fontSize: '14px', paddingLeft: '10px' }} title={user.uid}>
+            <div style={{ fontWeight: 'bold', fontSize: '14px', paddingLeft: '10px' }} title={user.uid || ''}>
                 {user.name}
             </div>
         </div>

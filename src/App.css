@@ -185,3 +185,26 @@ a.card-footer-item {
   height: 1rem;
   width: 1rem;
 }
+
+.card-rounded {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.button-group-end {
+  display: flex !important;
+  justify-content: flex-end !important;
+  border-radius: 10px;
+}
+
+.float-button-pane {
+  float: right;
+  flex-direction: column;
+  right: 0px;
+  margin-top: -3rem;
+  margin-right: -1.25rem;
+}
+
+.float-button-pane > button {
+  margin-top: 0.5rem;
+}

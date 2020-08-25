@@ -244,6 +244,7 @@ export class DocumentBody extends React.Component<
             });
             line.inProgress = true;
             line.startMinized = false;
+            lineNumberMap.set(inProgressComment.lineNumber, line);
         }
 
         // todo 1

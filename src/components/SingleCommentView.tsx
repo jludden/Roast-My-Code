@@ -1,141 +1,117 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
 import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
 
 import 'rbx/index.css';
-import { Message, Box, Textarea, Button, Delete } from 'rbx';
+import { CardHeader } from './CommentableDocument/CommentContainer';
+import { Message, Box, Textarea, Button, Card, Content, Icon, Delete } from 'rbx';
+import { FaAngleDown, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench } from 'react-icons/fa';
 
 export interface IRoastCommentProps {
     comment: RoastComment;
-    inProgress: boolean;
-    // lineRef: HTMLDivElement;
-    // topOffset: string;
     onEditComment: (details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
+    onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
+    onCancelComment: () => void;
 }
 
-const SingleCommentView = ({ comment }: { comment: RoastComment }) => {
-    if (+comment._id < 0) {
-        return <p style={{ border: 'dashed red' }}>{comment.text}</p>;
+const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitComment }: IRoastCommentProps) => {
+    const inProgress = +comment._id < 0;
+    let style = {};
+    if (inProgress) {
+        style = { border: 'dashed red' };
     }
-    return <p>{comment.text}</p>;
-};
 
-const SingleCommentViewOld2 = ({ comment, inProgress, onEditComment }: IRoastCommentProps) => {
-    const text = comment.text;
+    const [editMode, setEditMode] = useState(false);
+    const [inputText, setInputText] = useState(comment.text);
+
     return (
-        <>
-            {!inProgress && <p>{text}</p>}
-            {inProgress && (
-                <Textarea fixedSize readOnly={false} placeholder={text} onClick={() => onEditComment(comment)} />
-            )}
-        </>
+        <Card size="small" className="card-rounded" style={style}>
+            <Card.Header>
+                <Card.Header.Title>
+                    <CardHeader comment={comment} />
+                </Card.Header.Title>
+                <Card.Header.Icon onClick={() => {}}>
+                    <Icon>
+                        <FaAngleDown />
+                        {/* {this.state.expanded && <FaAngleUp />} */}
+                    </Icon>
+                </Card.Header.Icon>
+            </Card.Header>
+            <Card.Content>
+                <Content>
+                    {!inProgress && !editMode && (
+                        <>
+                            <p style={style}>{comment.text}</p>
+                            <div className="float-button-pane button-group-end">
+                                <Button
+                                    color="warning"
+                                    size="small"
+                                    rounded
+                                    onClick={() => onEditComment(comment, true)}
+                                    tooltip={'Delete'}
+                                >
+                                    <FaTrash />
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    size="small"
+                                    rounded
+                                    onClick={() => setEditMode(true)}
+                                    tooltip={'Edit'}
+                                >
+                                    <FaWrench />
+                                </Button>
+                            </div>
+                        </>
+                    )}
+
+                    {!inProgress && editMode && (
+                        <>
+                            <Textarea
+                                fixedSize
+                                readOnly={false}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)}
+                            />
+                            <Button.Group size="small" className="button-group-end">
+                                <Button color="warning" rounded onClick={() => setEditMode(false)}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    rounded
+                                    onClick={() => onEditComment({ ...comment, text: inputText }, false)}
+                                >
+                                    Save
+                                </Button>
+                            </Button.Group>
+                        </>
+                    )}
+
+                    {inProgress && (
+                        <>
+                            <Textarea
+                                fixedSize
+                                readOnly={false}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)}
+                            />
+                            <Button.Group size="small" className="button-group-end">
+                                <Button color="warning" rounded onClick={() => onCancelComment}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    rounded
+                                    onClick={() => onSubmitComment({ ...comment, text: inputText })}
+                                >
+                                    Save
+                                </Button>
+                            </Button.Group>
+                        </>
+                    )}
+                </Content>
+            </Card.Content>
+        </Card>
     );
 };
 
 export default SingleCommentView;
-
-// todo - create a component for a comment
-// and share it with documentbody? could even have different css to look different but behave the same
-interface ISingleCommentState {
-    isEditOn: boolean;
-    // styles: React.CSSProperties
-}
-class SingleCommentViewOld extends React.Component<IRoastCommentProps, ISingleCommentState> {
-    constructor(props: IRoastCommentProps) {
-        super(props);
-        this.state = {
-            isEditOn: false,
-            // styles: {
-            //   top: 0,
-            //   right: 0
-            // }
-        };
-    }
-
-    // public async componentDidMount() {
-    //   const styles: React.CSSProperties = {
-    //     backgroundColor: 'red',
-    //     border: '1px solid black',
-    //     top: this.props.topOffset
-    //     // top: this.computeTopWith(this.props.lineRef),
-    //   //     left: this.computeTopWith(this.props.lineRef)
-    //   }
-    //   this.setState({styles});
-    // }
-
-    // public computeTopWith(ref: HTMLDivElement): string {
-    //   if (!ref) return "0px";
-    //   return `${ref.offsetTop}px`;
-    // }
-
-    // public componentWillReceiveProps(nextProps: IRoastCommentProps) {
-    //   const styles: React.CSSProperties = {
-    //     backgroundColor: 'red',
-    //     border: '1px solid black',
-    //     top: nextProps.topOffset || this.props.topOffset
-    //     // top: this.computeTopWith(nextProps.lineRef || this.props.lineRef),
-    //   //     left: this.computeTopWith(this.props.lineRef)
-    //   }
-    //   this.setState({styles});
-    // }
-
-    //          <li className="float-comment" style={this.state.styles}>
-
-    // todo have just a border on one left side: border-width: 0 0 0 4px;
-    public render() {
-        const { isEditOn } = this.state;
-        const text = this.props.comment.text;
-        return (
-            // <Message>
-            //   <Message.Header><Delete> </Delete></Message.Header>
-            //   <Message.Body>
-            <>
-                {!this.props.inProgress && <p>{text}</p>}
-                {this.props.inProgress && (
-                    <Textarea
-                        fixedSize
-                        readOnly={!this.state.isEditOn}
-                        placeholder={text}
-                        onClick={this.handleCommentClicked}
-                    />
-                )}
-            </>
-            //   </Message.Body>
-            // </Message>
-            //   <Message as="textarea" color="danger" defaultValue={text}>
-
-            // </Message>
-
-            // <li className="single-comment">
-            //     <Message as="textarea" color="danger">
-            //       <Message.Body>
-
-            //         HELLO
-            //         </Message.Body>
-            //     </Message>
-            //     <span onClick={this.handleCommentClicked} hidden = {isEditOn}> Line Number: {this.props.comment.data.lineNumber} Comment text: {text}</span>
-            //     <div hidden = {!isEditOn}>
-            //         <span className="boxclose" id="boxclose" onClick={this.handleCommentDelete} />
-            //         <textarea defaultValue={text}/>
-            //         <Message>
-            //           <Message.Body>
-            //             {text}
-            //           </Message.Body>
-            //         </Message>
-            //         <button onClick={this.handleCommentSubmit}>Update</button>
-            //     </div>
-            // </li>
-        );
-    }
-
-    // todo how do we turn off edit mode when anywhere else in the app is clicked?
-    private handleCommentClicked = () => this.setState({ isEditOn: !this.state.isEditOn });
-
-    private handleCommentSubmit = () => {
-        this.props.onEditComment(this.props.comment);
-    };
-
-    private handleCommentDelete = () => {
-        this.props.onEditComment(this.props.comment, true);
-    };
-}
