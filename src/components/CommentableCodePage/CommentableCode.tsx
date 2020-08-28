@@ -297,28 +297,24 @@ export const CommentableCodeInner3 = ({
     const [filePathParam, setFilePathParam] = useQueryParam('path', StringParam);
 
     const params = new URLSearchParams(window.location.search);
-    const filePath = params.get('path');
-    let fileName = params.get('file');
-
-    // todo 1 - load readme by default
-    if (!fileName) {
-        // if (repo.)
-        fileName = "README.md";
-    }
+    const fileName = params.get('file') || 'master:README.md';
 
     // todo 2 - include whole path before file (1 path for search dir, 1 for loaded file)
 
     const loadFileHandler = (name: string, path: string) => {
         //window.history.pushState({ 'file': fileName, 'path': filePath }, '', '');
-        setFileParam(name, 'pushIn');
+        setFileParam(path+name, 'pushIn');
         if (path !== filePathParam) setFilePathParam(path, 'pushIn');
         // setFile({ filePath, fileName });
     };
 
+    const branchSplit = fileName.split(':'); // 0 - branch 1 - directory path
+    const dirSplit = branchSplit[1].split('/');
+
     const currentDocVars = {
         owner: repo ? repo.owner.login : '',
         name: repo ? repo.name : '',
-        path: (filePath || '') + fileName,
+        path: fileName,
     };
 
     return (
@@ -330,7 +326,7 @@ export const CommentableCodeInner3 = ({
             {fileName && (
                 <Document
                     queryVariables={currentDocVars}
-                    documentName={fileName}
+                    documentName={dirSplit[dirSplit.length - 1]}
                     repoComments={repoComments}
                     // onSubmitComment={onSubmitComment}
                     // onEditComment={onEditComment}

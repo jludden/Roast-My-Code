@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { SigninModal, FirebaseCommentsProvider, firebaseStore } from './SigninModal';
-import { Navbar, Button, Modal, Title, Textarea } from 'rbx';
+import { Navbar, Button, Modal, Media, Title, Textarea } from 'rbx';
 import { UserAvatar, UserHeader, AvatarPicker } from '../Avatar';
 import ErrorBoundary from '../Common/ErrorBoundary';
 import '../../App.css';
@@ -106,10 +106,12 @@ export const UserDetailsModal = () => {
                     <Modal.Card.Title>User Details</Modal.Card.Title>
                 </Modal.Card.Head>
                 <Modal.Card.Body>
-                    More coming soon!
-                    <br />
-                    <br />
-                    <span>
+                <Media>
+                    <Media.Item align="left" >
+                       <AvatarPicker avatar={avatar} setAvatar={(avatar) => setAvatar(avatar)} />
+                    </Media.Item>
+                    <Media.Item align="content" >
+                        <span>
                         {user && (
                             <>
                                 <span>{`display: ${user.displayName} \n email: ${user.email} \n photoURL: ${user.photoURL} \n uid: ${user.uid}`}</span>
@@ -125,7 +127,9 @@ export const UserDetailsModal = () => {
                             </>
                         )}
                     </span>
-                    <AvatarPicker avatar={avatar} setAvatar={(avatar) => setAvatar(avatar)} />
+                    </Media.Item>
+                </Media>
+                    
                 </Modal.Card.Body>
                 <Modal.Card.Foot>
                     <Button

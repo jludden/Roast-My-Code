@@ -58,7 +58,7 @@ interface IGithubDocQueryVariables {
     path: string;
 }
 
-const updateComment = async (comment: RoastComment, commentsId: number, isDelete?: boolean) => {
+const updateComment = async (comment: RoastComment, commentsId: string, isDelete?: boolean) => {
     const ref = db.ref('file-comments/' + commentsId + '/' + comment._id);
 
     if (isDelete) {
@@ -122,6 +122,7 @@ export interface IDocumentCommentProps {
 }
 
 const DocumentLoader = (props: IDocumentProps & IDocumentCommentProps) => {
+    console.log(`fetching document with query: ${GITHUB_DOCUMENT_QUERY} \n parameters== name: ${props.queryVariables.name} path:${props.queryVariables.path} owner:${props.queryVariables.owner}`);
     const { data, error, loading } = useQuery<IGithubDocResponse, IGithubDocQueryVariables>(GITHUB_DOCUMENT_QUERY, {
         variables: props.queryVariables,
         client: githubClient as any,

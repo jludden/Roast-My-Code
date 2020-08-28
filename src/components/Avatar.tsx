@@ -48,7 +48,7 @@ const AvatarMap = [
 ];
 
 const Avatars = ({ index, style }: { index: number; style?: any }) => {
-    switch (index) {
+    switch (+index) {
         case 0:
             return <FaUserCircle style={style} />;
         case 1:
@@ -76,7 +76,7 @@ export const AvatarPicker = ({ avatar, setAvatar }: any) => {
     // const isLoggedIn = identity && identity.isLoggedIn;
 
     return (
-        <Title>
+        <>
             <span id="avatar" onClick={() => setShowMore(!showMore)}>
                 <label>Change Avatar</label>
                 <UserAvatar avatar={avatar} />
@@ -96,7 +96,7 @@ export const AvatarPicker = ({ avatar, setAvatar }: any) => {
                     ))}
                 </>
             )}
-        </Title>
+        </>
     );
 };
 
@@ -168,7 +168,7 @@ export const UserHeader = ({ user }: { user?: User }) => {
     return (
         <div style={style}>
             <UserAvatar avatar={user.avatar} />
-            <div style={{ fontWeight: 'bold', fontSize: '14px', paddingLeft: '10px' }} title={user.uid || ''}>
+            <div style={{ fontWeight: 'bold', fontSize: '14px', paddingLeft: '10px' }} title={''+user.uid || ''}>
                 {user.name}
             </div>
         </div>

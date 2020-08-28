@@ -1,5 +1,8 @@
-import firebase from 'firebase';
-
+// import firebase from 'firebase';
+// todo
+import firebase from 'firebase/app';
+import 'firebase/auth';        
+import 'firebase/database';
 
 const config = {
     apiKey: process.env.REACT_APP_RMC_FIREBASE_KEY,
