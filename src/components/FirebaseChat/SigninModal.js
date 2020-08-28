@@ -18,7 +18,7 @@ const initialState = {
 export const firebaseStore = createContext({
     state: initialState,
     dispatch: (action) => {},
-    submitComment: (comment, commentsId) => {},
+    submitComment: (comment, commentsId) => false,
 });
 
 // function getLoggedInUser(user) {
@@ -106,13 +106,19 @@ export const FirebaseCommentsProvider = ({ children }) => {
 
         try {
             await auth().currentUser.updateProfile({
-                ...newUserDetails,
                 // ...auth().currentUser,
+                ...newUserDetails,
                 // displayName: 'Jane Q. User',
                 // photoURL: 'https://example.com/jane-q-user/profile.jpg',
             });
 
-            dispatch({ type: 'updateUserDetails', payload: newUserDetails });
+            dispatch({
+                type: 'updateUserDetails',
+                payload: {
+                    ...auth().currentUser,
+                    ...newUserDetails,
+                },
+            });
         } catch (error) {
             dispatch({ type: 'error', payload: "can't update user details: " + error });
         }

@@ -106,7 +106,7 @@ const DocCommentsLoader = (props: IDocumentProps) => {
     
     if (firebaseError) return <ErrorMessage message="failed to load comments for doc" />;
 
-    return <DocumentLoader comments={comments} authenticated={authenticated} user={{uid: 1234}} 
+    return <DocumentLoader comments={comments} authenticated={authenticated} user={user} 
         onSubmitComment={(comment) => submitComment(comment, commentsId)} 
         onEditComment={(comment, isDelete) => updateComment(comment, commentsId, isDelete ?? false)}
         

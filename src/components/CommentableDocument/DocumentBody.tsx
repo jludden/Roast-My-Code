@@ -354,7 +354,7 @@ export class DocumentBody extends React.Component<
                 lineRef: this.state.lineRefs[lineNumber],
                 lineNumber,
                 selectedText,
-                author: firebaseUserToRoastUserName(this.props.user),
+                author: this.props.user,
             },
         });
     };

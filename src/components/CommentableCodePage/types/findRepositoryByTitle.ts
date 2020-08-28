@@ -27,44 +27,44 @@ export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_
 }
 export default findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data;
 
-// export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments {
-//   __typename: "CommentPage";
-//   data: (findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data | null)[];
-// }
+export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments {
+  __typename: "CommentPage";
+  data: (findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data | null)[];
+}
 
-// export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data {
-//   __typename: "CommentList";
-//   _id: string;
-//   comments: findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments;
-// }
+export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data {
+  __typename: "CommentList";
+  _id: string;
+  comments: findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments;
+}
 
-// export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList {
-//   __typename: "CommentListPage";
-//   data: (findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data | null)[];
-// }
+export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList {
+  __typename: "CommentListPage";
+  data: (findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data | null)[];
+}
 
-// export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data {
-//   __typename: "Document";
-//   _id: string;
-//   title: string;
-//   commentsList: findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList;
-// }
+export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data {
+  __typename: "Document";
+  _id: string;
+  title: string;
+  commentsList: findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList;
+}
 
-// export interface findRepositoryByTitle_findRepositoryByTitle_documentsList {
-//   __typename: "DocumentPage";
-//   data: (findRepositoryByTitle_findRepositoryByTitle_documentsList_data | null)[];
-// }
+export interface findRepositoryByTitle_findRepositoryByTitle_documentsList {
+  __typename: "DocumentPage";
+  data: (findRepositoryByTitle_findRepositoryByTitle_documentsList_data | null)[];
+}
 
-// export interface findRepositoryByTitle_findRepositoryByTitle {
-//   __typename: "Repository";
-//   _id: string;
-//   title: string;
-//   documentsList: findRepositoryByTitle_findRepositoryByTitle_documentsList;
-// }
+export interface findRepositoryByTitle_findRepositoryByTitle {
+  __typename: "Repository";
+  _id: string;
+  title: string;
+  documentsList: findRepositoryByTitle_findRepositoryByTitle_documentsList;
+}
 
-// export interface findRepositoryByTitle {
-//   findRepositoryByTitle: findRepositoryByTitle_findRepositoryByTitle | null;
-// }
+export interface findRepositoryByTitle {
+  findRepositoryByTitle: findRepositoryByTitle_findRepositoryByTitle | null;
+}
 
 // export interface findRepositoryByTitleVariables {
 //   repoTitle: string;
