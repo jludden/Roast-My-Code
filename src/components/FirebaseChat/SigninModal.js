@@ -21,14 +21,6 @@ export const firebaseStore = createContext({
     submitComment: (comment, commentsId) => false,
 });
 
-// function getLoggedInUser(user) {
-//     return {
-//         name: string;
-//         uid: number;
-//         avatar: number | undefined;
-//     }
-// }
-
 export const FirebaseCommentsProvider = ({ children }) => {
     const [state, dispatch] = useReducer((state, action) => {
         switch (action.type) {
@@ -50,7 +42,6 @@ export const FirebaseCommentsProvider = ({ children }) => {
                     showSignIn: false,
                     authenticated: true,
                     user: auth().currentUser,
-                    // roastUser: getLoggedInUser(user)
                 };
                 return newState;
 
@@ -90,9 +81,9 @@ export const FirebaseCommentsProvider = ({ children }) => {
             timestamp: Date.now(),
             uid: user.uid,
             author: {
-                name: firebaseUserToRoastUserName(user),
+                displayName: firebaseUserToRoastUserName(user),
                 uid: user.uid,
-                avatar: user.photoURL || 0,
+                photoURL: user.photoURL || 0,
             },
         });
         return true;
@@ -106,10 +97,7 @@ export const FirebaseCommentsProvider = ({ children }) => {
 
         try {
             await auth().currentUser.updateProfile({
-                // ...auth().currentUser,
                 ...newUserDetails,
-                // displayName: 'Jane Q. User',
-                // photoURL: 'https://example.com/jane-q-user/profile.jpg',
             });
 
             dispatch({

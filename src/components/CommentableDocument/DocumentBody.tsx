@@ -242,7 +242,7 @@ export class DocumentBody extends React.Component<
                 selectedText: inProgressComment.selectedText,
                 createdAt: null,
                 updatedAt: null,
-                author: null, // todo inProgress.author
+                author: inProgressComment.author,
             });
             line.inProgress = true;
             line.startMinized = false;

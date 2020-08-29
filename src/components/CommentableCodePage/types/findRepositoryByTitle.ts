@@ -9,9 +9,9 @@
 export interface User {
 // export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data_author {
   __typename: "User";
-  name: string;
+  displayName: string;
   uid: number;
-  avatar: number | undefined;
+  photoURL: number | undefined;
 }
 
 export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data {
@@ -22,7 +22,7 @@ export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_
   selectedText: string | null;
   createdAt: string | null;
   updatedAt: string | null;
-  author: User | null;
+  author: User | undefined;
   // author: findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data_author | null;
 }
 export default findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data;

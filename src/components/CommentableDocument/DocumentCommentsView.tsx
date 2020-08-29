@@ -133,7 +133,7 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                             </span>
                             {props.user && <span>
                                 user: {props.user.uid}
-                                name: {props.user.name}
+                                name: {props.user.displayName}
                             </span>}
                         </div>
                     }

@@ -58,7 +58,7 @@ export function firebaseUserToRoastUserName(user) {
 }
 
 const LoggedInUserDetails = ({ user }) => {
-    const name = firebaseUserToRoastUserName(user);
+    const displayName = firebaseUserToRoastUserName(user);
 
     const textStub = {
         height: '2em',
@@ -71,7 +71,7 @@ const LoggedInUserDetails = ({ user }) => {
             
             <UserHeader
                 user={{
-                    name,
+                    displayName,
                     uid: user.uid,
                     avatar: firebasePhotoURLToRoastAvatar(user),
                 }}
@@ -94,7 +94,7 @@ export const UserDetailsModal = () => {
         state: { showUserDetails, user },
     } = useContext(firebaseStore);
 
-    const [dname, setDname] = useState(user ? user.displayName : 'Set display name');
+    const [displayName, setDisplayName] = useState(user ? user.displayName : 'Set display name');
     const [avatar, setAvatar] = useState(user ? firebasePhotoURLToRoastAvatar(user) : 1);
 
     return (
@@ -121,8 +121,8 @@ export const UserDetailsModal = () => {
                                     type="text"
                                     id="displayname"
                                     name="displayname"
-                                    value={dname}
-                                    onChange={(event) => setDname(event.target.value)}
+                                    value={displayName}
+                                    onChange={(event) => setDisplayName(event.target.value)}
                                 />
                             </>
                         )}
@@ -134,7 +134,7 @@ export const UserDetailsModal = () => {
                 <Modal.Card.Foot>
                     <Button
                         color="success"
-                        onClick={() => updateUserDetails({ photoURL: `rbx/${avatar}`, displayName: dname })}
+                        onClick={() => updateUserDetails({ photoURL: `rbx/${avatar}`, displayName })}
                     >
                         Save changes
                     </Button>
