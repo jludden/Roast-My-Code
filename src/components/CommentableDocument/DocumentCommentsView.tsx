@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
-import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
+import RoastComment, { User } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { ICommentGrouping } from './DocumentBody';
 import {
     Section,
@@ -38,14 +38,14 @@ export interface CommentsViewProps {
     documentTitle: string;
     commentListId: string;
     authenticated: boolean;
-    user: any;
+    user: User;
 }
 
 export interface UnsubmittedComment {
     lineRef: HTMLDivElement;
     lineNumber: number;
     selectedText: string;
-    author: string;
+    author: User;
 }
 
 const DocumentCommentsView = (props: CommentsViewProps) => {
