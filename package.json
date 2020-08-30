@@ -54,7 +54,7 @@
     "react-motion": "^0.5.2",
     "react-router": "5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.0.1",
+    "react-scripts": "^3.4.3",
     "react-syntax-highlighter": "^12.2.1",
     "react-use": "^15.1.0",
     "subscriptions-transport-ws": "^0.9.17",

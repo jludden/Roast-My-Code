@@ -128,43 +128,41 @@ export class DocumentBody extends React.Component<
 
         return (
             <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
-                <Section backgroundColor="dark" gradient="warning">
-                    <Container color="dark">
-                        <Column.Group>
-                            <Column size="three-quarters">
-                                {decoded && (
-                                    <SyntaxHighlighter
-                                        language={language}
-                                        style={this.props.theme}
-                                        className="left-align"
-                                        showLineNumbers
-                                        renderer={this.renderSyntaxLines}
-                                    >
-                                        {decoded}
-                                    </SyntaxHighlighter>
-                                )}
-                            </Column>
-                            <Column size="one-quarter" backgroundColor="light">
-                                <DocumentCommentsView
-                                    authenticated={this.props.authenticated}
-                                    lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
-                                    lineRefs={this.state.lineRefs}
-                                    inProgressComment={this.state.inProgressComment}
-                                    repoId={this.props.repoId}
-                                    repoTitle={this.props.repoTitle}
-                                    documentId={this.props.documentId}
-                                    documentTitle={this.props.documentTitle}
-                                    commentListId={this.props.commentListId}
-                                    onSubmitComment={this.props.onSubmitComment}
-                                    onSubmitCommentFinish={this.onSubmitCommentFinish}
-                                    onEditComment={this.props.onEditComment}
-                                    handleCommentAdd={this.handleCommentAdd}
-                                    user={this.props.user}
-                                />
-                            </Column>
-                        </Column.Group>
-                    </Container>
-                </Section>
+                <Container color="dark" breakpoint="desktop" backgroundColor="dark">
+                    <Column.Group>
+                        <Column size="three-quarters" backgroundColor="dark">
+                            {decoded && (
+                                <SyntaxHighlighter
+                                    language={language}
+                                    style={this.props.theme}
+                                    className="left-align"
+                                    showLineNumbers
+                                    renderer={this.renderSyntaxLines}
+                                >
+                                    {decoded}
+                                </SyntaxHighlighter>
+                            )}
+                        </Column>
+                        <Column size="one-quarter" backgroundColor="light">
+                            <DocumentCommentsView
+                                authenticated={this.props.authenticated}
+                                lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
+                                lineRefs={this.state.lineRefs}
+                                inProgressComment={this.state.inProgressComment}
+                                repoId={this.props.repoId}
+                                repoTitle={this.props.repoTitle}
+                                documentId={this.props.documentId}
+                                documentTitle={this.props.documentTitle}
+                                commentListId={this.props.commentListId}
+                                onSubmitComment={this.props.onSubmitComment}
+                                onSubmitCommentFinish={this.onSubmitCommentFinish}
+                                onEditComment={this.props.onEditComment}
+                                handleCommentAdd={this.handleCommentAdd}
+                                user={this.props.user}
+                            />
+                        </Column>
+                    </Column.Group>
+                </Container>
 
                 {/* 
         <div className="flex-container">

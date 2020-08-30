@@ -34,15 +34,15 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
     introspectionQueryResultData: IntrospectionResultData,
 });
 export const cache = new InMemoryCache({ fragmentMatcher });
-export const githubClient: ApolloClient<InMemoryCache> = new ApolloClient({
-    cache,
-    uri: '/.netlify/functions/repo_github',
+
+
+
+    export const githubClient: ApolloClient<InMemoryCache> = new ApolloClient({
+        cache,
+        uri: '/.netlify/functions/repo_github',
 });
-// export const faunaDbClient = new ApolloClient({
-//     cache,
-//     uri: '/.netlify/functions/repo_comments',
-//     clientState: { defaults: {}, resolvers: {} },
-// });
+
+
 
 //  Router && QueryParamProvider
 // AuthWrapper && ApolloProvider?
@@ -72,7 +72,7 @@ export const App = () => {
                                 <SigninModal />
                                 <UserDetailsModal />
 
-                                <Section color="dark">
+                                {/* <Section color="dark"> */}
                                     <Switch>
                                         <Route path="/" exact component={Home} />
                                         <Route path="/about/" component={About} />
@@ -87,7 +87,7 @@ export const App = () => {
                                             // />
                                         */}
                                     </Switch>
-                                </Section>
+                                {/* </Section> */}
                             </QueryParamProvider>
                         </Router>
                         <AppFooter />
@@ -126,14 +126,12 @@ const AppFooter = () => {
 function CommentableCodePage() {
     return (
         <div className="App">
-            <Section>
-                <Container>
-                    <ErrorBoundary >
-                        {/* <EndpointTest /> */}
-                        <CommentableCode />
-                    </ErrorBoundary>
-                </Container>
-            </Section>
+            <Container breakpoint="desktop">
+                <ErrorBoundary >
+                    {/* <EndpointTest /> */}
+                    <CommentableCode />
+                </ErrorBoundary>
+            </Container>
         </div>
     );
 }

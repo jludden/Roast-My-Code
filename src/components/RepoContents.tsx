@@ -112,7 +112,6 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
     const branch = repo.defaultBranchRef ? repo.defaultBranchRef.name : 'master';
     const title = (repo && repo.nameWithOwner) || 'Welcome to Roast My Code';
 
-    const [fileSelected, setFileSelected] = React.useState('');
     const [filePathParam, setFilePathParam] = useQueryParam('path', StringParam);
     // React.useEffect(() => {
     //     setFilePathParam(`${branch}:`);
@@ -141,7 +140,6 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
     const handleLineClicked = (line: Line) => {
         if (line && line.name && line.object && line.object.oid) {
             loadFileHandler(line.name, filePath); // trigger update
-            setFileSelected(line.name); // yes
         } else {
             // setVars({ ...vars, path: `${vars.path}${line.name}/` });
             setFilePathParam(`${filePath}${line.name}/`, 'pushIn');
@@ -354,19 +352,20 @@ function RepoContentsPanel({
 
             {!loading &&
                 data &&
-                data.repository.folder.entries.map(file => (
+                data.repository.folder.entries.map((file) => (
                     <PanelLine
                         key={file.oid}
                         file={file}
                         onLineClicked={handleLineClicked}
-                        // onMouseOver={() => {
-                        //     // prefetch folder on hover
-                        //     if (file.object.__typename === 'Tree')
-                        //         client.query({
-                        //             query: REPO_CONTENTS_QUERY,
-                        //             variables: { ...vars, path: `${filePath}${file.name}/` },
-                        //         });
-                        // }}
+                        onMouseOver={() => {
+                            // prefetch folder on hover
+                            if (file.object.__typename === 'Tree')
+                                console.log(`mouseover prefetch path: ${filePath}${file.name}/`);
+                                client.query({
+                                    query: REPO_CONTENTS_QUERY,
+                                    variables: { ...vars, path: `${filePath}${file.name}/` },
+                                });
+                        }}
                     />
                 ))}
         </>

@@ -154,16 +154,23 @@ const CommentableCodeLoadRepoContainer = (props: CCContainerProps) => {
     // const testxxxx = loadFileName;
 
     // Load Repo
-    const { data, error, loading, client } = useQuery<LoadGithubQueryResponse, LoadGithubQueryVars>(
-        LOAD_REPO_QUERY,
-        {
-            variables: { owner, name },
-            client: githubClient as any,
-        },
-    );
+    const { data, error, loading, client } = useQuery<LoadGithubQueryResponse, LoadGithubQueryVars>(LOAD_REPO_QUERY, {
+        variables: { owner, name },
+        client: githubClient as any,
+    });
 
-    if (loading) return <Progress color="info" />;
-    if (error || !data || !data.repository) return <div>Error</div>; // ErrorMessage
+    if (loading)
+        return (
+            <Section>
+                <Progress color="info" />
+            </Section>
+        );
+    if (error || !data || !data.repository)
+        return (
+            <Section>
+                <div>Error</div>
+            </Section>
+        );
 
     // write current repo to apollo cache
     // client.writeData({ data: { currentRepoTitle: `${owner}/${name}` } });
@@ -191,17 +198,10 @@ interface ContainerProps {
     children: JSX.Element;
 }
 
-const CommentableCodeInnerContainer = ({
-    repoTitle,
-    children,
-    userIsLoggedIn,
-    userName,
-    repo,
-}: ContainerProps & CommentableCodeProps) => {
-    const repoId = '245564447665422867';
-    const commentListId = '245564447670665747';
-    const documentId = '245564447668568595';
+const CommentableCodeInnerContainer = (props: ContainerProps & CommentableCodeProps) => {
+    const { repoTitle, children, userIsLoggedIn, userName, repo } = props;
 
+    useTraceUpdate(props);
     return (
         <div>
             {/* <LoadTodosTestWithDelete />
@@ -211,17 +211,17 @@ const CommentableCodeInnerContainer = ({
             <CompletedTodos />
             <GraphQLTodoList />
             */}
-            <FindCommentsForRepo userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} >
-                {({data} : any) => (
+            <FindCommentsForRepo userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo}>
+                {({ data }: any) => (
                     <div>
-                    <TraceComponentUpdate>
+                        {/* <TraceComponentUpdate> */}
                         <CommentableCodeInner3
                             userIsLoggedIn={userIsLoggedIn}
                             userName={userName}
                             repo={repo}
                             repoComments={data}
                         />
-                    </TraceComponentUpdate>
+                        {/* </TraceComponentUpdate> */}
                     </div>
                 )}
             </FindCommentsForRepo>
@@ -237,9 +237,8 @@ export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo, children }
     const { data, error, loading } = {
         data: [],
         error: '',
-        loading: false
+        loading: false,
     };
-
 
     if (loading) return <Progress color="info" />;
     if (error || !data) return <div>Error</div>; // ErrorMessage
@@ -254,7 +253,7 @@ export const FindCommentsForRepo = ({ userIsLoggedIn, userName, repo, children }
 
     return (
         <div>
-            {children({data})}
+            {children({ data })}
 
             {/* <CommentableCodeInner userIsLoggedIn={userIsLoggedIn} userName={userName} repo={repo} /> */}
         </div>
@@ -277,10 +276,10 @@ function useTraceUpdate(props: any) {
     });
 }
 
-function TraceComponentUpdate(props: any) {
-    useTraceUpdate(props);
-    return <div>{props.children}</div>;
-}
+// function TraceComponentUpdate(props: any) {
+//     useTraceUpdate(props);
+//     return <div>{props.children}</div>;
+// }
 
 export const CommentableCodeInner3 = ({
     userIsLoggedIn,
@@ -303,7 +302,7 @@ export const CommentableCodeInner3 = ({
 
     const loadFileHandler = (name: string, path: string) => {
         //window.history.pushState({ 'file': fileName, 'path': filePath }, '', '');
-        setFileParam(path+name, 'pushIn');
+        setFileParam(path + name, 'pushIn');
         if (path !== filePathParam) setFilePathParam(path, 'pushIn');
         // setFile({ filePath, fileName });
     };
@@ -320,9 +319,9 @@ export const CommentableCodeInner3 = ({
     return (
         <>
             {/* /{this.state.loading && <Progress color="info" />} */}
-
-            <RepoContents repo={repo} repoComments={repoComments} loadFileHandler={loadFileHandler} />
-
+            <Section>
+                <RepoContents repo={repo} repoComments={repoComments} loadFileHandler={loadFileHandler} />
+            </Section>
             {fileName && (
                 <Document
                     queryVariables={currentDocVars}
@@ -401,7 +400,7 @@ export const CommentableCodeInner2 = ({
             {/* /{this.state.loading && <Progress color="info" />} */}
 
             <ErrorBoundary>
-             <RepoContents repo={repo} repoComments={repoComments} loadFileHandler={loadFileHandler} />
+                <RepoContents repo={repo} repoComments={repoComments} loadFileHandler={loadFileHandler} />
             </ErrorBoundary>
 
             <ErrorBoundary>
@@ -415,7 +414,6 @@ export const CommentableCodeInner2 = ({
                     />
                 )}
             </ErrorBoundary>
-
         </>
     );
 };

@@ -191,6 +191,12 @@ a.card-footer-item {
   overflow: hidden;
 }
 
+@media screen and (max-width: 768px) {
+  .comment-container {
+    margin-left: 2rem;
+  }
+}
+
 .comment-container:hover .button-group-end {
   visibility: visible;
 }
