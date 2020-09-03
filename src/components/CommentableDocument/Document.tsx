@@ -62,7 +62,7 @@ const updateComment = async (comment: RoastComment, commentsId: string, isDelete
     const ref = db.ref('file-comments/' + commentsId + '/' + comment._id);
 
     if (isDelete) {
-         await ref.remove();
+        await ref.remove();
     } else {
         await ref.update({
             timestamp: Date.now(),
@@ -71,8 +71,7 @@ const updateComment = async (comment: RoastComment, commentsId: string, isDelete
     }
 
     return true;
-}
-
+};
 
 const DocCommentsLoader = (props: IDocumentProps) => {
     const commentsId = useMemo(() => btoa(props.queryVariables.path), [props.queryVariables]);
@@ -82,12 +81,13 @@ const DocCommentsLoader = (props: IDocumentProps) => {
         state: { showUserDetails, user, authenticated, firebaseError },
     } = useContext(firebaseStore);
 
-    const [loadCommentsError, setLoadCommentsError] = useState();   
+    const [loadCommentsError, setLoadCommentsError] = useState();
     const [comments, setComments] = useState([] as RoastComment[]);
 
     useEffect(() => {
+        const dbRef = db.ref('file-comments/' + commentsId);
         try {
-            db.ref('file-comments/' + commentsId).on('value', (snapshot) => {
+            dbRef.on('value', (snapshot) => {
                 const chats: RoastComment[] = [];
                 snapshot.forEach((snap) => {
                     const val = snap.val();
@@ -102,27 +102,35 @@ const DocCommentsLoader = (props: IDocumentProps) => {
         } catch (error) {
             setLoadCommentsError(error.message);
         }
+        return () => dbRef.off();
     }, [commentsId]);
-    
-    if (firebaseError) return <ErrorMessage message="failed to load comments for doc" />;
 
-    return <DocumentLoader comments={comments} authenticated={authenticated} user={user} 
-        onSubmitComment={(comment) => submitComment(comment, commentsId)} 
-        onEditComment={(comment, isDelete) => updateComment(comment, commentsId, isDelete ?? false)}
-        
-        {...props} />;
-}
+    if (firebaseError || loadCommentsError) return <ErrorMessage message="failed to load comments for doc" />;
+
+    return (
+        <DocumentLoader
+            comments={comments}
+            authenticated={authenticated}
+            user={user}
+            onSubmitComment={(comment) => submitComment(comment, commentsId)}
+            onEditComment={(comment, isDelete) => updateComment(comment, commentsId, isDelete ?? false)}
+            {...props}
+        />
+    );
+};
 
 export interface IDocumentCommentProps {
-    comments: RoastComment[],
-    onSubmitComment: (comment: RoastComment) => Promise<boolean>,
-    onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<boolean>,
-    authenticated: boolean,
-    user: any
+    comments: RoastComment[];
+    onSubmitComment: (comment: RoastComment) => Promise<boolean>;
+    onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<boolean>;
+    authenticated: boolean;
+    user: any;
 }
 
 const DocumentLoader = (props: IDocumentProps & IDocumentCommentProps) => {
-    console.log(`fetching document with query: ${GITHUB_DOCUMENT_QUERY} \n parameters== name: ${props.queryVariables.name} path:${props.queryVariables.path} owner:${props.queryVariables.owner}`);
+    console.log(
+        `fetching document with query: ${GITHUB_DOCUMENT_QUERY} \n parameters== name: ${props.queryVariables.name} path:${props.queryVariables.path} owner:${props.queryVariables.owner}`,
+    );
     const { data, error, loading } = useQuery<IGithubDocResponse, IGithubDocQueryVariables>(GITHUB_DOCUMENT_QUERY, {
         variables: props.queryVariables,
         client: githubClient as any,
@@ -152,7 +160,7 @@ const DocumentLoader = (props: IDocumentProps & IDocumentCommentProps) => {
     return <DocumentView data={data} {...props} />;
 };
 
-const DocumentView = (props: IDocumentProps & IDocumentCommentProps & { data: any; }) => {
+const DocumentView = (props: IDocumentProps & IDocumentCommentProps & { data: any }) => {
     const availableThemes = [tomorrow, ghcolors, darcula];
     const [theme, setTheme] = React.useState(tomorrow);
 
@@ -190,7 +198,7 @@ const DocumentView = (props: IDocumentProps & IDocumentCommentProps & { data: an
     );
 };
 
-export function ErrorMessage({ message }: { message?: string}) {
+export function ErrorMessage({ message }: { message?: string }) {
     return (
         <Container>
             <Message color="danger">

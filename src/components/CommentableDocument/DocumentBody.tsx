@@ -19,6 +19,8 @@ import '../../App.css';
 // import darcula from 'react-syntax-highlighter/dist/styles/prism/darcula';
 
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
+// TODO - use heavy version and won't need to register lang
+// or use async version for fastest rendering 
 
 // import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
@@ -33,14 +35,32 @@ import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 // TODO! Register languages: https://github.com/storybookjs/storybook/issues/9279
 // also see https://github.com/storybookjs/storybook/blob/b6136e1539c85d253504391a7d3f65e2c1239143/lib/components/src/syntaxhighlighter/syntaxhighlighter.tsx
 import jsx from 'react-syntax-highlighter/dist/cjs/languages/prism/jsx';
+import tsx from 'react-syntax-highlighter/dist/cjs/languages/prism/tsx';
 import bash from 'react-syntax-highlighter/dist/cjs/languages/prism/bash';
 import css from 'react-syntax-highlighter/dist/cjs/languages/prism/css';
 import json from 'react-syntax-highlighter/dist/cjs/languages/prism/json';
 import html from 'react-syntax-highlighter/dist/cjs/languages/prism/markup';
 import md from 'react-syntax-highlighter/dist/cjs/languages/prism/markdown';
 import yml from 'react-syntax-highlighter/dist/cjs/languages/prism/yaml';
-import tsx from 'react-syntax-highlighter/dist/cjs/languages/prism/tsx';
-import typescript from 'react-syntax-highlighter/dist/cjs/languages/prism/typescript';
+import ts from 'react-syntax-highlighter/dist/cjs/languages/prism/typescript';
+import properties from 'react-syntax-highlighter/dist/cjs/languages/prism/properties';
+// graphql
+// java
+// json
+// markdown
+// python
+// rust
+// ruby
+// toml
+// swift
+// yaml
+// java
+// javascript
+// csharp
+// css
+// cpp
+// c
+
 
 SyntaxHighlighter.registerLanguage('jsx', jsx);
 SyntaxHighlighter.registerLanguage('json', json);
@@ -50,7 +70,9 @@ SyntaxHighlighter.registerLanguage('bash', bash);
 SyntaxHighlighter.registerLanguage('css', css);
 SyntaxHighlighter.registerLanguage('html', html);
 SyntaxHighlighter.registerLanguage('tsx', tsx);
-SyntaxHighlighter.registerLanguage('typescript', typescript);
+SyntaxHighlighter.registerLanguage('typescript', ts);
+SyntaxHighlighter.registerLanguage('properties', properties);
+
 
 // import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism'; // todo
 
@@ -110,17 +132,15 @@ export class DocumentBody extends React.Component<
     };
 
     public render() {
-        // todo add more mappings
+        // mappings for languages that don't match their file endings
         const extMapping: { [key: string]: string } = {
             kt: 'kotlin',
-            java: 'java',
             js: 'javascript',
         };
 
         const docTitleParts = this.props.documentTitle.split('.');
         const fileEnding = docTitleParts[docTitleParts.length - 1];
-        // const language = extensionMapping.filter(x => x.ext === `.${fileEnding}`);
-        const language = extMapping[fileEnding];
+        const language = extMapping[fileEnding] || fileEnding;
         console.log(`detected language for ${this.props.documentTitle} is ${language}`);
 
         // const decoded = atob(this.props.content);

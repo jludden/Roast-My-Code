@@ -75,17 +75,52 @@ export const FirebaseCommentsProvider = ({ children }) => {
             return false;
         }
 
-        await db.ref('file-comments/' + commentsId).push({
+        // await db.ref('file-comments/' + commentsId).push({
+        //     text: comment.text,
+        //     lineNumber: comment.lineNumber,
+        //     timestamp: Date.now(),
+        //     uid: user.uid,
+        //     author: {
+        //         displayName: firebaseUserToRoastUserName(user),
+        //         uid: user.uid,
+        //         photoURL: user.photoURL || 0,
+        //     },
+        // });
+
+        const newCommentData = {
             text: comment.text,
             lineNumber: comment.lineNumber,
             timestamp: Date.now(),
-            uid: user.uid,
             author: {
                 displayName: firebaseUserToRoastUserName(user),
                 uid: user.uid,
                 photoURL: user.photoURL || 0,
             },
+        };
+
+        // Write the comment to a few separate places
+        var ref = db.ref();
+        // Generate a new push ID for the new post
+        var newCommentRef = await ref.child('posts').push();
+        var newCommentKey = newCommentRef.key;
+        // Create the data we want to update
+        var fbUpdates = {};
+        fbUpdates[`comments/${newCommentKey}`] = newCommentData;
+        fbUpdates[`file-comments/${commentsId}/${newCommentKey}`] = newCommentData;
+        fbUpdates[`user-comments/${user.uid || 1}/${newCommentKey}`] = true;
+        // Do a deep-path update
+        ref.update(fbUpdates, function (error) {
+            if (error) {
+                console.log('Error updating data:', error);
+                return false;
+            }
         });
+
+        // db.ref().update({
+        //     'tasks/001/name' : 'Here is the new name',
+        //     'tasksByUser/Cathryn/001' : 'Here the new name'
+        // });
+
         return true;
     };
 
@@ -149,5 +184,64 @@ export const SigninModal = () => {
                 </Modal.Card.Body>
             </Modal.Card>
         </Modal>
+    );
+};
+
+export const FirebaseQuery = () => {
+    const [showQuery, setShowQuery] = useState(false);
+    if (!showQuery) return <Button onClick={() => setShowQuery(!showQuery)}>Query Firebase</Button>;
+
+    return (
+        <div>
+            <Button onClick={() => setShowQuery(!showQuery)}>Query Firebase</Button>
+            <div>
+                <h1>Results:</h1>
+                <FirebaseQueryInner />
+            </div>
+        </div>
+    );
+};
+
+export const FirebaseQueryInner = () => {
+    const [loadCommentsError, setLoadCommentsError] = useState();
+    const [comments, setComments] = useState([]);
+
+    useEffect(() => {
+        const dbRef = db.ref('comments');
+        try {
+            dbRef
+                .orderByChild('timestamp')
+                .limitToFirst(10)
+                .on('child_added', function (snap) {
+                    const snapval = snap.val();
+                    console.log(
+                        snap.key + ' was posted on' + snapval.timestamp + ' and had this text: ' + snapval.text,
+                    );
+
+                    setComments((c) => [
+                        ...c,
+                        {
+                            _id: snap.key,
+                            updatedAt: new Date(snapval.timestamp),
+                            ...snapval,
+                        },
+                    ]);
+                });
+        } catch (error) {
+            setLoadCommentsError(error.message);
+        }
+        return () => dbRef.off();
+    }, []);
+
+    if (loadCommentsError) return <div>failed to load comment query for doc</div>;
+
+    return (
+        <div>
+            {comments.map((comment) => (
+                <div key={comment._id}>
+                    {comment.key + ' was posted on' + comment.updatedAt + ' and had this text: ' + comment.text}
+                </div>
+            ))}
+        </div>
     );
 };

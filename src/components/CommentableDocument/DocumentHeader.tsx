@@ -46,29 +46,42 @@ import {
 //             },
 //         },
 //     };
-const DocumentHeader = ({ documentName, commentsCount, cycleTheme }: 
-    { documentName: string; commentsCount: number; cycleTheme: () => void; }) => {
-
-        const mgRight = {
-            marginRight: "5px"
-        }
+const DocumentHeader = ({
+    documentName,
+    commentsCount,
+    cycleTheme,
+}: {
+    documentName: string;
+    commentsCount: number;
+    cycleTheme: () => void;
+}) => {
+    const mgRight = {
+        marginTop: '5px',
+        marginRight: '5px',
+    };
 
     return (
         <Section>
             <Container>
-
                 <Box>
-
-                <Title>{documentName}</Title>
-                <Title subtitle>
-                    <Button color="info" onClick={() => cycleTheme()} style={mgRight} >
-                        Change Theme
-                    </Button>
-                    <Button color="primary" disabled style={mgRight} >Request Public Code Review</Button>
-                    <Button badge={commentsCount} badgeColor="primary" badgeOutlined color="primary" outlinedstyle={mgRight}>
-                        <FaCommentAlt />
-                    </Button>
-                </Title>
+                    <Title>{documentName}</Title>
+                    <Title subtitle>
+                        <Button color="info" onClick={() => cycleTheme()} style={mgRight}>
+                            Change Theme
+                        </Button>
+                        <Button color="primary" disabled style={mgRight}>
+                            Request Public Code Review
+                        </Button>
+                        <Button
+                            badge={commentsCount}
+                            badgeColor="primary"
+                            badgeOutlined
+                            color="primary"
+                            outlinedstyle={mgRight}
+                        >
+                            <FaCommentAlt />
+                        </Button>
+                    </Title>
                 </Box>
             </Container>
         </Section>
