@@ -39,12 +39,15 @@ const CCNavbar = () => {
                     {/* NavLink - allows activeclassname attribute when matches current URL! */}
                     {/* exact activeClassName="is-active" */}
                     <Navbar.Item as={AdapterLink} to="/">
+                        Home
+                    </Navbar.Item>
+                    <Navbar.Item as={AdapterLink} to="/search">
                         Search
                     </Navbar.Item>
 
-                    <Navbar.Item as={AdapterLink} to="/chat">
+                    {/* <Navbar.Item as={AdapterLink} to="/chat">
                         Chat
-                    </Navbar.Item>
+                    </Navbar.Item> */}
 
                     <Navbar.Item dropdown>
                         <Navbar.Link>More</Navbar.Link>

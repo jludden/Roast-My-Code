@@ -77,7 +77,7 @@ const DocumentHeader = ({
                             badgeColor="primary"
                             badgeOutlined
                             color="primary"
-                            outlinedstyle={mgRight}
+                            style={mgRight}
                         >
                             <FaCommentAlt />
                         </Button>

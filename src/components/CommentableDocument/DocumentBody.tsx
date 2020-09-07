@@ -20,7 +20,7 @@ import '../../App.css';
 
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 // TODO - use heavy version and won't need to register lang
-// or use async version for fastest rendering 
+// or use async version for fastest rendering
 
 // import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
@@ -61,7 +61,6 @@ import properties from 'react-syntax-highlighter/dist/cjs/languages/prism/proper
 // cpp
 // c
 
-
 SyntaxHighlighter.registerLanguage('jsx', jsx);
 SyntaxHighlighter.registerLanguage('json', json);
 SyntaxHighlighter.registerLanguage('yml', yml);
@@ -72,7 +71,6 @@ SyntaxHighlighter.registerLanguage('html', html);
 SyntaxHighlighter.registerLanguage('tsx', tsx);
 SyntaxHighlighter.registerLanguage('typescript', ts);
 SyntaxHighlighter.registerLanguage('properties', properties);
-
 
 // import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism'; // todo
 
@@ -131,6 +129,16 @@ export class DocumentBody extends React.Component<
         lineRefs: [],
     };
 
+    componentDidMount() {
+        const { hash } = window.location;
+        const id = hash.replace('#', '');
+        setTimeout(() => {
+            const element = document.getElementById(id);
+            console.log('scrolling to: ' + id + '\n element ' + (element ? 'found' : 'not found'));
+            if (element) element.scrollIntoView();
+        });
+    }
+
     public render() {
         // mappings for languages that don't match their file endings
         const extMapping: { [key: string]: string } = {
@@ -141,10 +149,8 @@ export class DocumentBody extends React.Component<
         const docTitleParts = this.props.documentTitle.split('.');
         const fileEnding = docTitleParts[docTitleParts.length - 1];
         const language = extMapping[fileEnding] || fileEnding;
+        const decoded = this.props.content;
         console.log(`detected language for ${this.props.documentTitle} is ${language}`);
-
-        // const decoded = atob(this.props.content);
-        const decoded = this.props.content; // todo figure out how we're getting the raw file from github
 
         return (
             <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
@@ -183,37 +189,6 @@ export class DocumentBody extends React.Component<
                         </Column>
                     </Column.Group>
                 </Container>
-
-                {/* 
-        <div className="flex-container">
-          <div id="doc-body" className={`flex-item App-body`}> */}
-                {/* possibly want to use a ref here https://reactjs.org/docs/refs-and-the-dom.html */}
-                {/* <SyntaxHighlighter language="kotlin" style={github} className="left-align" showLineNumbers={true} renderer={()=>{LineRenderer()}}>{decoded}</SyntaxHighlighter> */}
-                {/* <SyntaxHighlighter
-              language="kotlin"
-              style={github}
-              className="left-align"
-              showLineNumbers={true}
-              renderer={this.renderSyntaxLines}
-            >
-              {decoded}
-            </SyntaxHighlighter>
-          </div>
-          <DocumentCommentsView
-            lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
-            onEditComment={this.props.onEditComment}
-            lineRefs={this.state.lineRefs}/>
-        </div> */}
-
-                {/* <h2> code-prettifier </h2>
-                <pre className="prettyprint linenums">
-                    {decoded}
-                </pre>
-                <h2> code-prettifier 2</h2>
-                <pre className="prettyprint">
-                    {decoded}
-                </pre>
-                 */}
             </div>
         );
     }
@@ -227,7 +202,7 @@ export class DocumentBody extends React.Component<
         }
     };
 
-    // Group comments into Comment Containers based their associated line number TODO this could be state or something
+    // Group comments into Comment Containers based their associated line number
     private groupCommentsByLineNumber = (comments: RoastComment[]) => {
         const lineNumberMap = new Map<number, ICommentGrouping>();
 
@@ -245,8 +220,7 @@ export class DocumentBody extends React.Component<
         });
 
         const inProgressComment = this.state.inProgressComment;
-        if (inProgressComment)
-        {
+        if (inProgressComment) {
             const line = lineNumberMap.get(inProgressComment.lineNumber) || {
                 comments: [],
                 startMinized: false,
@@ -265,6 +239,17 @@ export class DocumentBody extends React.Component<
             line.inProgress = true;
             line.startMinized = false;
             lineNumberMap.set(inProgressComment.lineNumber, line);
+        }
+
+        const { hash } = window.location; // definitely make the linked comment expando
+        const elementId = hash.replace('#', '');
+        if (elementId) {
+            const parts = elementId.split('-');
+            const expandedLine = parts[parts.length - 1];
+            const commentContainer = lineNumberMap.get(+expandedLine);
+            if (commentContainer) {
+                commentContainer.startMinized = false;
+            }
         }
 
         // todo 1

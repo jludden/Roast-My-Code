@@ -74,7 +74,11 @@ const updateComment = async (comment: RoastComment, commentsId: string, isDelete
 };
 
 const DocCommentsLoader = (props: IDocumentProps) => {
-    const commentsId = useMemo(() => btoa(props.queryVariables.path), [props.queryVariables]);
+    const filePath = useMemo(() => {
+        const { owner, name, path } = props.queryVariables;
+        return btoa(`${owner}/${name}/${path}`);
+    }, [props.queryVariables]);
+
     const {
         dispatch,
         submitComment,
@@ -85,7 +89,7 @@ const DocCommentsLoader = (props: IDocumentProps) => {
     const [comments, setComments] = useState([] as RoastComment[]);
 
     useEffect(() => {
-        const dbRef = db.ref('file-comments/' + commentsId);
+        const dbRef = db.ref('file-comments/' + filePath);
         try {
             dbRef.on('value', (snapshot) => {
                 const chats: RoastComment[] = [];
@@ -103,7 +107,7 @@ const DocCommentsLoader = (props: IDocumentProps) => {
             setLoadCommentsError(error.message);
         }
         return () => dbRef.off();
-    }, [commentsId]);
+    }, [filePath]);
 
     if (firebaseError || loadCommentsError) return <ErrorMessage message="failed to load comments for doc" />;
 
@@ -112,8 +116,8 @@ const DocCommentsLoader = (props: IDocumentProps) => {
             comments={comments}
             authenticated={authenticated}
             user={user}
-            onSubmitComment={(comment) => submitComment(comment, commentsId)}
-            onEditComment={(comment, isDelete) => updateComment(comment, commentsId, isDelete ?? false)}
+            onSubmitComment={(comment) => submitComment(comment, filePath, props.queryVariables)}
+            onEditComment={(comment, isDelete) => updateComment(comment, filePath, isDelete ?? false)}
             {...props}
         />
     );

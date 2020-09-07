@@ -179,7 +179,7 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
     );
 };
 
-const DropdownMenu = ({ branch }: { branch: string }) => {
+export const DropdownMenu = ({ branch }: { branch: string }) => {
     return (
         <Dropdown style={{ padding: '0 15px 0 0' }}>
             <Dropdown.Trigger>
@@ -360,11 +360,11 @@ function RepoContentsPanel({
                         onMouseOver={() => {
                             // prefetch folder on hover
                             if (file.object.__typename === 'Tree')
-                                console.log(`mouseover prefetch path: ${filePath}${file.name}/`);
-                                client.query({
-                                    query: REPO_CONTENTS_QUERY,
-                                    variables: { ...vars, path: `${filePath}${file.name}/` },
-                                });
+                                console.log(`mouseover prefetch path (DISABLED): ${filePath}${file.name}/`);
+                                // client.query({
+                                //     query: REPO_CONTENTS_QUERY,
+                                //     variables: { ...vars, path: `${filePath}${file.name}/` },
+                                // });
                         }}
                     />
                 ))}

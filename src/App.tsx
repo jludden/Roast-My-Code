@@ -9,18 +9,19 @@ import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from './generated/graphql';
-import { Home } from './components/Home';
+import { Search } from './pages/Search';
+import { Home} from './pages/Home';
+import About from './pages/About';
+import Login, {FirebaseLogin} from './pages/Login';
 import CommentableCode from './components/CommentableCodePage/CommentableCode';
 import CCNavBar from './components/Navbar';
 import { EndpointTest } from './components/CommentableDocument/EndpointTest';
 import ErrorBoundary from './components/Common/ErrorBoundary';
-import About from './pages/About';
 import { auth } from './services/firebase';
 import FirebaseChat from './components/FirebaseChat/Chat';
-import { SigninModal, FirebaseCommentsProvider, firebaseStore } from './components/FirebaseChat/SigninModal';
+import { SigninModal, FirebaseCommentsProvider, firebaseStore, FirebaseQuery } from './components/FirebaseChat/SigninModal';
 import { UserDetailsModal } from './components/FirebaseChat/LoggedInStatus';
 import Signup from './pages/Signup';
-import Login, {FirebaseLogin} from './pages/Login';
 
 // import logo from './' './logo.svg';
 
@@ -34,6 +35,7 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
     introspectionQueryResultData: IntrospectionResultData,
 });
 export const cache = new InMemoryCache({ fragmentMatcher });
+
 
 
 
@@ -75,6 +77,7 @@ export const App = () => {
                                 {/* <Section color="dark"> */}
                                     <Switch>
                                         <Route path="/" exact component={Home} />
+                                        <Route path="/search" component={Search} />
                                         <Route path="/about/" component={About} />
                                         <Route path="/repo/" component={CommentableCodePage} />
                                         <Route path="/chat/" component={FirebaseChat} />
@@ -110,6 +113,9 @@ const AppFooter = () => {
             <Content textAlign="centered">
                 <p>&copy; Jason Ludden 2020</p>
             </Content>
+            {/* <Section>
+                <FirebaseQuery />
+            </Section> */}
         </Footer>
     )
 }
@@ -162,6 +168,7 @@ function Users() {
     return <h2>Users</h2>;
 }
 
+
 function AppRouter() {
     return (
         <Router>
@@ -170,6 +177,9 @@ function AppRouter() {
                     <ul>
                         <li>
                             <Link to="/">Home</Link>
+                        </li>
+                        <li>
+                            <Link to="/search">Search</Link>
                         </li>
                         <li>
                             <Link to="/about/">About</Link>

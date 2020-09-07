@@ -18,7 +18,7 @@ const initialState = {
 export const firebaseStore = createContext({
     state: initialState,
     dispatch: (action) => {},
-    submitComment: async (comment, commentsId) => false,
+    submitComment: async (comment, filePath, queryVariables) => false,
 });
 
 export const FirebaseCommentsProvider = ({ children }) => {
@@ -63,7 +63,7 @@ export const FirebaseCommentsProvider = ({ children }) => {
         }
     }, initialState);
 
-    const submitComment = async (comment, commentsId) => {
+    const submitComment = async (comment, filePath, queryVariables) => {
         if (!state.authenticated) {
             dispatch({ type: 'error', payload: 'cannot add comment - not authenticated' });
             return false;
@@ -75,19 +75,9 @@ export const FirebaseCommentsProvider = ({ children }) => {
             return false;
         }
 
-        // await db.ref('file-comments/' + commentsId).push({
-        //     text: comment.text,
-        //     lineNumber: comment.lineNumber,
-        //     timestamp: Date.now(),
-        //     uid: user.uid,
-        //     author: {
-        //         displayName: firebaseUserToRoastUserName(user),
-        //         uid: user.uid,
-        //         photoURL: user.photoURL || 0,
-        //     },
-        // });
-
         const newCommentData = {
+            filePath,
+            queryVariables,
             text: comment.text,
             lineNumber: comment.lineNumber,
             timestamp: Date.now(),
@@ -105,9 +95,9 @@ export const FirebaseCommentsProvider = ({ children }) => {
         var newCommentKey = newCommentRef.key;
         // Create the data we want to update
         var fbUpdates = {};
-        fbUpdates[`comments/${newCommentKey}`] = newCommentData;
-        fbUpdates[`file-comments/${commentsId}/${newCommentKey}`] = newCommentData;
         fbUpdates[`user-comments/${user.uid || 1}/${newCommentKey}`] = true;
+        fbUpdates[`file-comments/${filePath}/${newCommentKey}`] = newCommentData;
+        fbUpdates[`comments/${newCommentKey}`] = newCommentData;
         // Do a deep-path update
         ref.update(fbUpdates, function (error) {
             if (error) {
@@ -115,11 +105,6 @@ export const FirebaseCommentsProvider = ({ children }) => {
                 return false;
             }
         });
-
-        // db.ref().update({
-        //     'tasks/001/name' : 'Here is the new name',
-        //     'tasksByUser/Cathryn/001' : 'Here the new name'
-        // });
 
         return true;
     };
@@ -202,7 +187,7 @@ export const FirebaseQuery = () => {
     );
 };
 
-export const FirebaseQueryInner = () => {
+export const FirebaseQueryInner = ({children}) => {
     const [loadCommentsError, setLoadCommentsError] = useState();
     const [comments, setComments] = useState([]);
 
@@ -221,9 +206,10 @@ export const FirebaseQueryInner = () => {
                     setComments((c) => [
                         ...c,
                         {
+                            ...snapval,
                             _id: snap.key,
                             updatedAt: new Date(snapval.timestamp),
-                            ...snapval,
+                            decodedFilePath: atob(snapval.filePath),
                         },
                     ]);
                 });
@@ -237,11 +223,17 @@ export const FirebaseQueryInner = () => {
 
     return (
         <div>
+            {children({comments})}
+        </div>
+    )
+
+    return (
+        <>
             {comments.map((comment) => (
                 <div key={comment._id}>
-                    {comment.key + ' was posted on' + comment.updatedAt + ' and had this text: ' + comment.text}
+                    {comment.decodedFilePath + `[${comment._id}]` + ' was posted on' + comment.updatedAt + ' and had this text: ' + comment.text}
                 </div>
             ))}
-        </div>
+        </>
     );
 };

@@ -8,17 +8,17 @@ import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemo
 import update from 'immutability-helper';
 import { BrowserRouter as Router, Switch, Route, Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import { Container, Message, Progress, Table } from 'rbx';
-import DocumentBody from './CommentableDocument/DocumentBody';
-import DocumentHeader from './CommentableDocument/DocumentHeader';
-import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
+import DocumentBody from '../components/CommentableDocument/DocumentBody';
+import DocumentHeader from '../components/CommentableDocument/DocumentHeader';
+import RoastComment from '../components/CommentableCodePage/types/findRepositoryByTitle';
 // import schema from '../api/github.schema.json';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../generated/graphql';
 import { RepositoryOwner, StargazerConnection, Language } from '../generated/graphql'; // todo shouldnt really need
-import RepoSearchContainer from './RepoSearch/RepoSearchContainer';
-import RepoContents from './RepoContents';
+import RepoSearchContainer from '../components/RepoSearch/RepoSearchContainer';
+import RepoContents from '../components/RepoContents';
 import { db, auth } from '../services/firebase';
 
-import './Home.css';
+import './Search.css';
 
 export interface IHomeProps {
     bar: string;
@@ -60,7 +60,7 @@ export const RecentlyUpdated = () => {
     )
 }
 
-export function Home(props: IHomeProps) {
+export const Search = (props: IHomeProps) => {
     const [shouldRedirect, setShouldRedirect] = React.useState('');
 
     // const styles: React.CSSProperties = {
@@ -72,6 +72,7 @@ export function Home(props: IHomeProps) {
         <>
             {shouldRedirect.length > 0 && <Redirect to={`/repo${shouldRedirect}`} push />}
 
+            <a href="http://localhost:8080/repo/jludden/Roast-My-Code?path=master%3Asrc%2F">This website's code!</a>
 
             <RepoSearchContainer
                 loadRepoHandler={(repo: Repository) => setShouldRedirect(repo.resourcePath)}
@@ -129,3 +130,4 @@ export function Home(props: IHomeProps) {
         </>
     );
 }
+export default Search;

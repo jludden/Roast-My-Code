@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
 import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
 
 import 'rbx/index.css';
 import { CardHeader } from './CommentableDocument/CommentContainer';
-import { Message, Box, Textarea, Button, Card, Content, Icon, Delete } from 'rbx';
+import { Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
 import { FaAngleDown, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench } from 'react-icons/fa';
+import { DropdownMenu } from './RepoContents';
 
 export interface IRoastCommentProps {
     comment: RoastComment;
@@ -23,25 +24,38 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
 
     const [editMode, setEditMode] = useState(false);
     const [inputText, setInputText] = useState(comment.text);
+    const id = `comment-${comment._id}`;
 
     const updateCommentText = async () => {
-       await onEditComment({ ...comment, text: inputText }, false);
-       setEditMode(false);
-    }
+        await onEditComment({ ...comment, text: inputText }, false);
+        setEditMode(false);
+    };
 
     return (
-        <Card size="small" className="card-rounded" style={style}>
+        <Card size="small" className="card-rounded" id={id} style={style}>
             <Card.Header>
-                <Card.Header.Title>
-                    <CardHeader comment={comment} />
-                </Card.Header.Title>
-                <Card.Header.Icon onClick={() => {}}>
-                    <Icon>
-                        <FaAngleDown />
-                        {/* {this.state.expanded && <FaAngleUp />} */}
-                    </Icon>
-                </Card.Header.Icon>
+                    <Dropdown style={{width: '100%'}}>
+                        <Card.Header.Title>
+                            <CardHeader comment={comment} />
+                        </Card.Header.Title>
+                        <Card.Header.Icon>
+                            <Dropdown.Trigger>
+                                    <Icon>
+                                        <FaAngleDown />
+                                    </Icon>
+                            </Dropdown.Trigger>
+                        </Card.Header.Icon>
+                        <Dropdown.Menu>
+                            <Dropdown.Content>
+                                <Dropdown.Item as="div">
+                                    <CopyLinkDropdownItem text={id} />
+                                </Dropdown.Item>
+                            </Dropdown.Content>
+                        </Dropdown.Menu>
+                    </Dropdown>
+
             </Card.Header>
+                
             <Card.Content>
                 <Content>
                     {!inProgress && !editMode && (
@@ -85,11 +99,7 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                                 <Button color="warning" rounded onClick={() => setEditMode(false)}>
                                     Cancel
                                 </Button>
-                                <Button
-                                    color="primary"
-                                    rounded
-                                    onClick={() => updateCommentText()}
-                                >
+                                <Button color="primary" rounded onClick={() => updateCommentText()}>
                                     Save
                                 </Button>
                             </Button.Group>
@@ -122,5 +132,70 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
         </Card>
     );
 };
+
+export const CopyLinkDropdownItem = ({ text: id }: { text: string }) => {
+    const [copySuccess, setCopySuccess] = useState('');
+
+    const textRef = useRef<HTMLTextAreaElement>(null);
+
+    function copyToClipboard(e: any) {
+        (textRef as any).current.select();
+        document.execCommand('copy');
+        // This is just personal preference.
+        // I prefer to not show the whole text area selected.
+        e.target.focus();
+        setCopySuccess('Copied!');
+      };
+
+    return (        
+        <>
+        <textarea ref={textRef}>{id}</textarea>
+        <Button onClick={copyToClipboard}>Copy</Button>
+        {copySuccess}
+
+        </>
+    )
+}
+
+// export const SingleCommentInteractive
+
+const CommentCard = ({comment, id, cardStyle, children}: {comment: RoastComment, id: string, cardStyle: any, children: any}) => (
+    <Card size="small" className="card-rounded" id={id} style={cardStyle}>
+            <Card.Header>
+                    <Dropdown style={{width: '100%'}}>
+                        <Card.Header.Title>
+                            <CardHeader comment={comment} />
+                        </Card.Header.Title>
+                        <Card.Header.Icon>
+                            <Dropdown.Trigger>
+                                    <Icon>
+                                        <FaAngleDown />
+                                    </Icon>
+                            </Dropdown.Trigger>
+                        </Card.Header.Icon>
+                        <Dropdown.Menu>
+                            <Dropdown.Content>
+                                <Dropdown.Item as="div">
+                                    <CopyLinkDropdownItem text={id} />
+                                </Dropdown.Item>
+                            </Dropdown.Content>
+                        </Dropdown.Menu>
+                    </Dropdown>
+
+            </Card.Header>
+                
+            <Card.Content>
+                <Content>
+                    {children}
+                </Content>
+            </Card.Content>
+        </Card>
+)
+
+export const SingleCommentUI = ({comment, ...props}: any) => (
+    <CommentCard comment={comment} {...props}>
+        <p>{comment.text}</p>
+    </CommentCard>
+)
 
 export default SingleCommentView;

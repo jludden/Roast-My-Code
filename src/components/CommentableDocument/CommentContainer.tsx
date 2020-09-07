@@ -8,6 +8,11 @@ import { FaAngleDown, FaAngleUp, FaCommentAlt, FaReply } from 'react-icons/fa';
 import { Collapse } from 'react-collapse';
 import '../../App.css';
 import { UserAvatar, UserAvatarBadge, UserHeader } from '../Avatar';
+import {    Link,
+    LinkProps,
+    NavLink,
+    RouteComponentProps,
+} from 'react-router-dom';
 
 export interface ICommentContainerProps {
     comments: RoastComment[]; // comments belonging to this line number
@@ -32,6 +37,7 @@ function computeTopOffset(ref: HTMLDivElement): string {
     if (!ref) return '0px';
     return `${ref.offsetTop}px`;
 }
+
 
 export default class CommentContainer extends React.PureComponent<ICommentContainerProps, ICommentContainerState> {
     constructor(props: ICommentContainerProps) {
@@ -65,7 +71,7 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         const { comments } = this.props;
 
         return (
-            <div className="comment-container" style={this.state.styles}>
+            <div id={`comment-container-${comments[0].lineNumber}`} className="comment-container" style={this.state.styles}>
                 <UserAvatarBadge
                     avatar={comments[0].author?.photoURL || 0}
                     badge={comments.length}
@@ -102,9 +108,9 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
     }
 }
 
-export const CardHeader = ({ comment }: { comment: RoastComment }) => {
+export const CardHeader = ({ comment, styles }: { comment: RoastComment, styles?: any }) => {
     return (
-        <div className="commentHeader">
+        <div className="commentHeader" style={styles}>
             <UserHeader user={comment.author} />
             <div style={{ fontWeight: 'lighter', fontSize: '12px' }}>
                 {comment.updatedAt ? comment.updatedAt.toLocaleString() : 'Just now'}
