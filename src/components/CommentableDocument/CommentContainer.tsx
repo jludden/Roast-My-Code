@@ -71,7 +71,7 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         const { comments } = this.props;
 
         return (
-            <div id={`comment-container-${comments[0].lineNumber}`} className="comment-container" style={this.state.styles}>
+            <div id={`comment-container~${comments[0].lineNumber}`} className="comment-container" style={this.state.styles}>
                 <UserAvatarBadge
                     avatar={comments[0].author?.photoURL || 0}
                     badge={comments.length}

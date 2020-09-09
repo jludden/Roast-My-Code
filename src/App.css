@@ -224,3 +224,12 @@ a.card-footer-item {
 .float-button-pane > button {
   margin-top: 0.5rem;
 }
+
+.hover-modal {  
+  top: 600px;
+  border: black;
+  border-width: 2px;
+  position: absolute;
+  border-style: solid;
+  background-color: antiquewhite;  
+}

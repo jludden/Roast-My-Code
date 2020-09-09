@@ -24,7 +24,8 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
 
     const [editMode, setEditMode] = useState(false);
     const [inputText, setInputText] = useState(comment.text);
-    const id = `comment-${comment._id}`;
+
+    const id = `comment~${comment._id}`;
 
     const updateCommentText = async () => {
         await onEditComment({ ...comment, text: inputText }, false);
@@ -34,28 +35,27 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
     return (
         <Card size="small" className="card-rounded" id={id} style={style}>
             <Card.Header>
-                    <Dropdown style={{width: '100%'}}>
-                        <Card.Header.Title>
-                            <CardHeader comment={comment} />
-                        </Card.Header.Title>
-                        <Card.Header.Icon>
-                            <Dropdown.Trigger>
-                                    <Icon>
-                                        <FaAngleDown />
-                                    </Icon>
-                            </Dropdown.Trigger>
-                        </Card.Header.Icon>
-                        <Dropdown.Menu>
-                            <Dropdown.Content>
-                                <Dropdown.Item as="div">
-                                    <CopyLinkDropdownItem text={id} />
-                                </Dropdown.Item>
-                            </Dropdown.Content>
-                        </Dropdown.Menu>
-                    </Dropdown>
-
+                <Dropdown style={{ width: '100%' }}>
+                    <Card.Header.Title>
+                        <CardHeader comment={comment} />
+                    </Card.Header.Title>
+                    <Card.Header.Icon>
+                        <Dropdown.Trigger>
+                            <Icon>
+                                <FaAngleDown />
+                            </Icon>
+                        </Dropdown.Trigger>
+                    </Card.Header.Icon>
+                    <Dropdown.Menu>
+                        <Dropdown.Content>
+                            <Dropdown.Item as="div">
+                                <CopyLinkDropdownItem text={id} />
+                            </Dropdown.Item>
+                        </Dropdown.Content>
+                    </Dropdown.Menu>
+                </Dropdown>
             </Card.Header>
-                
+
             <Card.Content>
                 <Content>
                     {!inProgress && !editMode && (
@@ -135,6 +135,7 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
 
 export const CopyLinkDropdownItem = ({ text: id }: { text: string }) => {
     const [copySuccess, setCopySuccess] = useState('');
+    const windowLocation = window.location.href.replace(window.location.hash, '');
 
     const textRef = useRef<HTMLTextAreaElement>(null);
 
@@ -145,57 +146,64 @@ export const CopyLinkDropdownItem = ({ text: id }: { text: string }) => {
         // I prefer to not show the whole text area selected.
         e.target.focus();
         setCopySuccess('Copied!');
-      };
+    }
 
-    return (        
-        <>
-        <textarea ref={textRef}>{id}</textarea>
-        <Button onClick={copyToClipboard}>Copy</Button>
-        {copySuccess}
-
-        </>
-    )
-}
+    return (
+        <div style={{ padding: '10px' }}>
+            <label htmlFor="comment-url-text">Permalink</label>
+            <textarea id="comment-url-text" ref={textRef} value={`${windowLocation}#${id}`} readOnly />
+            <Button onClick={copyToClipboard}>Copy</Button>
+            {copySuccess}
+        </div>
+    );
+};
 
 // export const SingleCommentInteractive
 
-const CommentCard = ({comment, id, cardStyle, children}: {comment: RoastComment, id: string, cardStyle: any, children: any}) => (
+const CommentCard = ({
+    comment,
+    id,
+    cardStyle,
+    children,
+}: {
+    comment: RoastComment;
+    id: string;
+    cardStyle: any;
+    children: any;
+}) => (
     <Card size="small" className="card-rounded" id={id} style={cardStyle}>
-            <Card.Header>
-                    <Dropdown style={{width: '100%'}}>
-                        <Card.Header.Title>
-                            <CardHeader comment={comment} />
-                        </Card.Header.Title>
-                        <Card.Header.Icon>
-                            <Dropdown.Trigger>
-                                    <Icon>
-                                        <FaAngleDown />
-                                    </Icon>
-                            </Dropdown.Trigger>
-                        </Card.Header.Icon>
-                        <Dropdown.Menu>
-                            <Dropdown.Content>
-                                <Dropdown.Item as="div">
-                                    <CopyLinkDropdownItem text={id} />
-                                </Dropdown.Item>
-                            </Dropdown.Content>
-                        </Dropdown.Menu>
-                    </Dropdown>
+        <Card.Header>
+            <Dropdown style={{ width: '100%' }}>
+                <Card.Header.Title>
+                    <CardHeader comment={comment} />
+                </Card.Header.Title>
+                <Card.Header.Icon>
+                    <Dropdown.Trigger>
+                        <Icon>
+                            <FaAngleDown />
+                        </Icon>
+                    </Dropdown.Trigger>
+                </Card.Header.Icon>
+                <Dropdown.Menu>
+                    <Dropdown.Content>
+                        <Dropdown.Item as="div">
+                            <CopyLinkDropdownItem text={id} />
+                        </Dropdown.Item>
+                    </Dropdown.Content>
+                </Dropdown.Menu>
+            </Dropdown>
+        </Card.Header>
 
-            </Card.Header>
-                
-            <Card.Content>
-                <Content>
-                    {children}
-                </Content>
-            </Card.Content>
-        </Card>
-)
+        <Card.Content>
+            <Content>{children}</Content>
+        </Card.Content>
+    </Card>
+);
 
-export const SingleCommentUI = ({comment, ...props}: any) => (
+export const SingleCommentUI = ({ comment, ...props }: any) => (
     <CommentCard comment={comment} {...props}>
         <p>{comment.text}</p>
     </CommentCard>
-)
+);
 
 export default SingleCommentView;

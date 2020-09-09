@@ -36,7 +36,7 @@ export const Home = () => {
                 </a>
             </div>
             <div style={{ padding: '2em' }}>
-                <Title size={1}>Recent comments</Title>
+                <Title size={1}>Recent Comments</Title>
                 <FirebaseQueryInner>
                     {({ comments }) => (
                         <ul>

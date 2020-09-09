@@ -99,6 +99,8 @@ interface IDocumentBodyState {
     selectedText: string;
     lineRefs: HTMLDivElement[];
     inProgressComment?: UnsubmittedComment;
+    selectedPos: any;
+    // textHover: any;
 }
 
 export interface ICommentGrouping {
@@ -121,12 +123,18 @@ export class DocumentBody extends React.Component<
     IDocumentBodyPropsWithTheme & IDocumentCommentProps,
     IDocumentBodyState
 > {
+    // constructor(props) {
+    //     super(props);
+    //     // this.textHover = React.createRef();
+    // }
+
     public state: IDocumentBodyState = {
         clicksCnt: 0,
         currentlySelected: false,
         selectedLine: -1,
         selectedText: '',
         lineRefs: [],
+        selectedPos: {},
     };
 
     componentDidMount() {
@@ -152,21 +160,33 @@ export class DocumentBody extends React.Component<
         const decoded = this.props.content;
         console.log(`detected language for ${this.props.documentTitle} is ${language}`);
 
+        const selectedPos = this.state.selectedPos;
+
+        const hoverStyle: React.CSSProperties = {
+            position: 'absolute',
+            top: selectedPos.top,
+        };
+
         return (
             <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
                 <Container color="dark" breakpoint="desktop" backgroundColor="dark">
                     <Column.Group>
                         <Column size="three-quarters" backgroundColor="dark">
                             {decoded && (
-                                <SyntaxHighlighter
-                                    language={language}
-                                    style={this.props.theme}
-                                    className="left-align"
-                                    showLineNumbers
-                                    renderer={this.renderSyntaxLines}
-                                >
-                                    {decoded}
-                                </SyntaxHighlighter>
+                                <div style={{ position: 'relative' }}>
+                                    <div id="sel-text-hover" className="hover-modal" style={hoverStyle}>
+                                        <span>why hello there</span>
+                                    </div>
+                                    <SyntaxHighlighter
+                                        language={language}
+                                        style={this.props.theme}
+                                        className="left-align"
+                                        showLineNumbers
+                                        renderer={this.renderSyntaxLines}
+                                    >
+                                        {decoded}
+                                    </SyntaxHighlighter>
+                                </div>
                             )}
                         </Column>
                         <Column size="one-quarter" backgroundColor="light">
@@ -205,15 +225,25 @@ export class DocumentBody extends React.Component<
     // Group comments into Comment Containers based their associated line number
     private groupCommentsByLineNumber = (comments: RoastComment[]) => {
         const lineNumberMap = new Map<number, ICommentGrouping>();
+        const { hash } = window.location; // definitely make the linked comment expando
+        const elementId = hash.replace('#', '');
+        const parts = elementId ? elementId.split('~') : [];
+        const selectedId = parts[parts.length - 1];
+        selectedId && console.log('Looking to force comment ' + selectedId + ' to be open and scrolled to');
 
         let previousLineNum = -10;
         comments.map((comment: RoastComment) => {
             const lineNumber = comment.lineNumber || 0;
             const line = lineNumberMap.get(lineNumber) || {
                 comments: [],
-                startMinized: lineNumber - previousLineNum > 5,
+                startMinized: lineNumber - previousLineNum < 8,
                 inProgress: false,
             };
+
+            if (lineNumber === +selectedId || comment._id === selectedId) {
+                line.startMinized = false;
+            }
+
             line.comments.push(comment);
             lineNumberMap.set(lineNumber, line);
             previousLineNum = lineNumber;
@@ -241,16 +271,17 @@ export class DocumentBody extends React.Component<
             lineNumberMap.set(inProgressComment.lineNumber, line);
         }
 
-        const { hash } = window.location; // definitely make the linked comment expando
-        const elementId = hash.replace('#', '');
-        if (elementId) {
-            const parts = elementId.split('-');
-            const expandedLine = parts[parts.length - 1];
-            const commentContainer = lineNumberMap.get(+expandedLine);
-            if (commentContainer) {
-                commentContainer.startMinized = false;
-            }
-        }
+        // const { hash } = window.location; // definitely make the linked comment expando
+        // const elementId = hash.replace('#', '');
+        // // console.log('')
+        // if (elementId) {
+        //     const parts = elementId.split('-');
+        //     const expandedLine = parts[parts.length - 1];
+        //     const commentContainer = lineNumberMap.get(+expandedLine);
+        //     if (commentContainer) {
+        //         commentContainer.startMinized = false;
+        //     }
+        // }
 
         // todo 1
         // if there is a comment on the same line,
@@ -331,7 +362,9 @@ export class DocumentBody extends React.Component<
         const lineNumber = (event.target as HTMLDivElement).dataset.index;
 
         // tslint:disable-next-line:no-console
-        console.log(lineNumber);
+        console.log('initial linenumber:' + lineNumber);
+
+        // console.log('mouseup x,y: '+event.pa+','+pageY)
 
         // debounce(() => {
         //   if (this.doucleckicked) {
@@ -388,6 +421,17 @@ export class DocumentBody extends React.Component<
             //     "doc-body"
             //   ) as Node);
 
+            //                 <div id="sel-text-hover" className="hover-modal">
+
+            const initialElement = sel.getRangeAt(0).startContainer.parentElement;
+
+            const selectedPos = initialElement ? initialElement.getBoundingClientRect() : {};
+
+            // todo find x, y
+            // setTimeout(() => {
+            //                     this.textHover.current
+            // })
+
             const index = this.findFirstLineNumber(sel);
 
             // preCaretRange.selectNodeContents(range.startContainer);
@@ -408,7 +452,7 @@ export class DocumentBody extends React.Component<
             }
 
             // const comments = this.props.comments.concat(new RoastComment(index, text));
-            this.setState({ currentlySelected: true, selectedText: text });
+            this.setState({ currentlySelected: true, selectedText: text, selectedPos });
             // this.setState({ comments });
         }
 
