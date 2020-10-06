@@ -4,6 +4,7 @@ import { IDocumentCommentProps } from './Document';
 import DocumentCommentsView, { UnsubmittedComment } from './DocumentCommentsView';
 import SubmitComment from '../SubmitCommentForm';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
+import { AddCommentBtnGroup } from './AddCommentBtnGroup';
 import { firebaseUserToRoastUserName } from '../FirebaseChat/LoggedInStatus';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { Column, Container, Section, Button } from 'rbx';
@@ -100,6 +101,7 @@ interface IDocumentBodyState {
     lineRefs: HTMLDivElement[];
     inProgressComment?: UnsubmittedComment;
     selectedPos: any;
+    // syntaxRef: React.Ref<HTMLDivElement>;
     // textHover: any;
 }
 
@@ -123,10 +125,13 @@ export class DocumentBody extends React.Component<
     IDocumentBodyPropsWithTheme & IDocumentCommentProps,
     IDocumentBodyState
 > {
-    // constructor(props) {
-    //     super(props);
-    //     // this.textHover = React.createRef();
-    // }
+    private syntaxRef: React.RefObject<HTMLDivElement>;
+    constructor(props: IDocumentBodyPropsWithTheme & IDocumentCommentProps) {
+        super(props);
+        this.syntaxRef = React.createRef();
+    }
+
+
 
     public state: IDocumentBodyState = {
         clicksCnt: 0,
@@ -135,6 +140,7 @@ export class DocumentBody extends React.Component<
         selectedText: '',
         lineRefs: [],
         selectedPos: {},
+        // syntaxRef: React.createRef()
     };
 
     componentDidMount() {
@@ -161,10 +167,17 @@ export class DocumentBody extends React.Component<
         console.log(`detected language for ${this.props.documentTitle} is ${language}`);
 
         const selectedPos = this.state.selectedPos;
+        // const selectedPosY = selectedPos.top + window.scrollY;
+        const syntaxY = this.syntaxRef?.current?.getBoundingClientRect() || {top: 0};
+
+
 
         const hoverStyle: React.CSSProperties = {
             position: 'absolute',
-            top: selectedPos.top,
+            top: selectedPos.top - syntaxY.top + 20,
+            left: selectedPos.left,
+            display: this.state.currentlySelected ? 'block' : 'none',
+            // width: '60%',
         };
 
         return (
@@ -173,9 +186,25 @@ export class DocumentBody extends React.Component<
                     <Column.Group>
                         <Column size="three-quarters" backgroundColor="dark">
                             {decoded && (
-                                <div style={{ position: 'relative' }}>
+                                <div style={{ position: 'relative' }}                                        
+                                ref={this.syntaxRef}
+                                >
                                     <div id="sel-text-hover" className="hover-modal" style={hoverStyle}>
-                                        <span>why hello there</span>
+                                        {/* <span>{`selected text (line ${this.state.selectedLine}): ${this.state.selectedText}`}</span> 
+                                        <br />
+                                        <span style={{fontSize: '8pt'}}>{'selectedPos:'+JSON.stringify(selectedPos, null, 4)}</span>
+                                        <br />
+                                        <span style={{fontSize: '8pt'}}>{'syntaxRef:'+JSON.stringify(syntaxY, null, 4)}</span>
+                                        <br />
+                                        <span>{`selected position top: ${selectedPos.top}`}</span>
+                                        <br />
+                                        <span>{`scroll: ${window.scrollY}`}</span>
+                                        <br />
+                                        <span>{`selected pos + syntax top: ${selectedPos.top + syntaxY.top}`}</span> */}
+                                        <AddCommentBtnGroup
+                                            handleCommentAdd={this.handleCommentAdd}
+                                            handleShare={this.handleSocialMediaShare}
+                                        />
                                     </div>
                                     <SyntaxHighlighter
                                         language={language}
@@ -383,17 +412,29 @@ export class DocumentBody extends React.Component<
         this.checkTextSelected();
     };
 
-    private handleCommentAdd = (lineNumber: number) => {
-        const selectedText = this.state.currentlySelected ? this.state.selectedText : '';
-        this.setState({
-            inProgressComment: {
-                lineRef: this.state.lineRefs[lineNumber],
-                lineNumber,
-                selectedText,
-                author: this.props.user,
-            },
-        });
+    private handleCommentAdd = (lineNumber?: number) => {
+        
+        lineNumber = lineNumber ?? this.state.selectedLine;
+
+        if(lineNumber !== undefined) {
+
+            const selectedText = this.state.currentlySelected ? this.state.selectedText : '';
+            this.setState({
+                inProgressComment: {
+                    lineRef: this.state.lineRefs[lineNumber],
+                    lineNumber,
+                    selectedText,
+                    author: this.props.user,
+                },
+            });
+        }
+
+        
     };
+
+    private handleSocialMediaShare = () => {
+        console.log('share on social media');
+    }
 
     private checkTextSelected = () => {
         let text = '';
