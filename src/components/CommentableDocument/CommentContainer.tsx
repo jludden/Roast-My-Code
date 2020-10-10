@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment, { User } from '../CommentableCodePage/types/findRepositoryByTitle';
-import SingleCommentView from '../SingleCommentView';
+import SingleCommentView from './SingleCommentView';
 import 'rbx/index.css';
 import { Container, Card, Button, Content, Heading, Message, Icon, Delete, Textarea } from 'rbx';
 import { FaAngleDown, FaAngleUp, FaCommentAlt, FaReply } from 'react-icons/fa';
@@ -16,7 +16,7 @@ import {    Link,
 
 export interface ICommentContainerProps {
     comments: RoastComment[]; // comments belonging to this line number
-    lineRef: HTMLDivElement; // div of the (top) line of code associated with these comments
+    lineRef: React.RefObject<HTMLElement>; // div of the (top) line of code associated with these comments
     onEditComment: (details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
     onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
     onCancelComment: () => void;
@@ -33,7 +33,7 @@ interface ICommentContainerState {
 }
 
 // get the top offset of the associated line of code
-function computeTopOffset(ref: HTMLDivElement): string {
+function computeTopOffset(ref: HTMLElement | null): string {
     if (!ref) return '0px';
     return `${ref.offsetTop}px`;
 }
@@ -60,7 +60,7 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
     static getDerivedStateFromProps(nextProps: ICommentContainerProps, prevState: ICommentContainerState) {
         const styles: React.CSSProperties = {
             position: 'absolute',
-            top: computeTopOffset(nextProps.lineRef),
+            top: computeTopOffset(nextProps.lineRef?.current),
         };
         return {
             ...prevState,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment, { User } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { ICommentGrouping } from './DocumentBody';
@@ -26,7 +26,7 @@ import CommentContainer from './CommentContainer';
 
 export interface CommentsViewProps {
     lineNumberMap: Map<number | undefined, ICommentGrouping>;
-    lineRefs: HTMLDivElement[];
+    lineRefs: React.RefObject<HTMLElement>[];
     inProgressComment?: UnsubmittedComment;
     onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<boolean>;
     onSubmitComment: (comment: RoastComment) => Promise<boolean>;
@@ -42,7 +42,7 @@ export interface CommentsViewProps {
 }
 
 export interface UnsubmittedComment {
-    lineRef: HTMLDivElement;
+    lineRef: React.RefObject<HTMLElement>;
     lineNumber: number;
     selectedText: string;
     author: User;
@@ -56,7 +56,16 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
     //   line.push(comment);
     //   lineNumberMap.set(comment.data.lineNumber, line);
     // });
-    const [writeCommentError, setWriteCommentError] = useState();
+    const [writeCommentError, setWriteCommentError] = useState<string|undefined>();
+
+    // TODO RECONSIDER NOSHIP react forgive me but i need to force a re-render to see if the refs are updated
+    useEffect(() => {
+        setTimeout(() => {
+            setWriteCommentError("ty")
+           setWriteCommentError(undefined)
+        })
+    }, [])
+
 
     // const onSubmit = useAddComment({
     //     repoId: props.repoId,

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../App.css';
 import { db } from '../services/firebase';
 import { FirebaseQueryInner } from '../components/FirebaseChat/SigninModal';
-import { SingleCommentUI } from '../components/SingleCommentView';
+import { SingleCommentUI } from '../components/CommentableDocument/SingleCommentView';
 import { CardHeader } from '../components/CommentableDocument/CommentContainer';
 import { Hero, Title, Container, Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
 
@@ -18,7 +18,7 @@ export const Home = () => {
     };
 
     return (
-        <div>
+        <div className="feat-comments">
             {/* <Hero primary="danger">
                 <Hero.Body>
                     <Container>
@@ -53,6 +53,12 @@ export const Home = () => {
     );
 };
 
+const constrainedFlexStyle = {
+    flexGrow: '0',
+    flexShrink: '0',
+    flexBasis: 'auto',
+}
+
 const flexStyle = {
     flexGrow: '1',
     flexShrink: '1',
@@ -64,8 +70,8 @@ export const RecentCommentCard = ({ comment }) => {
         <Card>
             <Card.Content>
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <CardHeader comment={comment} styles={flexStyle} />
-                    <div style={{ ...flexStyle, paddingLeft: '5px' }}>{comment.text}</div>
+                    <CardHeader comment={comment} styles={constrainedFlexStyle} />
+                    <div style={{ ...flexStyle, paddingLeft: '10px' }}>{comment.text}</div>
                     <RepositoryLink details={comment.queryVariables} />
                 </div>
             </Card.Content>
@@ -75,7 +81,7 @@ export const RecentCommentCard = ({ comment }) => {
 
 export const RepositoryLink = ({ details }) => {
     const linkStyle = {
-        ...flexStyle,
+        ...constrainedFlexStyle,
         paddingLeft: '5px',
         fontSize: '0.75rem',
     };

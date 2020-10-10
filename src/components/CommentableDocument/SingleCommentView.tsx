@@ -1,12 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { SubmitCommentResponse } from './CommentableCodePage/CommentableCode';
-import RoastComment from './CommentableCodePage/types/findRepositoryByTitle';
+import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
+import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 
 import 'rbx/index.css';
-import { CardHeader } from './CommentableDocument/CommentContainer';
+import { CardHeader } from './CommentContainer';
 import { Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
 import { FaAngleDown, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench } from 'react-icons/fa';
-import { DropdownMenu } from './RepoContents';
+import { DropdownMenu } from '../RepoContents';
 
 export interface IRoastCommentProps {
     comment: RoastComment;
@@ -134,7 +134,7 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
 };
 
 export const CopyLinkDropdownItem = ({ text: id }: { text: string }) => {
-    const [copySuccess, setCopySuccess] = useState('');
+    const [copySuccess, setCopySuccess] = useState('Copy URL');
     const windowLocation = window.location.href.replace(window.location.hash, '');
 
     const textRef = useRef<HTMLTextAreaElement>(null);
@@ -150,10 +150,10 @@ export const CopyLinkDropdownItem = ({ text: id }: { text: string }) => {
 
     return (
         <div style={{ padding: '10px' }}>
-            <label htmlFor="comment-url-text">Permalink</label>
-            <textarea id="comment-url-text" ref={textRef} value={`${windowLocation}#${id}`} readOnly />
-            <Button onClick={copyToClipboard}>Copy</Button>
-            {copySuccess}
+            {/* <label htmlFor="comment-url-text">Permalink</label> */}
+            <textarea id="comment-url-text" ref={textRef} value={`${windowLocation}#${id}`} readOnly 
+            style={{height: '15px'}}/>
+            <Button color="primary" onClick={copyToClipboard}>{copySuccess}</Button>            
         </div>
     );
 };

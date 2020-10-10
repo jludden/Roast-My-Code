@@ -185,7 +185,7 @@ export const DropdownMenu = ({ branch }: { branch: string }) => {
             <Dropdown.Trigger>
                 <Button>
                     <span>{branch}</span>
-                    <FaAngleDown />
+                    <FaAngleDown style={{paddingLeft: '5px'}} />
                 </Button>
             </Dropdown.Trigger>
             <Dropdown.Menu>

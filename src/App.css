@@ -192,10 +192,33 @@ a.card-footer-item {
 }
 
 @media screen and (max-width: 768px) {
+  .small-sc-only{
+    display: flex;
+  }
+  .large-sc-only {
+    display: none;
+  }
   .comment-container {
     margin-left: 2rem;
   }
+  .feat-comments {  
+    margin: 2px;
+  }
 }
+
+@media screen and (min-width: 768px) {
+  .small-sc-only{
+    display: none;
+  }
+  .large-sc-only {
+    display: flex;
+  }
+.feat-comments
+{
+  margin: 20px
+}
+}
+
 
 .comment-container:hover .button-group-end {
   visibility: visible;
@@ -233,3 +256,5 @@ a.card-footer-item {
   border-style: solid;
   background-color: antiquewhite;  
 }
+
+

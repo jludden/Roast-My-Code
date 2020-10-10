@@ -2,7 +2,6 @@ import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import { IDocumentCommentProps } from './Document';
 import DocumentCommentsView, { UnsubmittedComment } from './DocumentCommentsView';
-import SubmitComment from '../SubmitCommentForm';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import { AddCommentBtnGroup } from './AddCommentBtnGroup';
 import { firebaseUserToRoastUserName } from '../FirebaseChat/LoggedInStatus';
@@ -98,11 +97,9 @@ interface IDocumentBodyState {
     currentlySelected: boolean;
     selectedLine: number;
     selectedText: string;
-    lineRefs: HTMLDivElement[];
+    lineRefs: React.RefObject<HTMLElement>[];
     inProgressComment?: UnsubmittedComment;
     selectedPos: any;
-    // syntaxRef: React.Ref<HTMLDivElement>;
-    // textHover: any;
 }
 
 export interface ICommentGrouping {
@@ -111,46 +108,44 @@ export interface ICommentGrouping {
     inProgress: boolean;
 }
 
-// const DocumentBodyContainer = (props: IDocumentBodyPropsWithTheme & IDocumentCommentProps) => {
-//     return (
-//         <>
-//             <DocumentBody {...props} />
-//         </>
-//     );
-// };
-
-// export default DocumentBodyContainer;
 
 export class DocumentBody extends React.Component<
     IDocumentBodyPropsWithTheme & IDocumentCommentProps,
     IDocumentBodyState
 > {
     private syntaxRef: React.RefObject<HTMLDivElement>;
+
     constructor(props: IDocumentBodyPropsWithTheme & IDocumentCommentProps) {
         super(props);
         this.syntaxRef = React.createRef();
+
+        
+        const num = props.content.split(/\r\n|\r|\n/).length;
+        const arr = [React.createRef<HTMLElement>()]; // line 0 unused
+        for (let i = 0; i < num; i++)
+        {
+            arr.push(React.createRef<HTMLElement>())
+        }
+        this.state = {
+            clicksCnt: 0,
+            currentlySelected: false,
+            selectedLine: -1,
+            selectedText: '',
+            lineRefs: arr,
+            selectedPos: {},
+        }    
     }
-
-
-
-    public state: IDocumentBodyState = {
-        clicksCnt: 0,
-        currentlySelected: false,
-        selectedLine: -1,
-        selectedText: '',
-        lineRefs: [],
-        selectedPos: {},
-        // syntaxRef: React.createRef()
-    };
 
     componentDidMount() {
         const { hash } = window.location;
         const id = hash.replace('#', '');
-        setTimeout(() => {
-            const element = document.getElementById(id);
-            console.log('scrolling to: ' + id + '\n element ' + (element ? 'found' : 'not found'));
-            if (element) element.scrollIntoView();
-        });
+        if(id){
+            setTimeout(() => {
+                const element = document.getElementById(id);
+                console.log('scrolling to: ' + id + '\n element ' + (element ? 'found' : 'not found'));
+                if (element) element.scrollIntoView();
+            });
+        }
     }
 
     public render() {
@@ -166,7 +161,10 @@ export class DocumentBody extends React.Component<
         const decoded = this.props.content;
         console.log(`detected language for ${this.props.documentTitle} is ${language}`);
 
-        const selectedPos = this.state.selectedPos;
+        let selectedPos = {top: 0, left: 0};
+        if (this.state.selectedPos?.top){
+            selectedPos = this.state.selectedPos;
+        }
         // const selectedPosY = selectedPos.top + window.scrollY;
         const syntaxY = this.syntaxRef?.current?.getBoundingClientRect() || {top: 0};
 
@@ -210,8 +208,11 @@ export class DocumentBody extends React.Component<
                                         language={language}
                                         style={this.props.theme}
                                         className="left-align"
-                                        showLineNumbers
-                                        renderer={this.renderSyntaxLines}
+                                        showLineNumbers={true}
+                                        wrapLines={true}
+                                        lineProps={(lineNumber) => {
+                                            return { ref: this.state.lineRefs[lineNumber] };
+                                        }}
                                     >
                                         {decoded}
                                     </SyntaxHighlighter>
@@ -322,57 +323,6 @@ export class DocumentBody extends React.Component<
         // minimize nearby comments
 
         return lineNumberMap;
-    };
-
-    // track the refs for each line in the document
-    // these can then be used to find the exact positioning of each line
-    // private lineRefs: HTMLDivElement[] = []; // todo to be state or not?
-    private setLineRef = (el: HTMLDivElement) => {
-        if (!el || !el.dataset) return;
-        const lineNumber = parseInt(el.dataset.index || '');
-        const { lineRefs } = this.state;
-        lineRefs[lineNumber] = el;
-        this.setState({ lineRefs });
-    };
-
-    // render the rows of Syntax Highlighted elements
-    private renderSyntaxLines = ({
-        rows,
-        stylesheet,
-        useInlineStyles,
-    }: {
-        rows?: any;
-        stylesheet?: any;
-        useInlineStyles?: any;
-    }): JSX.Element => {
-        // const createElement = require('react-syntax-highlighter/dist/create-element').default; // todo add to node_modules\@types\react-syntax-highlighter\index.d.t
-
-        // using the index as a key should be okay in this case, we are never insertering or deleting elements
-        return rows.map((node: any, i: number) => (
-            <div key={i} data-index={i} onClick={this.handleLineClicked} ref={this.setLineRef}>
-                {/* todo!!! don't know about passing this state down here... is it causing a re-render for every line? */}
-                {/* <SubmitComment
-          comment={this.props.comments[this.props.comments.length-1]}
-          isCurrentlySelected={this.state.selectedLine === i}
-          onSubmitComment={this.props.onSubmitComment}
-          selectedText={this.state.selectedText}
-        />
-        {createElement({
-          key: `code-segement${i}`,
-          node,
-          stylesheet,
-          useInlineStyles
-        })} */}
-                <SyntaxLine lineNumber={i} handleCommentAdd={this.handleCommentAdd}>
-                    {createElement({
-                        key: `code-segement${i}`,
-                        node,
-                        stylesheet,
-                        useInlineStyles,
-                    })}
-                </SyntaxLine>
-            </div>
-        ));
     };
 
     private handleLineClicked = (event: React.SyntheticEvent<EventTarget>) => {
@@ -510,21 +460,6 @@ export class DocumentBody extends React.Component<
         return true;
     };
 
-    private getComments(): string {
-        const text = '';
-        const count = 0;
-        // for (const comment of this.props.comments) {
-        //     text = text.concat(`\n [${count}] line ${comment.data.lineNumber}: ${comment.data.selectedText}`);
-        //     count++;
-        // }
-
-        return text;
-    }
-
-    private handleButtonPress = () => {
-        this.setState({ clicksCnt: this.state.clicksCnt + 1 });
-    };
-
     // unfortunately, although event.currentTarget should return the <div> with attached onclick, we can't rely on that
     // to get us the start position of a selection if multiple lines of text are selected
     // find the closest parent element of the current element satisfying the function
@@ -540,12 +475,23 @@ export class DocumentBody extends React.Component<
         const initialElement = sel.getRangeAt(0).startContainer.parentElement;
 
         // todo can just use e.target.closest('.whatever-line-number-class')?
-        const myDiv = this.closestElement(initialElement, (el: HTMLElement) => {
+        const myDivOOO = this.closestElement(initialElement, (el: HTMLElement) => {
             return el.dataset.index != null;
         });
 
+        if(initialElement === null) return -1;
+
+
+        const childDiv = initialElement.querySelector('.linenumber')
+
+        const test2 = initialElement.closest('.linenumber')
+
+        const test3 = initialElement?.parentElement?.querySelector('.linenumber')
+
+        const myDiv = childDiv || test2 || test3
+
         if (myDiv) {
-            const lineNumber = (myDiv as HTMLDivElement).dataset.index;
+            const lineNumber = myDiv.textContent;
             return lineNumber ? +lineNumber : -1;
         }
         return -1;
