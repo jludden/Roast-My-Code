@@ -108,7 +108,6 @@ export interface ICommentGrouping {
     inProgress: boolean;
 }
 
-
 export class DocumentBody extends React.Component<
     IDocumentBodyPropsWithTheme & IDocumentCommentProps,
     IDocumentBodyState
@@ -119,12 +118,10 @@ export class DocumentBody extends React.Component<
         super(props);
         this.syntaxRef = React.createRef();
 
-        
         const num = props.content.split(/\r\n|\r|\n/).length;
         const arr = [React.createRef<HTMLElement>()]; // line 0 unused
-        for (let i = 0; i < num; i++)
-        {
-            arr.push(React.createRef<HTMLElement>())
+        for (let i = 0; i < num; i++) {
+            arr.push(React.createRef<HTMLElement>());
         }
         this.state = {
             clicksCnt: 0,
@@ -133,13 +130,13 @@ export class DocumentBody extends React.Component<
             selectedText: '',
             lineRefs: arr,
             selectedPos: {},
-        }    
+        };
     }
 
     componentDidMount() {
         const { hash } = window.location;
         const id = hash.replace('#', '');
-        if(id){
+        if (id) {
             setTimeout(() => {
                 const element = document.getElementById(id);
                 console.log('scrolling to: ' + id + '\n element ' + (element ? 'found' : 'not found'));
@@ -161,14 +158,12 @@ export class DocumentBody extends React.Component<
         const decoded = this.props.content;
         console.log(`detected language for ${this.props.documentTitle} is ${language}`);
 
-        let selectedPos = {top: 0, left: 0};
-        if (this.state.selectedPos?.top){
+        let selectedPos = { top: 0, left: 0 };
+        if (this.state.selectedPos?.top) {
             selectedPos = this.state.selectedPos;
         }
         // const selectedPosY = selectedPos.top + window.scrollY;
-        const syntaxY = this.syntaxRef?.current?.getBoundingClientRect() || {top: 0};
-
-
+        const syntaxY = this.syntaxRef?.current?.getBoundingClientRect() || { top: 0 };
 
         const hoverStyle: React.CSSProperties = {
             position: 'absolute',
@@ -178,15 +173,15 @@ export class DocumentBody extends React.Component<
             // width: '60%',
         };
 
+        const lineNumberMap = this.groupCommentsByLineNumber(this.props.comments);
+
         return (
             <div onMouseUp={this.onMouseUp} onDoubleClick={this.onDoubleClick}>
                 <Container color="dark" breakpoint="desktop" backgroundColor="dark">
                     <Column.Group>
                         <Column size="three-quarters" backgroundColor="dark">
                             {decoded && (
-                                <div style={{ position: 'relative' }}                                        
-                                ref={this.syntaxRef}
-                                >
+                                <div style={{ position: 'relative' }} ref={this.syntaxRef}>
                                     <div id="sel-text-hover" className="hover-modal" style={hoverStyle}>
                                         {/* <span>{`selected text (line ${this.state.selectedLine}): ${this.state.selectedText}`}</span> 
                                         <br />
@@ -211,7 +206,10 @@ export class DocumentBody extends React.Component<
                                         showLineNumbers={true}
                                         wrapLines={true}
                                         lineProps={(lineNumber) => {
-                                            return { ref: this.state.lineRefs[lineNumber] };
+                                            return {
+                                                style: this.createLineStyle(lineNumberMap, lineNumber),
+                                                ref: this.state.lineRefs[lineNumber],
+                                            };
                                         }}
                                     >
                                         {decoded}
@@ -222,7 +220,7 @@ export class DocumentBody extends React.Component<
                         <Column size="one-quarter" backgroundColor="light">
                             <DocumentCommentsView
                                 authenticated={this.props.authenticated}
-                                lineNumberMap={this.groupCommentsByLineNumber(this.props.comments)}
+                                lineNumberMap={lineNumberMap}
                                 lineRefs={this.state.lineRefs}
                                 inProgressComment={this.state.inProgressComment}
                                 repoId={this.props.repoId}
@@ -242,6 +240,25 @@ export class DocumentBody extends React.Component<
             </div>
         );
     }
+
+    private createLineStyle = (
+        lineNumberMap: Map<number, ICommentGrouping>,
+        lineNumber: number,
+    ): React.CSSProperties => {
+        const theme = this.props.theme;
+
+        if (lineNumberMap.has(lineNumber)) {
+            const deletedColor = theme.deleted.color;
+            const insertedColor = theme.inserted.color;
+
+            return {
+                backgroundColor: insertedColor || deletedColor,
+                // Highlight the line of code with color known to work with this theme
+            };
+        }
+
+        return {};
+    };
 
     // get rid of the in-progress comment when the submission goes through or is cancelled
     private onSubmitCommentFinish = () => {
@@ -363,11 +380,9 @@ export class DocumentBody extends React.Component<
     };
 
     private handleCommentAdd = (lineNumber?: number) => {
-        
         lineNumber = lineNumber ?? this.state.selectedLine;
 
-        if(lineNumber !== undefined) {
-
+        if (lineNumber !== undefined) {
             const selectedText = this.state.currentlySelected ? this.state.selectedText : '';
             this.setState({
                 inProgressComment: {
@@ -378,13 +393,11 @@ export class DocumentBody extends React.Component<
                 },
             });
         }
-
-        
     };
 
     private handleSocialMediaShare = () => {
         console.log('share on social media');
-    }
+    };
 
     private checkTextSelected = () => {
         let text = '';
@@ -479,16 +492,15 @@ export class DocumentBody extends React.Component<
             return el.dataset.index != null;
         });
 
-        if(initialElement === null) return -1;
+        if (initialElement === null) return -1;
 
+        const childDiv = initialElement.querySelector('.linenumber');
 
-        const childDiv = initialElement.querySelector('.linenumber')
+        const test2 = initialElement.closest('.linenumber');
 
-        const test2 = initialElement.closest('.linenumber')
+        const test3 = initialElement?.parentElement?.querySelector('.linenumber');
 
-        const test3 = initialElement?.parentElement?.querySelector('.linenumber')
-
-        const myDiv = childDiv || test2 || test3
+        const myDiv = childDiv || test2 || test3;
 
         if (myDiv) {
             const lineNumber = myDiv.textContent;

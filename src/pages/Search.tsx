@@ -72,7 +72,7 @@ export const Search = (props: IHomeProps) => {
         <>
             {shouldRedirect.length > 0 && <Redirect to={`/repo${shouldRedirect}`} push />}
 
-            <a href="http://localhost:8080/repo/jludden/Roast-My-Code?path=master%3Asrc%2F">This website's code!</a>
+            <a href="/repo/jludden/Roast-My-Code?path=master%3Asrc%2F">This website's code!</a>
 
             <RepoSearchContainer
                 loadRepoHandler={(repo: Repository) => setShouldRedirect(repo.resourcePath)}

@@ -196,7 +196,7 @@ export const FirebaseQueryInner = ({children}) => {
         try {
             dbRef
                 .orderByChild('timestamp')
-                .limitToFirst(10)
+                .limitToLast(20)
                 .on('child_added', function (snap) {
                     const snapval = snap.val();
                     console.log(
@@ -204,13 +204,13 @@ export const FirebaseQueryInner = ({children}) => {
                     );
 
                     setComments((c) => [
-                        ...c,
                         {
                             ...snapval,
                             _id: snap.key,
                             updatedAt: new Date(snapval.timestamp),
                             decodedFilePath: atob(snapval.filePath),
                         },
+                        ...c,
                     ]);
                 });
         } catch (error) {
