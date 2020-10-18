@@ -191,6 +191,7 @@ a.card-footer-item {
   overflow: hidden;
 }
 
+/* xs screen */
 @media screen and (max-width: 768px) {
   .small-sc-only{
     display: flex;
@@ -201,22 +202,74 @@ a.card-footer-item {
   .comment-container {
     margin-left: 2rem;
   }
-  .feat-comments {  
+  .home-container {  
     margin: 2px;
   }
+  .home-content
+{
+  padding:2em;
+}
+.recent-card-text-container
+{
+  padding-left: 1rem;
+}
 }
 
+/* smallscreen and up */
 @media screen and (min-width: 768px) {
+
+.home-content
+{
+  padding: 2em 4em 2em 4em;
+}
+.recent-card-text-container
+{
+  padding-left: 4rem;
+}
+}
+
+/* large screen and up */
+@media screen and (min-width: 1200px) {
   .small-sc-only{
     display: none;
   }
   .large-sc-only {
     display: flex;
   }
-.feat-comments
+.home-container
 {
-  margin: 20px
+  margin: 20px;
 }
+.home-content
+{
+  padding:4em 16em 4em 16em;
+}
+
+}
+
+/* home-screen recent cards */
+.recent-card-text-container
+{
+  display: flex;
+  align-items: center;
+  font-size: larger;
+}
+.recent-card-repo-name
+{
+  font-size: larger;
+  font-weight: 500;
+}
+.recent-card-repo-item
+{
+  margin-top: 5px;
+}
+.recent-card-repo-path
+{
+
+}
+.recent-card-repo-owner
+{
+
 }
 
 

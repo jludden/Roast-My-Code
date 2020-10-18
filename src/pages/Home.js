@@ -29,13 +29,13 @@ export const Home = () => {
                     </Container>
                 </Hero.Body>
             </Hero> */}
-            <div style={{ padding: '2em' }}>
+            <div className="home-content">
                 <Title size={1}>Welcome to RoastMyCode.com!</Title>
                 <a href="/Search">
                     <Button color="info">Search</Button>
                 </a>
             </div>
-            <div style={{ padding: '2em' }}>
+            <div className="home-content">
                 <Title size={1}>Recent Comments</Title>
                 <FirebaseQueryInner>
                     {({ comments }) => (
@@ -57,7 +57,7 @@ const constrainedFlexStyle = {
     flexGrow: '0',
     flexShrink: '0',
     flexBasis: 'auto',
-}
+};
 
 const flexStyle = {
     flexGrow: '1',
@@ -71,7 +71,11 @@ export const RecentCommentCard = ({ comment }) => {
             <Card.Content>
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                     <CardHeader comment={comment} styles={constrainedFlexStyle} />
-                    <div style={{ ...flexStyle, paddingLeft: '10px' }}>{comment.text}</div>
+                    <div className="recent-card-text-container" style={{ ...flexStyle }}>
+                        <span >
+                            {comment.text}
+                        </span>
+                    </div>
                     <RepositoryLink details={comment.queryVariables} />
                 </div>
             </Card.Content>
@@ -81,17 +85,31 @@ export const RecentCommentCard = ({ comment }) => {
 
 export const RepositoryLink = ({ details }) => {
     const linkStyle = {
-        ...constrainedFlexStyle,
+        // ...constrainedFlexStyle,
         paddingLeft: '5px',
         fontSize: '0.75rem',
     };
     const link = `/repo/${details.owner}/${details.name}?file=${details.path}`;
 
+    const encodedLink = `/repo/${details.owner}/${details.name}?file=${encodeURIComponent(details.path)}`;
+
     return (
-        <a style={linkStyle} href={link}>
-            <span>{`${details.owner}/${details.name}`}</span>
-            <br />
-            <span>{details.path}</span>
-        </a>
+        <div className="recent-card" style={constrainedFlexStyle}>
+            <a className="recent-card-repo-name" href={encodedLink}>
+                <span>{details.name}</span>
+            </a><br />
+
+            <div className="recent-card-repo-item recent-card-repo-path">
+            <label>File: </label>
+            <a  href={encodedLink}>
+                <span>{details.path}</span>
+            </a>
+            </div>
+
+            <div className="recent-card-repo-item recent-card-repo-owner">
+            <label>Owner: </label>
+            <span >{details.owner}</span>
+            </div>
+        </div>
     );
 };
