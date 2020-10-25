@@ -1,6 +1,6 @@
 import * as React from 'react';
 import '../../App.css';
-import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub, FaCommentAlt } from 'react-icons/fa';
+import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub, FaCommentAlt, FaCog } from 'react-icons/fa';
 import { Blob } from '../../generated/graphql';
 import 'rbx/index.css';
 import {
@@ -50,10 +50,12 @@ const DocumentHeader = ({
     documentName,
     commentsCount,
     cycleTheme,
+    changeSetting
 }: {
     documentName: string;
     commentsCount: number;
     cycleTheme: () => void;
+    changeSetting: (key: string, value: boolean) => void;
 }) => {
     const mgRight = {
         marginTop: '5px',
@@ -80,6 +82,14 @@ const DocumentHeader = ({
                             style={mgRight}
                         >
                             <FaCommentAlt />
+                        </Button>
+                        <Button
+                                                    style={mgRight}
+                                                    color="dark"
+
+                            onClick={() => changeSetting('WrapLongLines', true)}
+                        >
+                            <FaCog /> Wrap Long Lines
                         </Button>
                     </Title>
                 </Box>

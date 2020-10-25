@@ -90,6 +90,7 @@ export interface IDocumentBodyPropsWithTheme {
     documentTitle: string;
     commentListId: string;
     theme: any;
+    wrapLongLines: boolean;
 }
 
 interface IDocumentBodyState {
@@ -202,6 +203,7 @@ export class DocumentBody extends React.Component<
                                     <SyntaxHighlighter
                                         language={language}
                                         style={this.props.theme}
+                                        wrapLongLines ={this.props.wrapLongLines}
                                         className="left-align"
                                         showLineNumbers={true}
                                         wrapLines={true}

@@ -60,6 +60,7 @@ interface IGithubDocQueryVariables {
 
 const updateComment = async (comment: RoastComment, commentsId: string, isDelete?: boolean) => {
     const ref = db.ref('file-comments/' + commentsId + '/' + comment._id);
+    // TODO update comment at the user-comments/ and comments/ collections as well
 
     if (isDelete) {
         await ref.remove();
@@ -167,6 +168,7 @@ const DocumentLoader = (props: IDocumentProps & IDocumentCommentProps) => {
 const DocumentView = (props: IDocumentProps & IDocumentCommentProps & { data: any }) => {
     const availableThemes = [tomorrow, ghcolors, darcula];
     const [theme, setTheme] = React.useState(tomorrow);
+    const [wrapLongLines, setWrapLongLines] = React.useState(true);
 
     const cycleTheme = () => {
         const currentIndex = availableThemes.indexOf(theme);
@@ -174,13 +176,17 @@ const DocumentView = (props: IDocumentProps & IDocumentCommentProps & { data: an
         setTheme(availableThemes[newIndex]);
     };
 
+    const changeSetting = (key: string, value: boolean) => {
+        setWrapLongLines(!wrapLongLines);
+    };
+
     return (
         <>
-            {/* <TestLoadDocumentComments owner= */}
             <DocumentHeader
                 documentName={props.documentName}
                 commentsCount={props.comments.length}
                 cycleTheme={cycleTheme}
+                changeSetting={changeSetting}
             />
             <DocumentBody
                 {...props}
@@ -195,6 +201,7 @@ const DocumentView = (props: IDocumentProps & IDocumentCommentProps & { data: an
                 documentTitle={props.queryVariables.path}
                 commentListId={''}
                 theme={theme}
+                wrapLongLines={wrapLongLines}
                 onSubmitComment={props.onSubmitComment}
                 onEditComment={props.onEditComment}
             />
