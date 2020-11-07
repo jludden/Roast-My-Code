@@ -3,6 +3,8 @@ import { SigninModal, FirebaseCommentsProvider, firebaseStore } from './SigninMo
 import { Navbar, Button, Modal, Media, Title, Textarea } from 'rbx';
 import { UserAvatar, UserHeader, AvatarPicker } from '../Avatar';
 import ErrorBoundary from '../Common/ErrorBoundary';
+import { generateUserName } from './helpers/nameGen';
+import { FaRedoAlt } from 'react-icons/fa';
 import '../../App.css';
 
 export const LoggedInStatus = () => {
@@ -116,14 +118,19 @@ export const UserDetailsModal = () => {
                             <>
                                 <span>{`display: ${user.displayName} \n email: ${user.email} \n photoURL: ${user.photoURL} \n uid: ${user.uid}`}</span>
                                 <br />
-                                <label htmlFor="displayname">Display name:</label>
-                                <input
-                                    type="text"
-                                    id="displayname"
-                                    name="displayname"
-                                    value={displayName}
-                                    onChange={(event) => setDisplayName(event.target.value)}
-                                />
+                                <div>
+                                    <label htmlFor="displayname">Display name:</label>
+                                    <input
+                                        type="text"
+                                        id="displayname"
+                                        name="displayname"
+                                        value={displayName}
+                                        onChange={(event) => setDisplayName(event.target.value)}
+                                    />
+                                    <Button onClick={() => setDisplayName(generateUserName())}>
+                                        <FaRedoAlt />
+                                    </Button>
+                                </div>
                             </>
                         )}
                     </span>

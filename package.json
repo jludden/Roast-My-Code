@@ -30,6 +30,7 @@
     "encoding": "^0.1.12",
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.13.0",
+    "faker": "^5.1.0",
     "firebase": "^7.17.1",
     "firebaseui": "^4.6.1",
     "graphql": "^15.0.0",
