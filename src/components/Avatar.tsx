@@ -169,7 +169,7 @@ export const UserHeader = ({ user }: { user?: User }) => {
         <div style={style}>
             <UserAvatar avatar={user.photoURL} />
             <div style={{ fontWeight: 'bold', fontSize: '14px', paddingLeft: '10px' }} title={''+user.uid || ''}>
-                {user.displayName}
+                {user.displayName.substring(0, 10)}
             </div>
         </div>
     );

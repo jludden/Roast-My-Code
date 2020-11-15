@@ -4,7 +4,7 @@ import Login, { Logout, FirebaseLogin } from '../../pages/Login';
 import { db, auth } from '../../services/firebase';
 import { firebaseUserToRoastUserName, firebasePhotoURLToRoastAvatar } from './LoggedInStatus';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
-
+import { generateUserName } from './helpers/nameGen';
 import { Modal, Container, Hero, Title, Section, Button, Footer, Content } from 'rbx';
 
 const initialState = {
@@ -30,23 +30,29 @@ export const FirebaseCommentsProvider = ({ children }) => {
             case 'hideSignIn':
                 return { ...state, showSignIn: false };
 
-            case 'showUserDetails':
+            case 'showUserDetails': //todo consolidate to one modal
                 return { ...state, showUserDetails: true };
 
             case 'hideUserDetails':
                 return { ...state, showUserDetails: false };
 
-            case 'authenticate':
-                const newState = {
-                    ...state,
-                    showSignIn: false,
-                    authenticated: true,
-                    user: auth().currentUser,
-                };
-                return newState;
+            // case 'authenticate':
+            //     const newState = {
+            //         ...state,
+            //         showSignIn: false,
+            //         authenticated: true,
+            //         user: auth().currentUser,
+            //     }; //todo merge to updateUserDetails
+            //     return newState;
 
             case 'updateUserDetails':
-                return { ...state, user: action.payload, showUserDetails: false };
+                return {
+                    ...state,
+                    user: action.payload,
+                    showUserDetails: false,
+                    showSignIn: false,
+                    authenticated: true,
+                };
 
             case 'error':
                 console.log(action.payload);
@@ -109,12 +115,19 @@ export const FirebaseCommentsProvider = ({ children }) => {
         return true;
     };
 
-    const updateUserDetails = async (newUserDetails) => {
-        if (!state.user) {
-            dispatch({ type: 'error', payload: "can't update user details: user is not logged in" });
-            return;
-        }
+    const handleSignup = async (user) => {
+        if (!user.displayName && user.isAnonymous) {
+            // todo set random name and avatar
+            const avatar = 3;
+            const displayName = generateUserName();
 
+            updateUserDetails({ ...user, photoURL: `rbx/${avatar}`, displayName });
+        } else {
+            updateUserDetails(user);
+        }
+    };
+
+    const updateUserDetails = async (newUserDetails) => {      
         try {
             await auth().currentUser.updateProfile({
                 ...newUserDetails,
@@ -134,11 +147,8 @@ export const FirebaseCommentsProvider = ({ children }) => {
 
     useEffect(() => {
         const unsubscribe = auth().onAuthStateChanged((user) => {
-            if (user) {
-                dispatch({ type: 'authenticate' });
-            } else {
-                dispatch({ type: 'signOut' });
-            }
+            if (user) handleSignup(user);
+            else dispatch({ type: 'signOut' });
         });
         return () => unsubscribe();
     }, []);
@@ -187,7 +197,7 @@ export const FirebaseQuery = () => {
     );
 };
 
-export const FirebaseQueryInner = ({children}) => {
+export const FirebaseQueryInner = ({ children }) => {
     const [loadCommentsError, setLoadCommentsError] = useState();
     const [comments, setComments] = useState([]);
 
@@ -221,17 +231,18 @@ export const FirebaseQueryInner = ({children}) => {
 
     if (loadCommentsError) return <div>failed to load comment query for doc</div>;
 
-    return (
-        <div>
-            {children({comments})}
-        </div>
-    )
+    return <div>{children({ comments })}</div>;
 
     return (
         <>
             {comments.map((comment) => (
                 <div key={comment._id}>
-                    {comment.decodedFilePath + `[${comment._id}]` + ' was posted on' + comment.updatedAt + ' and had this text: ' + comment.text}
+                    {comment.decodedFilePath +
+                        `[${comment._id}]` +
+                        ' was posted on' +
+                        comment.updatedAt +
+                        ' and had this text: ' +
+                        comment.text}
                 </div>
             ))}
         </>

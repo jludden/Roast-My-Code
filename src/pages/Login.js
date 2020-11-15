@@ -20,6 +20,8 @@ var uiConfig = {
     callbacks: {
         // Avoid redirects after sign-in.
         signInSuccessWithAuthResult: () => false,
+        // signInFailure: handleSignInFailure
+
     },
     // tosUrl and privacyPolicyUrl accept either url string or a callback
     // function.
@@ -28,7 +30,12 @@ var uiConfig = {
     // // Privacy policy url/callback.
     // privacyPolicyUrl: '/privacy'
     credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
+    // autoUpgradeAnonymousUsers: true,
 };
+
+// const handleSignInFailure = () => {
+
+// }
 
 // export const FirebaseUILogin = () => {
 //     const onClick = () => {

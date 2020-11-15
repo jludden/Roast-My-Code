@@ -71,15 +71,14 @@ export const Search = (props: IHomeProps) => {
     return (
         <>
             {shouldRedirect.length > 0 && <Redirect to={`/repo${shouldRedirect}`} push />}
-
-            <a href="/repo/jludden/Roast-My-Code?path=master%3Asrc%2F">This website's code!</a>
+                       
 
             <RepoSearchContainer
                 loadRepoHandler={(repo: Repository) => setShouldRedirect(repo.resourcePath)}
                 loadRecommendedRepo={() => setShouldRedirect('/jludden/ReefLifeSurvey---Species-Explorer')}
             />
             
-            <div className="grid">
+            {/* <div className="grid">
                 <div>
                     Search Personal Repositories - Login prompt Your starred Repos - Login prompt Hide everything
                     below or translucent below when searching?
@@ -91,7 +90,7 @@ export const Search = (props: IHomeProps) => {
                 <div><RecentlyUpdated /></div>
 
             </div>
-            <h1>Sample `img` of Code + comments w/ roasties</h1>
+            <h1>Sample `img` of Code + comments w/ roasties</h1> */}
 
             {/* <Columns>
                 <Columns.Column>First Column</Columns.Column>

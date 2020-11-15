@@ -50,7 +50,12 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
         <Section>
             <Container>
                 <Panel>
-                    <Panel.Heading><FaGithub/> Github Repositories</Panel.Heading>
+                    <Panel.Heading> 
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span><FaGithub/> Github Repositories</span>
+                                <span > <a href="/repo/jludden/Roast-My-Code?path=master%3Asrc%2F">This website's code</a></span>
+                                </div>
+                    </Panel.Heading>
                     <Panel.Tab.Group>
                         <Panel.Tab active>search all</Panel.Tab>
                         <Panel.Tab onClick={() => props.loadRecommendedRepo()}>recommended</Panel.Tab>

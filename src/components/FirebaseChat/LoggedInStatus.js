@@ -99,6 +99,15 @@ export const UserDetailsModal = () => {
     const [displayName, setDisplayName] = useState(user ? user.displayName : 'Set display name');
     const [avatar, setAvatar] = useState(user ? firebasePhotoURLToRoastAvatar(user) : 1);
 
+    const validateSaveChanges = () => {
+        if (!user) {
+            dispatch({ type: 'error', payload: "can't update user details: user is not logged in" });
+            return;
+        }
+
+        updateUserDetails({ photoURL: `rbx/${avatar}`, displayName });
+    }
+
     return (
         <Modal active={showUserDetails} onClose={() => dispatch({ type: 'hideUserDetails' })} closeOnBlur={true}>
             <Modal.Background />
@@ -141,7 +150,7 @@ export const UserDetailsModal = () => {
                 <Modal.Card.Foot>
                     <Button
                         color="success"
-                        onClick={() => updateUserDetails({ photoURL: `rbx/${avatar}`, displayName })}
+                        onClick={() => validateSaveChanges()}
                     >
                         Save changes
                     </Button>

@@ -63,6 +63,7 @@
     "use-query-params": "^1.1.3"
   },
   "scripts": {
+    "dev": "netlify dev",
     "start": "run-p start:**",
     "start:app": "react-scripts start",
     "start:lambda": "netlify-lambda serve src/roast-lambda",
