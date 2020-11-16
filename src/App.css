@@ -206,13 +206,14 @@ a.card-footer-item {
     margin: 2px;
   }
   .home-content
-{
-  padding:2em;
-}
-.recent-card-text-container
-{
-  padding-left: 1rem;
-}
+  {
+    padding:2em;
+  }
+  .recent-card-text-container
+  {
+    padding-left: 1rem;
+    justify-content: flex-end;
+  }
 }
 
 /* smallscreen and up */
@@ -225,6 +226,7 @@ a.card-footer-item {
 .recent-card-text-container
 {
   padding-left: 4rem;
+  justify-content: space-between;
 }
 }
 
@@ -247,7 +249,17 @@ a.card-footer-item {
 
 }
 
+/* search panel overflow fix */
+.panel-tabs
+{
+  flex-flow: row wrap;
+}
+
 /* home-screen recent cards */
+.recent-card
+{
+  min-width: 300px;
+}
 .recent-card-text-container
 {
   display: flex;

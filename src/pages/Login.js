@@ -53,7 +53,7 @@ var uiConfig = {
 export const FirebaseLogin = () => {
     return <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />;
 };
-
+// todo consider https://github.com/firebase/firebaseui-web-react#using-firebaseauth-with-local-state
 export const Login = () => {
     const [state, setState] = useState({});
 

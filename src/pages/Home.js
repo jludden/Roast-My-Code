@@ -71,7 +71,7 @@ export const RecentCommentCard = ({ comment }) => {
     return (
         <Card>
             <Card.Content>
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', flexFlow: 'row wrap' }}>
                     <CardHeader comment={comment} styles={constrainedFlexStyle} />
                     <div className="recent-card-text-container" style={{ ...flexStyle }}>
                         <span >
@@ -87,16 +87,16 @@ export const RecentCommentCard = ({ comment }) => {
 
 export const RepositoryLink = ({ details }) => {
     const linkStyle = {
-        // ...constrainedFlexStyle,
-        paddingLeft: '5px',
-        fontSize: '0.75rem',
+        ...constrainedFlexStyle,
+        padding: '1rem',
+        // fontSize: '0.75rem',
     };
     const link = `/repo/${details.owner}/${details.name}?file=${details.path}`;
 
     const encodedLink = `/repo/${details.owner}/${details.name}?file=${encodeURIComponent(details.path)}`;
 
     return (
-        <div className="recent-card" style={constrainedFlexStyle}>
+        <div className="recent-card" style={linkStyle}>
             <a className="recent-card-repo-name" href={encodedLink}>
                 <span>{details.name}</span>
             </a><br />
