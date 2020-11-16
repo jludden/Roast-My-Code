@@ -81,8 +81,8 @@ export const App = () => {
                                         <Route path="/about/" component={About} />
                                         <Route path="/repo/" component={CommentableCodePage} />
                                         <Route path="/chat/" component={FirebaseChat} />
-                                        <Route path="/signup/" component={Signup} />
-                                        <Route path="/login/" component={Login} />
+                                        {/* <Route path="/signup/" component={Signup} />
+                                        <Route path="/login/" component={Login} /> */}
                                         {/* //  TODO only render signup, login if authenticated not true!
                                             // render={(props) => authenticated === false
                                             //     ? <Component {...props} />

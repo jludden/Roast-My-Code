@@ -19,6 +19,7 @@ export const firebaseStore = createContext({
     state: initialState,
     dispatch: (action) => {},
     submitComment: async (comment, filePath, queryVariables) => false,
+    signOut: async () => {},
 });
 
 export const FirebaseCommentsProvider = ({ children }) => {
@@ -115,6 +116,11 @@ export const FirebaseCommentsProvider = ({ children }) => {
         return true;
     };
 
+    const signOut = async () => {
+        await auth().signOut();
+        dispatch({ type: 'signOut' });
+    }
+
     const handleSignup = async (user) => {
         if (!user.displayName && user.isAnonymous) {
             // todo set random name and avatar
@@ -147,14 +153,13 @@ export const FirebaseCommentsProvider = ({ children }) => {
 
     useEffect(() => {
         const unsubscribe = auth().onAuthStateChanged((user) => {
-            if (user) handleSignup(user);
-            else dispatch({ type: 'signOut' });
+            user ? handleSignup(user) : signOut();
         });
         return () => unsubscribe();
     }, []);
 
     return (
-        <firebaseStore.Provider value={{ state, submitComment, updateUserDetails, dispatch }}>
+        <firebaseStore.Provider value={{ state, submitComment, signOut, updateUserDetails, dispatch }}>
             {children}
         </firebaseStore.Provider>
     );

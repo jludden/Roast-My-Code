@@ -11,6 +11,7 @@ export const LoggedInStatus = () => {
     const {
         dispatch,
         state: { user },
+        signOut,
     } = useContext(firebaseStore);
 
     if (user)
@@ -21,7 +22,7 @@ export const LoggedInStatus = () => {
                         <ChangeDisplayName onClickHandler={() => dispatch({ type: 'showUserDetails' })} />
                         <LoggedInUserDetails user={user} />
                     </div>
-                    <Button color="light" onClick={() => dispatch({ type: 'signOut' })}>
+                    <Button color="light" onClick={() => signOut()}>
                         Sign out
                     </Button>
                 </div>
