@@ -66,7 +66,7 @@ const CCNavbar = () => {
                                 Log in
                             </Navbar.Item>
                             <Navbar.Divider />
-                            <Navbar.Item>Report an issue</Navbar.Item>
+                            <Navbar.Item as={AdapterLink} to="/inquiry">Report an issue</Navbar.Item>
                         </Navbar.Dropdown>
                     </Navbar.Item>
                 </Navbar.Segment>

@@ -12,6 +12,7 @@ import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from 
 import { Search } from './pages/Search';
 import { Home} from './pages/Home';
 import About from './pages/About';
+import Inquiry from './pages/Inquiry';
 import Login, {FirebaseLogin} from './pages/Login';
 import CommentableCode from './components/CommentableCodePage/CommentableCode';
 import CCNavBar from './components/Navbar';
@@ -81,6 +82,7 @@ export const App = () => {
                                         <Route path="/about/" component={About} />
                                         <Route path="/repo/" component={CommentableCodePage} />
                                         <Route path="/chat/" component={FirebaseChat} />
+                                        <Route path="/inquiry" component={Inquiry} />
                                         {/* <Route path="/signup/" component={Signup} />
                                         <Route path="/login/" component={Login} /> */}
                                         {/* //  TODO only render signup, login if authenticated not true!
