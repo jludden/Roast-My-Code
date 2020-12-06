@@ -22,6 +22,8 @@ import {
 import { FaEnvelope, FaCheck, FaUser } from 'react-icons/fa';
 
 const Inquiry = () => {
+    // note - possible to intercept post request & navigate to custom page (or nowhere)
+    // https://docs.netlify.com/forms/setup/#work-with-javascript-rendered-forms
     return (
         <div style={{ padding: '2rem' }}>
             <Container breakpoint="desktop">
@@ -73,11 +75,11 @@ const Inquiry = () => {
                         <Field.Body>
                             <Field>
                                 <Control>
-                                    <Select.Container name="category[]">
+                                    <Select.Container name="category">
                                         {/* color="danger */}
                                         <Select multiple size={3}>
                                             <Select.Option value="bug">Bug Report</Select.Option>
-                                            <Select.Option value="Suggestion">Suggestion</Select.Option>
+                                            <Select.Option value="suggestion">Suggestion</Select.Option>
                                             <Select.Option value="miscellaneous">Miscellaneous</Select.Option>
                                         </Select>
                                     </Select.Container>
