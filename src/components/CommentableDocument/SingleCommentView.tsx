@@ -5,7 +5,7 @@ import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import 'rbx/index.css';
 import { CardHeader } from './CommentContainer';
 import { Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
-import { FaAngleDown, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench } from 'react-icons/fa';
+import { FaAngleDown,FaShareAlt, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench } from 'react-icons/fa';
 import { DropdownMenu } from '../RepoContents';
 
 export interface IRoastCommentProps {
@@ -50,6 +50,18 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                         <Dropdown.Content>
                             <Dropdown.Item as="div">
                                 <CopyLinkDropdownItem text={id} />
+                            </Dropdown.Item>
+                            <Dropdown.Item as="div">
+                            <Button
+                                size="small"
+                                rounded
+                                // todo onClick
+                                // onClick={() => props.handleShare()}
+                                tooltip="Share to Social Media"
+                                color="warning"
+                            >
+                                <FaShareAlt />
+                            </Button>
                             </Dropdown.Item>
                         </Dropdown.Content>
                     </Dropdown.Menu>
@@ -151,8 +163,8 @@ export const CopyLinkDropdownItem = ({ text: id }: { text: string }) => {
     return (
         <div style={{ padding: '10px' }}>
             {/* <label htmlFor="comment-url-text">Permalink</label> */}
-            <textarea id="comment-url-text" ref={textRef} value={`${windowLocation}#${id}`} readOnly 
-            style={{height: '15px'}}/>
+            {/* <textarea id="comment-url-text" ref={textRef} value={`${windowLocation}#${id}`} readOnly 
+            style={{height: '15px'}}/> */}
             <Button color="primary" onClick={copyToClipboard}>{copySuccess}</Button>            
         </div>
     );

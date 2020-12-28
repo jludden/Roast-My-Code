@@ -7,7 +7,6 @@ import { AddCommentBtnGroup } from './AddCommentBtnGroup';
 import { firebaseUserToRoastUserName } from '../FirebaseChat/LoggedInStatus';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { Column, Container, Section, Button } from 'rbx';
-import SyntaxLine, { createElement } from './SyntaxRenderer';
 
 import 'rbx/index.css';
 import * as React from 'react';

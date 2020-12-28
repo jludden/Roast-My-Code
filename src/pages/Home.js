@@ -74,18 +74,16 @@ export const RecentCommentCard = ({ comment }) => {
                 <div style={{ display: 'flex', flexDirection: 'row', flexFlow: 'row wrap' }}>
                     <CardHeader comment={comment} styles={constrainedFlexStyle} />
                     <div className="recent-card-text-container" style={{ ...flexStyle }}>
-                        <span >
-                            {comment.text}
-                        </span>
+                        <span>{comment.text}</span>
                     </div>
-                    <RepositoryLink details={comment.queryVariables} />
+                    <RepositoryLink details={comment.queryVariables} lineNumber={comment.lineNumber} />
                 </div>
             </Card.Content>
         </Card>
     );
 };
 
-export const RepositoryLink = ({ details }) => {
+export const RepositoryLink = ({ details, lineNumber }) => {
     const linkStyle = {
         ...constrainedFlexStyle,
         padding: '1rem',
@@ -93,24 +91,25 @@ export const RepositoryLink = ({ details }) => {
     };
     const link = `/repo/${details.owner}/${details.name}?file=${details.path}`;
 
-    const encodedLink = `/repo/${details.owner}/${details.name}?file=${encodeURIComponent(details.path)}`;
+    const encodedLink = `/repo/${details.owner}/${details.name}?file=${encodeURIComponent(
+        details.path,
+    )}#comment-container~${lineNumber}`;
 
     return (
         <div className="recent-card" style={linkStyle}>
-            <a className="recent-card-repo-name" href={encodedLink}>
-                <span>{details.name}</span>
-            </a><br />
-
-            <div className="recent-card-repo-item recent-card-repo-path">
-            <label>File: </label>
-            <a href={encodedLink}>
+            <div className="recent-card-repo-item recent-card-repo-name">
+                <label>Repository: </label>
+                <a href={encodedLink}>
+                    <span>{details.name}</span>
+                </a>
+            </div>
+            <a className="recent-card-repo-path" href={encodedLink}>
                 <span>{details.path}</span>
             </a>
-            </div>
-
+            <br />
             <div className="recent-card-repo-item recent-card-repo-owner">
-            <label>Owner: </label>
-            <span>{details.owner}</span>
+                <label>Owner: </label>
+                <span>{details.owner}</span>
             </div>
         </div>
     );

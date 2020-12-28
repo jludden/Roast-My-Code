@@ -121,6 +121,24 @@ span.boxclose{
   background-color: lightgray;
 }
 
+.hide-after-notify {
+  animation: hide-animation 1.6s ease-in 6s;
+  visibility: hidden;
+
+  @keyframes hide-animation {
+    0% {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+}
+
+
 
 
 /* comment card footer */

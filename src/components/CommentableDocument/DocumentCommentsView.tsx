@@ -1,28 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, createContext } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment, { User } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { ICommentGrouping } from './DocumentBody';
-import {
-    Section,
-    Title,
-    Tag,
-    Container,
-    Input,
-    Button,
-    Block,
-    Help,
-    Control,
-    Delete,
-    Field,
-    Panel,
-    Checkbox,
-    Icon,
-    Progress,
-} from 'rbx';
+import { Notification } from 'rbx';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { db } from '../../services/firebase';
-
+import { firebaseStore } from '../FirebaseChat/SigninModal';
 import CommentContainer from './CommentContainer';
+import '../../App.css';
 
 export interface CommentsViewProps {
     lineNumberMap: Map<number | undefined, ICommentGrouping>;
@@ -48,46 +33,59 @@ export interface UnsubmittedComment {
     author: User;
 }
 
+interface INotificationStore {
+    state: {
+        writeCommentError: string | undefined;
+    };
+    showErrorMessage: (message: string) => void;
+    showSuccessMessage: (message: string) => void;
+}
+
+export const notificationStore = createContext<INotificationStore>({
+    state: {
+        writeCommentError: undefined, //todo rename
+    },
+    showErrorMessage: Function,
+    showSuccessMessage: Function,
+});
+
 const DocumentCommentsView = (props: CommentsViewProps) => {
-    // Group comments into Comment Containers based their associated line number TODO this could be state or something
-    // const lineNumberMap = new Map<number|undefined, RoastComment[]>();
-    // this.props.comments.map((comment: RoastComment) => {
-    //   var line: RoastComment[] = lineNumberMap.get(comment.data.lineNumber) || [];
-    //   line.push(comment);
-    //   lineNumberMap.set(comment.data.lineNumber, line);
-    // });
-    const [writeCommentError, setWriteCommentError] = useState<string|undefined>();
+    const {
+        state: { writeCommentError },
+        showErrorMessage,
+    } = useContext(notificationStore);
+
+    const {
+        state: { user },
+    } = useContext(firebaseStore);
 
     // TODO RECONSIDER NOSHIP react forgive me but i need to force a re-render to see if the refs are updated
-    useEffect(() => {
-        setTimeout(() => {
-            setWriteCommentError("ty")
-           setWriteCommentError(undefined)
-        })
-    }, [])
+    // useEffect(() => {
+    //     setTimeout(() => {
+    //         setWriteCommentError('ty');
+    //         setWriteCommentError(undefined);
+    //     });
+    // }, []);
 
-
-    // const onSubmit = useAddComment({
-    //     repoId: props.repoId,
-    //     repoTitle: props.repoTitle,
-    //     documentId: props.documentId,
-    //     documentTitle: props.documentTitle,
-    //     commentListId: props.commentListId,
-    // });
+    const isCommentAuthor: (comment: RoastComment) => boolean = (comment: RoastComment) => {
+        if (user === null) return false;
+        const u1 = user as any;
+        return u1.uid === comment.author?.uid;
+    };
 
     const onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse> = async (
         comment: RoastComment,
     ) => {
-        // todo check logged in
         try {
             if (comment.text) {
-                setWriteCommentError(undefined);
-                await props.onSubmitComment(comment);
+                const success = await props.onSubmitComment(comment);
                 props.onSubmitCommentFinish(); // notify parent
-                return SubmitCommentResponse.Success;
+
+                if (!success) showErrorMessage('Please sign in to comment');
+                return success ? SubmitCommentResponse.Success : SubmitCommentResponse.Error;
             }
         } catch (e) {
-            setWriteCommentError(e.message);
+            showErrorMessage(e.message);
             console.log(e.message);
         }
         return SubmitCommentResponse.Error;
@@ -98,22 +96,23 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
     };
 
     const onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse> = async (
-        comment: RoastComment, isDelete?: boolean
+        comment: RoastComment,
+        isDelete?: boolean,
     ) => {
-        // todo check logged in
         try {
-            if (comment.text) {
-                setWriteCommentError(undefined);
-                await props.onEditComment(comment, isDelete);
-                return SubmitCommentResponse.Success;
+            if (!isCommentAuthor(comment)) {
+                showErrorMessage('Not the comment author');
+            } else if (comment.text) {
+                const success = await props.onEditComment(comment, isDelete);
+                if (!success) showErrorMessage('Sorry - unexpected failure');
+                return success ? SubmitCommentResponse.Success : SubmitCommentResponse.Error;
             }
         } catch (e) {
-            setWriteCommentError(e.message);
+            showErrorMessage(e.message);
             console.log(e.message);
         }
         return SubmitCommentResponse.Error;
     };
-
 
     return (
         <ul className="flex-item comments-pane">
@@ -122,7 +121,7 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                 <CommentContainer
                     key={lineNumber}
                     comments={grouping.comments}
-                    startMinimized={grouping.startMinized} 
+                    startMinimized={grouping.startMinized}
                     onEditComment={onEditComment}
                     onSubmitComment={onSubmitComment}
                     onCancelComment={onCancelComment}
@@ -134,43 +133,51 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
             {/* also display the comment in progress if any */}
             {props.inProgressComment && (
                 <>
-                    {writeCommentError && 
+                    {writeCommentError && (
                         <div>
                             {writeCommentError}
-                            <span>
-                                authenticated: {props.authenticated}
-                            </span>
-                            {props.user && <span>
-                                user: {props.user.uid}
-                                name: {props.user.displayName}
-                            </span>}
+                            <span>authenticated: {props.authenticated}</span>
+                            {props.user && (
+                                <span>
+                                    user: {props.user.uid}
+                                    name: {props.user.displayName}
+                                </span>
+                            )}
                         </div>
-                    }
-                    {/* <CommentContainer
-                        startMinimized={false}
-                        key={`unsubmitted ${props.inProgressComment.lineRef}`}
-                        onEditComment={onEditComment}
-                        onSubmitComment={onSubmitComment}
-                        onCancelComment={onCancelComment}
-                        lineRef={props.inProgressComment.lineRef}
-                        inProgress
-                        comments={[
-                            {
-                                __typename: 'Comment',
-                                _id: '-1',
-                                text: props.inProgressComment.selectedText || '',
-                                lineNumber: props.inProgressComment.lineNumber,
-                                selectedText: props.inProgressComment.selectedText,
-                                createdAt: null,
-                                updatedAt: null,
-                                author: null, // todo inProgress.author
-                            },
-                        ]}
-                    /> */}
+                    )}
                 </>
+            )}
+            {/* display any error messages */}
+            {writeCommentError && (
+                <aside
+                    style={{
+                        bottom: '.5rem',
+                        position: 'fixed',
+                    }}
+                    className="hide-after-notify"
+                >
+                    <Notification color="warning">{writeCommentError}</Notification>
+                </aside>
             )}
         </ul>
     );
 };
 
-export default DocumentCommentsView;
+const DocumentCommentsWithNotificationProvider = (props: CommentsViewProps) => {
+    const [writeCommentError, setWriteCommentError] = useState<string | undefined>();
+
+    // todo set timer? success could be animated css?
+    const showErrorMessage = (message: string) => {
+        setWriteCommentError(message);
+    };
+
+    const showSuccessMessage = (message: string) => {};
+
+    return (
+        <notificationStore.Provider value={{ state: { writeCommentError }, showErrorMessage, showSuccessMessage }}>
+            <DocumentCommentsView {...props} />
+        </notificationStore.Provider>
+    );
+};
+
+export default DocumentCommentsWithNotificationProvider;
