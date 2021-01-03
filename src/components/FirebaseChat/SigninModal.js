@@ -4,7 +4,7 @@ import Login, { Logout, FirebaseLogin } from '../../pages/Login';
 import { db, auth } from '../../services/firebase';
 import { firebaseUserToRoastUserName, firebasePhotoURLToRoastAvatar } from './LoggedInStatus';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
-import { generateUserName } from './helpers/nameGen';
+import { generateUserName, generateAvatar } from './helpers/nameGen';
 import { Modal, Container, Hero, Title, Section, Button, Footer, Content } from 'rbx';
 
 const initialState = {
@@ -123,8 +123,7 @@ export const FirebaseCommentsProvider = ({ children }) => {
 
     const handleSignup = async (user) => {
         if (!user.displayName && user.isAnonymous) {
-            // todo set random name and avatar
-            const avatar = 3;
+            const avatar = generateAvatar();
             const displayName = generateUserName();
 
             updateUserDetails({ ...user, photoURL: `rbx/${avatar}`, displayName });

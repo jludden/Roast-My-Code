@@ -16,7 +16,7 @@ export const LoggedInStatus = () => {
 
     if (user)
         return (
-            <ErrorBoundary message="Unable to resolve auth" >
+            <ErrorBoundary message="Unable to resolve auth">
                 <div>
                     <div className="hover-container">
                         <ChangeDisplayName onClickHandler={() => dispatch({ type: 'showUserDetails' })} />
