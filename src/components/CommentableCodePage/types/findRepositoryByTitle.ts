@@ -11,7 +11,7 @@ export interface User {
   __typename: "User";
   displayName: string;
   uid: number;
-  photoURL: number | undefined;
+  photoURL: string | undefined;
 }
 
 export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data {

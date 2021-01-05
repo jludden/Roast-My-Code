@@ -72,7 +72,7 @@ const CCNavbar = () => {
                 </Navbar.Segment>
 
                 <Navbar.Segment align="end">
-                    <Navbar.Item>
+                    <Navbar.Item as="div">
                     <LoggedInStatus />
                         {/* <Button.Group> */}
                             {/* <Button color="primary">

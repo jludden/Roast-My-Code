@@ -121,7 +121,7 @@ span.boxclose{
   background-color: lightgray;
 }
 
-.hide-after-notify {
+/* .hide-after-notify {
   animation: hide-animation 1.6s ease-in 6s;
   visibility: hidden;
 
@@ -136,10 +136,21 @@ span.boxclose{
       visibility: hidden;
     }
   }
+} */
+
+/* user avatar - auto fill grid */
+.auto-fill {
+  display: grid;
+  /* grid-template-rows: 25% 100px auto; */
+  grid-template-columns: repeat(4, 6rem [col-start]);
+
+  /* grid-template-columns: repeat(auto-fill, 1fr); */
 }
 
-
-
+.auto-fill > button {
+  width: 6rem;
+  height: 6rem;
+}
 
 /* comment card footer */
 .card-footer {
@@ -167,7 +178,7 @@ a.card-footer-item {
 .hover-container {
   position: relative;
   display: inline-block;
-  width: 8rem;
+  width: 10rem;
   height: 2rem;
 }
 .hover-out {
@@ -184,7 +195,7 @@ a.card-footer-item {
   opacity:100;
   transition-property: all;
   transition-duration: 700ms;
-  transform: translateX(-50%);
+  transform: translateX(-20%);
 }
     
 .comment-badge {

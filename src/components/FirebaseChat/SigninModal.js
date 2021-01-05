@@ -119,20 +119,20 @@ export const FirebaseCommentsProvider = ({ children }) => {
     const signOut = async () => {
         await auth().signOut();
         dispatch({ type: 'signOut' });
-    }
+    };
 
     const handleSignup = async (user) => {
         if (!user.displayName && user.isAnonymous) {
-            const avatar = generateAvatar();
+            const avatar = generateAvatar(); //`rbx/${avatar}`
             const displayName = generateUserName();
 
-            updateUserDetails({ ...user, photoURL: `rbx/${avatar}`, displayName });
+            updateUserDetails({ ...user, photoURL: avatar, displayName });
         } else {
             updateUserDetails(user);
         }
     };
 
-    const updateUserDetails = async (newUserDetails) => {      
+    const updateUserDetails = async (newUserDetails) => {
         try {
             await auth().currentUser.updateProfile({
                 ...newUserDetails,

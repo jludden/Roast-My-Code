@@ -37,7 +37,7 @@ interface INotificationStore {
     state: {
         writeCommentError: string | undefined;
     };
-    showErrorMessage: (message: string) => void;
+    showErrorMessage: (message: string | undefined) => void;
     showSuccessMessage: (message: string) => void;
 }
 
@@ -45,7 +45,7 @@ export const notificationStore = createContext<INotificationStore>({
     state: {
         writeCommentError: undefined, //todo rename
     },
-    showErrorMessage: Function,
+    showErrorMessage: (message: string | undefined) => undefined,
     showSuccessMessage: Function,
 });
 
@@ -60,12 +60,12 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
     } = useContext(firebaseStore);
 
     // TODO RECONSIDER NOSHIP react forgive me but i need to force a re-render to see if the refs are updated
-    // useEffect(() => {
-    //     setTimeout(() => {
-    //         setWriteCommentError('ty');
-    //         setWriteCommentError(undefined);
-    //     });
-    // }, []);
+    useEffect(() => {
+        setTimeout(() => {
+            showErrorMessage('ty');
+            showErrorMessage(undefined);
+        });
+    }, []);
 
     const isCommentAuthor: (comment: RoastComment) => boolean = (comment: RoastComment) => {
         if (user === null) return false;
@@ -166,9 +166,15 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
 const DocumentCommentsWithNotificationProvider = (props: CommentsViewProps) => {
     const [writeCommentError, setWriteCommentError] = useState<string | undefined>();
 
-    // todo set timer? success could be animated css?
-    const showErrorMessage = (message: string) => {
-        setWriteCommentError(message);
+    const showErrorMessage = (message: string | undefined) => {
+        if (!message) {
+            setWriteCommentError(undefined);
+        } else {
+            setWriteCommentError(message);
+            setTimeout(() => {
+                setWriteCommentError(undefined);
+            }, 2000);
+        } 
     };
 
     const showSuccessMessage = (message: string) => {};

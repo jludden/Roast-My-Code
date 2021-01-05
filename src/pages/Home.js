@@ -31,7 +31,7 @@ export const Home = () => {
                 </Hero.Body>
             </Hero> */}
             <div className="home-content">
-                <Title size={1}>Welcome to RoastMyCode</Title>
+                <Title size={1}>Search Code Repositories</Title>
                 {/* <a href="/Search">
                     <Button color="info">Search</Button>
                 </a> */}
@@ -103,10 +103,12 @@ export const RepositoryLink = ({ details, lineNumber }) => {
                     <span>{details.name}</span>
                 </a>
             </div>
-            <a className="recent-card-repo-path" href={encodedLink}>
-                <span>{details.path}</span>
-            </a>
-            <br />
+            <div className="recent-card-repo-path">
+                <label>Path: </label>
+                <a href={encodedLink}>
+                    <span>{details.path}</span>
+                </a>
+            </div>
             <div className="recent-card-repo-item recent-card-repo-owner">
                 <label>Owner: </label>
                 <span>{details.owner}</span>

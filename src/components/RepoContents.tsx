@@ -110,7 +110,7 @@ export const REPO_CONTENTS_QUERY = gql`
 
 export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoContentsProps) => {
     const branch = repo.defaultBranchRef ? repo.defaultBranchRef.name : 'master';
-    const title = (repo && repo.nameWithOwner) || 'Welcome to Roast My Code';
+    const title = (repo && repo.nameWithOwner) || 'Search Github Repositories';
 
     const [filePathParam, setFilePathParam] = useQueryParam('path', StringParam);
     // React.useEffect(() => {

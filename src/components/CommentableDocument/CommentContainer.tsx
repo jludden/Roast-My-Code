@@ -73,7 +73,7 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
         return (
             <div id={`comment-container~${comments[0].lineNumber}`} className="comment-container" style={this.state.styles}>
                 <UserAvatarBadge
-                    avatar={comments[0].author?.photoURL || 0}
+                    photoURL={comments[0].author?.photoURL}
                     badge={comments.length}
                     onClickHandler={this.onMinimizeClicked}
                     tooltip={comments[0].text}

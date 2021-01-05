@@ -84,12 +84,11 @@ const DocumentHeader = ({
                             <FaCommentAlt />
                         </Button>
                         <Button
-                                                    style={mgRight}
-                                                    color="dark"
-
+                            style={mgRight}
+                            color="dark"
                             onClick={() => changeSetting('WrapLongLines', true)}
                         >
-                            <FaCog /> Wrap Long Lines
+                            <FaCog/>&nbsp;Wrap Long Lines
                         </Button>
                     </Title>
                 </Box>

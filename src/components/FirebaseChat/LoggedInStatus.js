@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { SigninModal, FirebaseCommentsProvider, firebaseStore } from './SigninModal';
 import { Navbar, Button, Modal, Media, Title, Textarea } from 'rbx';
-import { UserAvatar, UserHeader, AvatarPicker } from '../Avatar';
+import { UserAvatar, UserHeader, AvataaarPicker } from '../Avatar';
 import ErrorBoundary from '../Common/ErrorBoundary';
-import { generateUserName } from './helpers/nameGen';
-import { FaRedoAlt } from 'react-icons/fa';
+import { generateUserName, generateAvatar } from './helpers/nameGen';
+import { FaRedoAlt, FaEdit } from 'react-icons/fa';
 import '../../App.css';
 
 export const LoggedInStatus = () => {
@@ -51,7 +51,7 @@ const ChangeDisplayName = ({ onClickHandler }) => {
 export function firebasePhotoURLToRoastAvatar(user) {
     if (user.photoURL) {
         const parts = user.photoURL.split('/');
-        return parts[parts.length-1];
+        return parts[parts.length - 1];
     }
     return 0;
 }
@@ -71,7 +71,6 @@ const LoggedInUserDetails = ({ user }) => {
 
     return (
         <div className="hover-out" style={textStub}>
-            
             <UserHeader
                 user={{
                     displayName,
@@ -97,17 +96,17 @@ export const UserDetailsModal = () => {
         state: { showUserDetails, user },
     } = useContext(firebaseStore);
 
-    const [displayName, setDisplayName] = useState(user ? user.displayName : 'Set display name');
-    const [avatar, setAvatar] = useState(user ? firebasePhotoURLToRoastAvatar(user) : 1);
-
+    const [displayName, setDisplayName] = useState(user ? user.displayName : '');
+    const [imageUrl, setImageUrl] = useState(user ? user.photoURL : '');
+    
     const validateSaveChanges = () => {
         if (!user) {
             dispatch({ type: 'error', payload: "can't update user details: user is not logged in" });
             return;
         }
 
-        updateUserDetails({ photoURL: `rbx/${avatar}`, displayName });
-    }
+        updateUserDetails({ photoURL: imageUrl, displayName });
+    };
 
     return (
         <Modal active={showUserDetails} onClose={() => dispatch({ type: 'hideUserDetails' })} closeOnBlur={true}>
@@ -118,41 +117,74 @@ export const UserDetailsModal = () => {
                     <Modal.Card.Title>User Details</Modal.Card.Title>
                 </Modal.Card.Head>
                 <Modal.Card.Body>
-                <Media>
-                    <Media.Item align="left" >
-                       <AvatarPicker avatar={avatar} setAvatar={(avatar) => setAvatar(avatar)} />
-                    </Media.Item>
-                    <Media.Item align="content" >
-                        <span>
-                        {user && (
-                            <>
-                                <span>{`display: ${user.displayName} \n email: ${user.email} \n photoURL: ${user.photoURL} \n uid: ${user.uid}`}</span>
-                                <br />
+                    <Media>
+                        {/* <Media.Item align="left" > */}
+                        {/* <AvatarPicker avatar={avatar} setAvatar={(avatar) => setAvatar(avatar)} /> */}
+                        {/* </Media.Item> */}
+                        <Media.Item align="content">
+                            {/* <div>
+                                <AvatarPicker imageUrl={imageUrl} setImageUrl={(avatar) => setImageUrl(avatar)} />
+                            </div> */}
+                            {user && (
                                 <div>
-                                    <label htmlFor="displayname">Display name:</label>
-                                    <input
-                                        type="text"
-                                        id="displayname"
-                                        name="displayname"
-                                        value={displayName}
-                                        onChange={(event) => setDisplayName(event.target.value)}
-                                    />
-                                    <Button onClick={() => setDisplayName(generateUserName())}>
-                                        <FaRedoAlt />
-                                    </Button>
+                                        <span>{user.photoURL}</span>
+                                        <span>{imageUrl}</span>
+
+                                <Title>Update Avatar Image</Title>
+                                        <UserAvatar imageUrl={imageUrl}></UserAvatar>
+                                <AvataaarPicker imageUrl={imageUrl} setImageUrl={(imageUrl) => setImageUrl(imageUrl)} />
+
+                                        <Button title="Edit avatar" onClick={() => {}}>
+                                            <FaEdit />
+                                            Edit
+                                        </Button>
+                                        <Button title="random avatar" onClick={() => setImageUrl(generateAvatar())}>
+                                            <FaRedoAlt />
+                                            Random 
+                                        </Button>
                                 </div>
-                            </>
-                        )}
-                    </span>
-                    </Media.Item>
-                </Media>
-                    
+                            )}
+                            {user && (
+                                <div>
+                                    <Title>
+                                        {user.displayName}
+                                        <Button title="Edit name" onClick={() => {}}>
+                                            <FaEdit />
+                                            Edit
+                                        </Button>
+                                        <Button title="Random name" onClick={() => setDisplayName(generateUserName())}>
+                                            <FaRedoAlt />
+                                            Random
+                                        </Button>
+                                    </Title>
+                                </div>
+                            )}
+                            <div>
+                                {user && (
+                                    <>
+                                        <span>{`display: ${user.displayName} \n email: ${user.email} \n photoURL: ${user.photoURL} \n uid: ${user.uid}`}</span>
+                                        <br />
+                                        <div>
+                                            <label htmlFor="displayname">Display name:</label>
+                                            <input
+                                                type="text"
+                                                id="displayname"
+                                                name="displayname"
+                                                value={displayName}
+                                                onChange={(event) => setDisplayName(event.target.value)}
+                                            />
+                                            <Button onClick={() => setDisplayName(generateUserName())}>
+                                                <FaRedoAlt />
+                                            </Button>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </Media.Item>
+                    </Media>
                 </Modal.Card.Body>
                 <Modal.Card.Foot>
-                    <Button
-                        color="success"
-                        onClick={() => validateSaveChanges()}
-                    >
+                    <Button color="success" onClick={() => validateSaveChanges()}>
                         Save changes
                     </Button>
                     <Button onClick={() => dispatch({ type: 'hideUserDetails' })}>Cancel</Button>

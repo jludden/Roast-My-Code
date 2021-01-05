@@ -30,3 +30,10 @@ https://delesign.com/free-designs/graphics
 
 colors:
 ffa000 favicon
+
+
+## Thanks
+https://www.npmjs.com/package/random-avatar-generator
+https://getavataaars.com/
+
+https://github.com/aceakash/project-name-generator

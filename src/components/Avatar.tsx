@@ -1,4 +1,5 @@
 import * as React from 'react';
+// import { Avatar, AvatarGroup } from "@chakra-ui/avatar"
 import 'rbx/index.css';
 import {
     Section,
@@ -15,6 +16,7 @@ import {
     Panel,
     Checkbox,
     Icon,
+    Image,
 } from 'rbx';
 import {
     FaUserCircle,
@@ -29,8 +31,11 @@ import {
     FaUserFriends,
     FaUserGraduate,
     FaUserNinja,
+    FaRedoAlt
 } from 'react-icons/fa';
 import RoastComment, { User } from './CommentableCodePage/types/findRepositoryByTitle';
+import { generateAvatar } from './FirebaseChat/helpers/nameGen';
+import '../App.css';
 
 export interface IAppProps {
     isLoggedIn: boolean;
@@ -47,25 +52,64 @@ const AvatarMap = [
     <FaUserSecret />,
 ];
 
-const Avatars = ({ index, style }: { index: number; style?: any }) => {
+const Avatars = ({ index, style, size = 70 }: { index: number; style?: any, size?: number }) => {
     switch (+index) {
         case 0:
-            return <FaUserCircle style={style} />;
+            return <FaUserCircle style={style} size={size} />;
         case 1:
-            return <FaUserAstronaut style={style} />;
+            return <FaUserAstronaut style={style} size={size} />;
         case 2:
-            return <FaUser style={style} />;
+            return <FaUser style={style} size={size} />;
         case 3:
-            return <FaUserAlt style={style} />;
+            return <FaUserAlt style={style} size={size} />;
         case 4:
-            return <FaUserTie style={style} />;
+            return <FaUserTie style={style} size={size} />;
         case 5:
-            return <FaUserNinja style={style} />;
+            return <FaUserNinja style={style} size={size} />;
         case 6:
-            return <FaUserSecret style={style} />;
+            return <FaUserSecret style={style} size={size} />;
     }
 
     return <FaUser style={style} />;
+};
+
+export const AvataaarPicker = ({ imageUrl, setImageUrl }: any) => {
+    const [showMore, setShowMore] = React.useState(false);
+    const [generated, setGenerated] = React.useState(new Array(8));
+    const extrabutton = '';
+    const [generateMore, setGenerateMore] = React.useState(1);
+
+    React.useEffect(() => {
+        var tmp = [...generated];
+        setGenerated(tmp.map(_ => generateAvatar()));
+    }, [generateMore]);
+
+
+
+    return (
+        <>
+            <span id="avatar" onClick={() => setShowMore(!showMore)}>
+                <label>Change Avatar</label>
+                <UserAvatar imageUrl={imageUrl} />
+            </span>
+            {showMore && (
+                <div className="auto-fill">
+                    {generated.map((item, i) => (
+                            <Button key={i} onClick={() => setImageUrl(item)} size="large">
+                            <UserAvatarInner imageUrl={item} size={72} />
+                            </Button>
+                    ))}
+                            <Button key={'extra'} onClick={() => setImageUrl(extrabutton)} size="large">
+                            <UserAvatarInner imageUrl={extrabutton} size={72} />
+                            </Button>
+                            <Button key='random-button' size="large" title="random avatar" onClick={() => setGenerateMore(generateMore+1)}>
+                                <FaRedoAlt />
+                                Random 
+                            </Button>
+                </div>
+            )}
+        </>
+    );
 };
 
 export const AvatarPicker = ({ avatar, setAvatar }: any) => {
@@ -79,7 +123,7 @@ export const AvatarPicker = ({ avatar, setAvatar }: any) => {
         <>
             <span id="avatar" onClick={() => setShowMore(!showMore)}>
                 <label>Change Avatar</label>
-                <UserAvatar avatar={avatar} />
+                <UserAvatar imageUrl={avatar} />
             </span>
 
             {/* {props.isLoggedIn && <FaUserAstronaut onClick={() => setShowMore(!showMore)} />}
@@ -87,27 +131,28 @@ export const AvatarPicker = ({ avatar, setAvatar }: any) => {
             {props.isLoggedIn ? ` ${props.name}` : ' Anonymous'} */}
 
             {showMore && (
-                <>
+                <div className="auto-fill">
                     {AvatarMap.map((a, i) => (
                         <div key={i}>
-                            {a}
-                            <Button onClick={() => setAvatar(i)} />
-                        </div>
+                            <Button onClick={() => setAvatar(i)} size="large">
+                            {a}    
+                            </Button>
+                        </div>  
                     ))}
-                </>
+                </div>
             )}
         </>
     );
 };
 
 export const UserAvatarBadge = ({
-    avatar,
+    photoURL,
     onClickHandler,
     badge,
     tooltip,
     isActive,
 }: {
-    avatar?: number;
+    photoURL?: string;
     onClickHandler?: any;
     badge?: number;
     tooltip: string;
@@ -128,28 +173,56 @@ export const UserAvatarBadge = ({
             tooltipPosition="right"
             tooltipMultiline
         >
-            <Avatars index={avatar || 0} />
+            {/* <Avatars index={avatar || 0} /> */}
+            <UserAvatarInner imageUrl={photoURL} />
         </Button>
     </div>
 );
 
 export const UserAvatar = ({
-    avatar,
+    imageUrl,
     onClickHandler,
     containerStyle,
     iconStyle,
 }: {
-    avatar?: number;
+    imageUrl?: string;
     onClickHandler?: any;
     containerStyle?: any;
     iconStyle?: any;
 }) => {
     return (
         <div style={containerStyle} onClick={onClickHandler}>
-            <Avatars index={avatar || 0} style={iconStyle} />
+            {/* <Avatars index={avatar || 0} style={iconStyle} size={28}/> */}
+            {/* <Avatar name="test_poop" src={avatar} /> */}
+            <UserAvatarInner imageUrl={imageUrl} />
+            {/* <Image.Container size={32}>
+                <Image rounded src={avatar}></Image>
+            </Image.Container> */}
         </div>
     );
 };
+
+type sizes = 32 | 16 | "square" | 24 | 48 | 64 | 96 | 128 | "16by9" | "1by1" | "1by2" | "1by3" | "2by1" | "2by3" | "3by1" | "3by2" | "3by4" | "3by5" | "4by3" | "4by5" | "5by3" | "5by4" | "9by16";
+export const UserAvatarInner = ({ imageUrl, size = 32}: { imageUrl?: string, size?: any}) => {
+    // todo handle eg rbx/6
+    const [loadError, setLoadError] = React.useState(!imageUrl);
+    const fallback = 'https://avataaars.io/';
+    const onLoadError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {  setLoadError(true); }
+    React.useEffect(() => setLoadError(!imageUrl), [imageUrl]);
+    return (
+        <div id="user-avatar">
+            {!loadError &&
+            <Image.Container size={size}>
+                <Image as="img" rounded src={loadError ? fallback : imageUrl } onError={onLoadError}></Image>
+            </Image.Container>
+            }
+            {loadError &&
+            <FaUserNinja size={size} />
+            }
+        </div>
+    );
+}
+
 export const UserHeader = ({ user }: { user?: User }) => {
     const style = {
         display: 'flex',
@@ -167,10 +240,17 @@ export const UserHeader = ({ user }: { user?: User }) => {
 
     return (
         <div style={style}>
-            <UserAvatar avatar={user.photoURL} />
+            <UserAvatar imageUrl={user.photoURL} />
             <div style={{ fontWeight: 'bold', fontSize: '14px', paddingLeft: '10px' }} title={''+user.uid || ''}>
-                {user.displayName.substring(0, 10)}
+                {truncateLongDisplayNames(user.displayName)}
             </div>
         </div>
     );
 };
+
+const truncateLongDisplayNames = (name: string): string => {
+    if (name.length > 20) {
+        return `${name.substring(0,20)}...`;
+    }
+    return name;
+}
