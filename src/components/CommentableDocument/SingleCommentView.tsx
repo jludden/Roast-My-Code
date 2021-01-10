@@ -151,20 +151,23 @@ export const CopyLinkDropdownItem = ({ text: id }: { text: string }) => {
 
     const textRef = useRef<HTMLTextAreaElement>(null);
 
-    function copyToClipboard(e: any) {
+    async function copyToClipboard(e: any) {
         (textRef as any).current.select();
-        document.execCommand('copy');
+
+        await navigator.clipboard.writeText(`${windowLocation}#${id}`);
+
+        // document.execCommand('copy');
         // This is just personal preference.
         // I prefer to not show the whole text area selected.
-        e.target.focus();
+        // e.target.focus();
         setCopySuccess('Copied!');
     }
 
     return (
         <div style={{ padding: '10px' }}>
             {/* <label htmlFor="comment-url-text">Permalink</label> */}
-            {/* <textarea id="comment-url-text" ref={textRef} value={`${windowLocation}#${id}`} readOnly 
-            style={{height: '15px'}}/> */}
+            <textarea id="comment-url-text" ref={textRef} value={`${windowLocation}#${id}`} readOnly 
+            style={{height: '15px'}} hidden/>
             <Button color="primary" onClick={copyToClipboard}>{copySuccess}</Button>            
         </div>
     );
