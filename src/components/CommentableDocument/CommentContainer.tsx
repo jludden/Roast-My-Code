@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment, { User } from '../CommentableCodePage/types/findRepositoryByTitle';
 import SingleCommentView from './SingleCommentView';
-import 'rbx/index.css';
+// import 'rbx/index.css';
 import { Container, Card, Button, Content, Heading, Message, Icon, Delete, Textarea } from 'rbx';
 import { FaAngleDown, FaAngleUp, FaCommentAlt, FaReply } from 'react-icons/fa';
 import { Collapse } from 'react-collapse';

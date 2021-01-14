@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../App.css';
 import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub } from 'react-icons/fa';
-import 'rbx/index.css';
+// import 'rbx/index.css';
 import {
     Section,
     Title,
@@ -50,9 +50,11 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
 
     return (
         <Section>
+            <Title size={1}>Search Code Repositories</Title>
+
             <Container>
-                <Panel>
-                    <Panel.Heading>
+                <Panel backgroundColor="grey-dark">
+                    <Panel.Heading backgroundColor="black-bis">
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <span style={{ display: 'flex', alignItems: 'center' }}>
                                 <FaGithub size="1.5em" />
@@ -73,9 +75,9 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
                     <Panel.Tab.Group>
                         <Panel.Tab active>search all</Panel.Tab>
                         <Panel.Tab onClick={() => props.loadRecommendedRepo()}>recommended</Panel.Tab>
-                        <Panel.Tab>most commented</Panel.Tab>
+                        {/* <Panel.Tab>most commented</Panel.Tab>
                         <Panel.Tab>starred</Panel.Tab>
-                        <Panel.Tab>personal</Panel.Tab>
+                        <Panel.Tab>personal</Panel.Tab> */}
                     </Panel.Tab.Group>
 
                     <Panel.Block>

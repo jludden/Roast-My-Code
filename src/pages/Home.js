@@ -4,7 +4,7 @@ import { db } from '../services/firebase';
 import { FirebaseQueryInner } from '../components/FirebaseChat/SigninModal';
 import { SingleCommentUI } from '../components/CommentableDocument/SingleCommentView';
 import { CardHeader } from '../components/CommentableDocument/CommentContainer';
-import { Hero, Title, Container, Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
+import { Hero, Title, Container, Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown, Section } from 'rbx';
 import { Search } from './Search';
 
 export const Home = () => {
@@ -31,13 +31,11 @@ export const Home = () => {
                 </Hero.Body>
             </Hero> */}
             <div className="home-content">
-                <Title size={1}>Search Code Repositories</Title>
-                {/* <a href="/Search">
-                    <Button color="info">Search</Button>
-                </a> */}
+                {/* <Title size={1}>Search Code Repositories</Title> */}
                 <Search />
             </div>
             <div className="home-content">
+                <Section>
                 <Title size={1}>Recent Comments</Title>
                 <FirebaseQueryInner>
                     {({ comments }) => (
@@ -50,6 +48,7 @@ export const Home = () => {
                         </ul>
                     )}
                 </FirebaseQueryInner>
+                </Section>
             </div>
         </div>
     );

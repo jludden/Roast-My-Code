@@ -75,7 +75,8 @@ const LoggedInUserDetails = ({ user }) => {
                 user={{
                     displayName,
                     uid: user.uid,
-                    avatar: firebasePhotoURLToRoastAvatar(user),
+                    photoURL: user.photoURL,
+                    // firebasePhotoURLToRoastAvatar(user),
                 }}
             />
             {/* <UserAvatar />
@@ -98,7 +99,17 @@ export const UserDetailsModal = () => {
 
     const [displayName, setDisplayName] = useState(user ? user.displayName : '');
     const [imageUrl, setImageUrl] = useState(user ? user.photoURL : '');
-    
+    const [showMore, setShowMore] = React.useState(false);
+    React.useEffect(() => {
+        if(user) {
+            setDisplayName(user.displayName);
+            setImageUrl(user.photoURL);
+        } else {
+            setDisplayName('');
+            setImageUrl('');
+        }
+    }, [showUserDetails]);
+
     const validateSaveChanges = () => {
         if (!user) {
             dispatch({ type: 'error', payload: "can't update user details: user is not logged in" });
@@ -130,11 +141,11 @@ export const UserDetailsModal = () => {
                                         <span>{user.photoURL}</span>
                                         <span>{imageUrl}</span>
 
-                                <Title>Update Avatar Image</Title>
-                                        <UserAvatar imageUrl={imageUrl}></UserAvatar>
-                                <AvataaarPicker imageUrl={imageUrl} setImageUrl={(imageUrl) => setImageUrl(imageUrl)} />
+                                         <Title>Update Avatar Image</Title>
+                                        {/* <UserAvatar imageUrl={imageUrl}></UserAvatar> */}
+                                        {showMore && <AvataaarPicker imageUrl={imageUrl} setImageUrl={(imageUrl) => setImageUrl(imageUrl)} />}
 
-                                        <Button title="Edit avatar" onClick={() => {}}>
+                                        <Button title="Edit avatar" onClick={() => setShowMore(!showMore)}>
                                             <FaEdit />
                                             Edit
                                         </Button>

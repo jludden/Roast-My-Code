@@ -1,6 +1,5 @@
 import * as React from 'react';
-// import { Avatar, AvatarGroup } from "@chakra-ui/avatar"
-import 'rbx/index.css';
+// import 'rbx/index.css';
 import {
     Section,
     Title,
@@ -74,7 +73,6 @@ const Avatars = ({ index, style, size = 70 }: { index: number; style?: any, size
 };
 
 export const AvataaarPicker = ({ imageUrl, setImageUrl }: any) => {
-    const [showMore, setShowMore] = React.useState(false);
     const [generated, setGenerated] = React.useState(new Array(8));
     const extrabutton = '';
     const [generateMore, setGenerateMore] = React.useState(1);
@@ -88,11 +86,11 @@ export const AvataaarPicker = ({ imageUrl, setImageUrl }: any) => {
 
     return (
         <>
-            <span id="avatar" onClick={() => setShowMore(!showMore)}>
+            {/* <span id="avatar" onClick={() => setShowMore(!showMore)}>
                 <label>Change Avatar</label>
                 <UserAvatar imageUrl={imageUrl} />
             </span>
-            {showMore && (
+            {showMore && ( */}
                 <div className="auto-fill">
                     {generated.map((item, i) => (
                             <Button key={i} onClick={() => setImageUrl(item)} size="large">
@@ -107,43 +105,11 @@ export const AvataaarPicker = ({ imageUrl, setImageUrl }: any) => {
                                 Random 
                             </Button>
                 </div>
-            )}
+            {/* )} */}
         </>
     );
 };
 
-export const AvatarPicker = ({ avatar, setAvatar }: any) => {
-    const [showMore, setShowMore] = React.useState(false);
-    // const identity = useIdentityContext();
-    // const name =
-    //   (identity && identity.user && identity.user.user_metadata && identity.user.user_metadata.name) || "NoName";
-    // const isLoggedIn = identity && identity.isLoggedIn;
-
-    return (
-        <>
-            <span id="avatar" onClick={() => setShowMore(!showMore)}>
-                <label>Change Avatar</label>
-                <UserAvatar imageUrl={avatar} />
-            </span>
-
-            {/* {props.isLoggedIn && <FaUserAstronaut onClick={() => setShowMore(!showMore)} />}
-            {!props.isLoggedIn && <FaUserSecret onClick={() => setShowMore(!showMore)} />}
-            {props.isLoggedIn ? ` ${props.name}` : ' Anonymous'} */}
-
-            {showMore && (
-                <div className="auto-fill">
-                    {AvatarMap.map((a, i) => (
-                        <div key={i}>
-                            <Button onClick={() => setAvatar(i)} size="large">
-                            {a}    
-                            </Button>
-                        </div>  
-                    ))}
-                </div>
-            )}
-        </>
-    );
-};
 
 export const UserAvatarBadge = ({
     photoURL,

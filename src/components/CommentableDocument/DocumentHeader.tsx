@@ -2,7 +2,7 @@ import * as React from 'react';
 import '../../App.css';
 import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub, FaCommentAlt, FaCog } from 'react-icons/fa';
 import { Blob } from '../../generated/graphql';
-import 'rbx/index.css';
+// import 'rbx/index.css';
 import {
     Section,
     Title,

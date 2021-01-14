@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 
-import 'rbx/index.css';
+// import 'rbx/index.css';
 import { CardHeader } from './CommentContainer';
 import { Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
 import { FaAngleDown,FaShareAlt, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench } from 'react-icons/fa';

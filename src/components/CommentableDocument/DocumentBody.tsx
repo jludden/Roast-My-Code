@@ -8,7 +8,7 @@ import { firebaseUserToRoastUserName } from '../FirebaseChat/LoggedInStatus';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { Column, Container, Section, Button } from 'rbx';
 
-import 'rbx/index.css';
+// import 'rbx/index.css';
 import * as React from 'react';
 import '../../App.css';
 // import createElement from 'react-syntax-highlighter/dist/esm/create-element';
@@ -218,7 +218,7 @@ export class DocumentBody extends React.Component<
                                 </div>
                             )}
                         </Column>
-                        <Column size="one-quarter" backgroundColor="light">
+                        <Column size="one-quarter" backgroundColor="grey-dark">
                             <DocumentCommentsView
                                 authenticated={this.props.authenticated}
                                 lineNumberMap={lineNumberMap}

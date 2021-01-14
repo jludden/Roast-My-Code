@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import '../App.css';
-import 'rbx/index.css';
+// import 'rbx/index.css';
 import { Navbar, Button, Title } from 'rbx';
 import {
     BrowserRouter as Router,
@@ -25,7 +25,7 @@ const CCNavbar = () => {
     const { dispatch } = useContext(firebaseStore);
 
     return (
-        <Navbar>
+        <Navbar as="div" className="App-header">
             <Navbar.Brand>
                 <Navbar.Item as={AdapterLink} to="/">
                     <img src={logo} alt="Roast My Code Logo" role="presentation" width="medium" height="medium" />

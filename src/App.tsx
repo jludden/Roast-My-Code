@@ -1,7 +1,8 @@
 import React, {useContext} from 'react';
 import './App.css';
+import './generated/Bulma.css';
 import { Container, Hero, Title, Section, Button, Footer, Content } from 'rbx';
-import 'rbx/index.css';
+// import 'rbx/index.css';
 import { BrowserRouter as Router, Switch, Route, Link, RouteComponentProps } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
 // import { ApolloProvider } from '@apollo/react-hooks';
@@ -24,7 +25,7 @@ import { SigninModal, FirebaseCommentsProvider, firebaseStore, FirebaseQuery } f
 import { UserDetailsModal } from './components/FirebaseChat/LoggedInStatus';
 import Signup from './pages/Signup';
 
-// import logo from './' './logo.svg';
+// import logo from './logo.svg';
 
 // import { generateGithubSchema } from "../api/generateGithubSchema";
 // todo move apollo setup to new file
@@ -36,9 +37,6 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
     introspectionQueryResultData: IntrospectionResultData,
 });
 export const cache = new InMemoryCache({ fragmentMatcher });
-
-
-
 
     export const githubClient: ApolloClient<InMemoryCache> = new ApolloClient({
         cache,
@@ -121,15 +119,6 @@ const AppFooter = () => {
         </Footer>
     )
 }
-
-//
-//
-
-// function HomePage() {
-    // welcome
-    // repo explorer
-    // Link repo explorer => Commentable Code
-// }
 
 function CommentableCodePage() {
     return (

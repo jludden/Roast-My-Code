@@ -190,12 +190,14 @@ export const DropdownMenu = ({ branch }: { branch: string }) => {
             </Dropdown.Trigger>
             <Dropdown.Menu>
                 <Dropdown.Content>
-                    <Dropdown.Item>Dropdown item</Dropdown.Item>
+                    <Dropdown.Item>Sorry, not implemented</Dropdown.Item>
+
+                    {/* <Dropdown.Item>Dropdown item</Dropdown.Item>
                     <Dropdown.Item>Other dropdown item</Dropdown.Item>
                     <Dropdown.Item active>Active dropdown item</Dropdown.Item>
                     <Dropdown.Item>Other dropdown item</Dropdown.Item>
                     <Dropdown.Divider />
-                    <Dropdown.Item>With a divider</Dropdown.Item>
+                    <Dropdown.Item>With a divider</Dropdown.Item> */}
                 </Dropdown.Content>
             </Dropdown.Menu>
         </Dropdown>
@@ -260,14 +262,9 @@ const RepoContentsPanelFrame = ({
     children: React.ReactElement;
 }) => {
     const [filesTabActive, setfilesTabActive] = React.useState(true);
-    //todo
-    const repoId = '245564447665422867';
-    const commentListId = '245564447670665747';
-    const documentId = '245564447668568595';
-
     return (
-        <Panel>
-            <Panel.Heading>{title}</Panel.Heading>
+        <Panel backgroundColor="grey-dark">
+            <Panel.Heading backgroundColor="black-bis">{title}</Panel.Heading>
 
             <Panel.Tab.Group>
                 <Panel.Tab active={filesTabActive} onClick={() => setfilesTabActive(true)}>
