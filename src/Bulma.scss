@@ -1,7 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Yantramanav:wght@500&display=swap');
+
+$rmc-logo-font: 'Montserrat', sans-serif;
+$rmc-body-font: 'Yantramanav', sans-serif;
+
+// Update Bulma's global variables
+$family-sans-serif: $rmc-body-font;
+$family-primary: $rmc-body-font;
 
 @import '../node_modules/bulmaswatch/darkly/variables';
 @import "../node_modules/bulma/bulma.sass";
 @import '../node_modules/bulmaswatch/darkly/overrides';
 
-
-
+.title.is-1 {
+    font-size: 2.25rem;
+    font-family: $rmc-body-font;
+}

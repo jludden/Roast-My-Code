@@ -195,7 +195,7 @@ export const UserDetailsModal = () => {
                     </Media>
                 </Modal.Card.Body>
                 <Modal.Card.Foot>
-                    <Button color="success" onClick={() => validateSaveChanges()}>
+                    <Button color="primary" onClick={() => validateSaveChanges()}>
                         Save changes
                     </Button>
                     <Button onClick={() => dispatch({ type: 'hideUserDetails' })}>Cancel</Button>

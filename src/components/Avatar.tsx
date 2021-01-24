@@ -30,7 +30,7 @@ import {
     FaUserFriends,
     FaUserGraduate,
     FaUserNinja,
-    FaRedoAlt
+    FaRedoAlt,
 } from 'react-icons/fa';
 import RoastComment, { User } from './CommentableCodePage/types/findRepositoryByTitle';
 import { generateAvatar } from './FirebaseChat/helpers/nameGen';
@@ -51,7 +51,7 @@ const AvatarMap = [
     <FaUserSecret />,
 ];
 
-const Avatars = ({ index, style, size = 70 }: { index: number; style?: any, size?: number }) => {
+const Avatars = ({ index, style, size = 70 }: { index: number; style?: any; size?: number }) => {
     switch (+index) {
         case 0:
             return <FaUserCircle style={style} size={size} />;
@@ -79,10 +79,8 @@ export const AvataaarPicker = ({ imageUrl, setImageUrl }: any) => {
 
     React.useEffect(() => {
         var tmp = [...generated];
-        setGenerated(tmp.map(_ => generateAvatar()));
+        setGenerated(tmp.map((_) => generateAvatar()));
     }, [generateMore]);
-
-
 
     return (
         <>
@@ -91,25 +89,29 @@ export const AvataaarPicker = ({ imageUrl, setImageUrl }: any) => {
                 <UserAvatar imageUrl={imageUrl} />
             </span>
             {showMore && ( */}
-                <div className="auto-fill">
-                    {generated.map((item, i) => (
-                            <Button key={i} onClick={() => setImageUrl(item)} size="large">
-                            <UserAvatarInner imageUrl={item} size={72} />
-                            </Button>
-                    ))}
-                            <Button key={'extra'} onClick={() => setImageUrl(extrabutton)} size="large">
-                            <UserAvatarInner imageUrl={extrabutton} size={72} />
-                            </Button>
-                            <Button key='random-button' size="large" title="random avatar" onClick={() => setGenerateMore(generateMore+1)}>
-                                <FaRedoAlt />
-                                Random 
-                            </Button>
-                </div>
+            <div className="auto-fill">
+                {generated.map((item, i) => (
+                    <Button key={i} onClick={() => setImageUrl(item)} size="large">
+                        <UserAvatarInner imageUrl={item} size={72} />
+                    </Button>
+                ))}
+                <Button key={'extra'} onClick={() => setImageUrl(extrabutton)} size="large">
+                    <UserAvatarInner imageUrl={extrabutton} size={72} />
+                </Button>
+                <Button
+                    key="random-button"
+                    size="large"
+                    title="random avatar"
+                    onClick={() => setGenerateMore(generateMore + 1)}
+                >
+                    <FaRedoAlt />
+                    Random
+                </Button>
+            </div>
             {/* )} */}
         </>
     );
 };
-
 
 export const UserAvatarBadge = ({
     photoURL,
@@ -169,45 +171,51 @@ export const UserAvatar = ({
 };
 
 type sizes = 32 | 16 | "square" | 24 | 48 | 64 | 96 | 128 | "16by9" | "1by1" | "1by2" | "1by3" | "2by1" | "2by3" | "3by1" | "3by2" | "3by4" | "3by5" | "4by3" | "4by5" | "5by3" | "5by4" | "9by16";
-export const UserAvatarInner = ({ imageUrl, size = 32}: { imageUrl?: string, size?: any}) => {
+export const UserAvatarInner = ({ imageUrl, size = 32 }: { imageUrl?: string; size?: any }) => {
     // todo handle eg rbx/6
     const [loadError, setLoadError] = React.useState(!imageUrl);
     const fallback = 'https://avataaars.io/';
-    const onLoadError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {  setLoadError(true); }
+    const onLoadError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        setLoadError(true);
+    };
     React.useEffect(() => setLoadError(!imageUrl), [imageUrl]);
     return (
         <div id="user-avatar">
-            {!loadError &&
-            <Image.Container size={size}>
-                <Image as="img" rounded src={loadError ? fallback : imageUrl } onError={onLoadError}></Image>
-            </Image.Container>
-            }
-            {loadError &&
-            <FaUserNinja size={size} />
-            }
+            {!loadError && (
+                <Image.Container size={size}>
+                    <Image as="img" rounded src={loadError ? fallback : imageUrl} onError={onLoadError}></Image>
+                </Image.Container>
+            )}
+            {loadError && <FaUserNinja size={size} />}
         </div>
     );
-}
+};
 
 export const UserHeader = ({ user }: { user?: User }) => {
-    const style = {
+    const containerStyle = {
         display: 'flex',
+    };
+
+    const userHeaderTextStyle = {
+        // fontWeight: 'bold',
+        fontSize: '16px',
+        paddingLeft: '10px',
     };
 
     if (!user)
         return (
-            <div style={style}>
+            <div style={containerStyle}>
                 <UserAvatar />
-                <div style={{ fontWeight: 'bold', fontSize: '14px', paddingLeft: '10px' }} title={'unknown'}>
+                <div style={userHeaderTextStyle} title={'unknown'}>
                     Unknown user
                 </div>
             </div>
         );
 
     return (
-        <div style={style}>
+        <div style={containerStyle}>
             <UserAvatar imageUrl={user.photoURL} />
-            <div style={{ fontWeight: 'bold', fontSize: '14px', paddingLeft: '10px' }} title={''+user.uid || ''}>
+            <div style={userHeaderTextStyle} title={'' + user.uid || ''}>
                 {truncateLongDisplayNames(user.displayName)}
             </div>
         </div>
@@ -216,7 +224,7 @@ export const UserHeader = ({ user }: { user?: User }) => {
 
 const truncateLongDisplayNames = (name: string): string => {
     if (name.length > 20) {
-        return `${name.substring(0,20)}...`;
+        return `${name.substring(0, 20)}...`;
     }
     return name;
-}
+};

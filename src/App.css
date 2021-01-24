@@ -19,8 +19,9 @@
   flex-grow: 2;
 } */
 
-.App-title {
+.App-brand {
   font-size: 1.5em;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .App-intro {
@@ -33,7 +34,9 @@
 
  /* .prettyprint {
   text-align: left;
-}  */
+}
+.prettyprint ol.linenums > li { list-style-type: decimal; }
+*/
 
 
 .flex-container {
@@ -218,6 +221,22 @@ a.card-footer-item {
 .card-rounded {
   border-radius: 10px;
   overflow: hidden;
+}
+
+/* inquiry form - override multi select height */
+.select select[multiple] {
+  height: auto;
+  padding: 0;
+}
+
+.select.is-multiple {
+  height: auto;
+  padding: 0;
+}
+
+/* navbar overrides */
+div.navbar-burger {
+  height: 4.8rem;
 }
 
 /* xs screen */

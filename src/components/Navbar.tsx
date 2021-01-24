@@ -26,10 +26,10 @@ const CCNavbar = () => {
 
     return (
         <Navbar as="div" className="App-header">
-            <Navbar.Brand>
+            <Navbar.Brand className="App-brand">
                 <Navbar.Item as={AdapterLink} to="/">
                     <img src={logo} alt="Roast My Code Logo" role="presentation" width="medium" height="medium" />
-                    <Title style={{ color: '#209cee', marginLeft: '1rem' }}>Roast My Code</Title>
+                    <Title color="primary">&nbsp;Roast My Code</Title>
                 </Navbar.Item>
                 <Navbar.Burger />
             </Navbar.Brand>
@@ -55,16 +55,7 @@ const CCNavbar = () => {
                             {/* <Link to="/about"><Navbar.Item>About</Navbar.Item></Link> */}
                             <Navbar.Item as={AdapterLink} to="/about">
                                 About
-                            </Navbar.Item>
-                            <Navbar.Item onClick={() => dispatch({type: 'showSignIn'})}>
-                                Sign in Modal
-                            </Navbar.Item>
-                            <Navbar.Item as={AdapterLink} to="/signup">
-                                Sign up
-                            </Navbar.Item>
-                            <Navbar.Item as={AdapterLink} to="/login">
-                                Log in
-                            </Navbar.Item>
+                            </Navbar.Item>                         
                             <Navbar.Divider />
                             <Navbar.Item as={AdapterLink} to="/inquiry">Report an issue</Navbar.Item>
                         </Navbar.Dropdown>

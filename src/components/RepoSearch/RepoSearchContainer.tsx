@@ -53,7 +53,7 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
             <Title size={1}>Search Code Repositories</Title>
 
             <Container>
-                <Panel backgroundColor="grey-dark">
+                <Panel backgroundColor="grey-darker">
                     <Panel.Heading backgroundColor="black-bis">
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <span style={{ display: 'flex', alignItems: 'center' }}>

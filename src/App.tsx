@@ -111,7 +111,7 @@ const AppFooter = () => {
     return (
         <Footer>
             <Content textAlign="centered">
-                <p>&copy; Jason Ludden 2020</p>
+                <p>&copy; Jason Ludden 2021</p>
             </Content>
             {/* <Section>
                 <FirebaseQuery />

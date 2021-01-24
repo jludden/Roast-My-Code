@@ -1,7 +1,7 @@
 {
-  "name": "react-ts-tdd",
-  "version": "0.1.0",
-  "private": true,
+  "name": "roast-my-code",
+  "version": "0.8.0",
+  "license": "MIT",
   "dependencies": {
     "@apollo/client": "^3.0.2",
     "@apollo/react-hooks": "^3.0.0",
