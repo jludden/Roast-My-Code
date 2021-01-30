@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { SigninModal, FirebaseCommentsProvider, firebaseStore } from './SigninModal';
-import { Navbar, Button, Modal, Media, Title, Textarea } from 'rbx';
+import { firebaseStore } from './SigninModal';
+import { Button, Modal, Media, Title } from 'rbx';
 import { UserAvatar, UserHeader, AvataaarPicker } from '../Avatar';
 import ErrorBoundary from '../Common/ErrorBoundary';
-import { generateUserName, generateAvatar } from './helpers/nameGen';
+import { generateUserName } from './helpers/nameGen';
 import { FaRedoAlt, FaEdit } from 'react-icons/fa';
 import '../../App.css';
 
@@ -76,16 +76,8 @@ const LoggedInUserDetails = ({ user }) => {
                     displayName,
                     uid: user.uid,
                     photoURL: user.photoURL,
-                    // firebasePhotoURLToRoastAvatar(user),
                 }}
             />
-            {/* <UserAvatar />
-            <span
-                style={{paddingLeft: '10px'}}
-                title={`display: ${user.displayName} \n email: ${user.email} \n photoURL: ${user.photoURL} \n uid: ${user.uid}`}
-            >
-                {name}
-            </span> */}
         </div>
     );
 };
@@ -101,14 +93,14 @@ export const UserDetailsModal = () => {
     const [imageUrl, setImageUrl] = useState(user ? user.photoURL : '');
     const [showMore, setShowMore] = React.useState(false);
     React.useEffect(() => {
-        if(user) {
+        if (user) {
             setDisplayName(user.displayName);
             setImageUrl(user.photoURL);
         } else {
             setDisplayName('');
             setImageUrl('');
         }
-    }, [showUserDetails]);
+    }, [user, showUserDetails]);
 
     const validateSaveChanges = () => {
         if (!user) {
@@ -125,58 +117,48 @@ export const UserDetailsModal = () => {
             <Modal.Close />
             <Modal.Card>
                 <Modal.Card.Head>
-                    <Modal.Card.Title>User Details</Modal.Card.Title>
+                    <Modal.Card.Title
+                        size={3}
+                        title={
+                            user &&
+                            `display: ${user.displayName} \n email: ${user.email} \n photoURL: ${user.photoURL} \n uid: ${user.uid}`
+                        }
+                    >
+                        User Details
+                    </Modal.Card.Title>
                 </Modal.Card.Head>
                 <Modal.Card.Body>
                     <Media>
-                        {/* <Media.Item align="left" > */}
-                        {/* <AvatarPicker avatar={avatar} setAvatar={(avatar) => setAvatar(avatar)} /> */}
-                        {/* </Media.Item> */}
                         <Media.Item align="content">
-                            {/* <div>
-                                <AvatarPicker imageUrl={imageUrl} setImageUrl={(avatar) => setImageUrl(avatar)} />
-                            </div> */}
                             {user && (
                                 <div>
-                                        <span>{user.photoURL}</span>
-                                        <span>{imageUrl}</span>
-
-                                         <Title>Update Avatar Image</Title>
-                                        {/* <UserAvatar imageUrl={imageUrl}></UserAvatar> */}
-                                        {showMore && <AvataaarPicker imageUrl={imageUrl} setImageUrl={(imageUrl) => setImageUrl(imageUrl)} />}
-
+                                    <Title size={5}>Update Avatar Image:</Title>
+                                    <UserAvatar imageUrl={imageUrl} containerStyle={{ display: 'flex' }}>
                                         <Button title="Edit avatar" onClick={() => setShowMore(!showMore)}>
                                             <FaEdit />
                                             Edit
                                         </Button>
-                                        <Button title="random avatar" onClick={() => setImageUrl(generateAvatar())}>
-                                            <FaRedoAlt />
-                                            Random 
-                                        </Button>
+                                    </UserAvatar>
+
+                                    {showMore && (
+                                        <AvataaarPicker
+                                            imageUrl={imageUrl}
+                                            setImageUrl={(imageUrl) => setImageUrl(imageUrl)}
+                                        />
+                                    )}
                                 </div>
                             )}
                             {user && (
                                 <div>
-                                    <Title>
-                                        {user.displayName}
-                                        <Button title="Edit name" onClick={() => {}}>
-                                            <FaEdit />
-                                            Edit
-                                        </Button>
-                                        <Button title="Random name" onClick={() => setDisplayName(generateUserName())}>
-                                            <FaRedoAlt />
-                                            Random
-                                        </Button>
+                                    <Title size={5} style={{ paddingTop: '3rem' }}>
+                                        Update Dispayed Name:
                                     </Title>
                                 </div>
                             )}
                             <div>
                                 {user && (
                                     <>
-                                        <span>{`display: ${user.displayName} \n email: ${user.email} \n photoURL: ${user.photoURL} \n uid: ${user.uid}`}</span>
-                                        <br />
                                         <div>
-                                            <label htmlFor="displayname">Display name:</label>
                                             <input
                                                 type="text"
                                                 id="displayname"
