@@ -136,7 +136,7 @@ export const UserDetailsModal = () => {
                                     <UserAvatar imageUrl={imageUrl} containerStyle={{ display: 'flex' }}>
                                         <Button title="Edit avatar" onClick={() => setShowMore(!showMore)}>
                                             <FaEdit />
-                                            Edit
+                                            &nbsp;Edit
                                         </Button>
                                     </UserAvatar>
 
@@ -166,8 +166,12 @@ export const UserDetailsModal = () => {
                                                 value={displayName}
                                                 onChange={(event) => setDisplayName(event.target.value)}
                                             />
-                                            <Button onClick={() => setDisplayName(generateUserName())}>
+                                            <Button
+                                                title="Random name"
+                                                onClick={() => setDisplayName(generateUserName())}
+                                            >
                                                 <FaRedoAlt />
+                                                &nbsp;Random
                                             </Button>
                                         </div>
                                     </>
