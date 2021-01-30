@@ -5,7 +5,7 @@ import { ICommentGrouping } from './DocumentBody';
 import { Notification } from 'rbx';
 // import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { db } from '../../services/firebase';
-import { firebaseStore } from '../FirebaseChat/SigninModal';
+import { firebaseStore } from '../FirebaseChat/FirebaseCommentsProvider';
 import CommentContainer from './CommentContainer';
 import '../../App.css';
 

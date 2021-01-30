@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { firebaseStore } from './SigninModal';
+import { firebaseStore } from './FirebaseCommentsProvider';
 import { Button, Modal, Media, Title } from 'rbx';
 import { UserAvatar, UserHeader, AvataaarPicker } from '../Avatar';
 import ErrorBoundary from '../Common/ErrorBoundary';

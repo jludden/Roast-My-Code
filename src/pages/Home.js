@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
 import { db } from '../services/firebase';
-import { FirebaseQueryInner } from '../components/FirebaseChat/SigninModal';
+import { FirebaseQueryInner } from '../components/FirebaseChat/FirebaseCommentsProvider';
 import { SingleCommentUI } from '../components/CommentableDocument/SingleCommentView';
 import { CardHeader } from '../components/CommentableDocument/CommentContainer';
 import { Hero, Title, Container, Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown, Section } from 'rbx';

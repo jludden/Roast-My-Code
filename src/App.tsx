@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import './App.css';
 import './generated/Bulma.css';
 import { Container, Hero, Title, Section, Button, Footer, Content } from 'rbx';
@@ -14,24 +14,17 @@ import { Search } from './pages/Search';
 import { Home} from './pages/Home';
 import About from './pages/About';
 import Inquiry from './pages/Inquiry';
-import Login, {FirebaseLogin} from './pages/Login';
 import CommentableCode from './components/CommentableCodePage/CommentableCode';
 import CCNavBar from './components/Navbar';
 import { EndpointTest } from './components/CommentableDocument/EndpointTest';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import { auth } from './services/firebase';
 import FirebaseChat from './components/FirebaseChat/Chat';
-import { SigninModal, FirebaseCommentsProvider, firebaseStore, FirebaseQuery } from './components/FirebaseChat/SigninModal';
+import { FirebaseCommentsProvider } from './components/FirebaseChat/FirebaseCommentsProvider';
+import { SigninModal } from './components/FirebaseChat/SigninModal';
 import { UserDetailsModal } from './components/FirebaseChat/LoggedInStatus';
 import Signup from './pages/Signup';
 
-// import logo from './logo.svg';
-
-// import { generateGithubSchema } from "../api/generateGithubSchema";
-// todo move apollo setup to new file
-// "https://48p1r2roz4.sse.codesandbox.io"/
-// https://github.com/nuxt-community/apollo-module/issues/70
-// introspectionQueryResultData: (schema as any)
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
     introspectionQueryResultData: IntrospectionResultData,
@@ -42,20 +35,6 @@ export const cache = new InMemoryCache({ fragmentMatcher });
         cache,
         uri: '/.netlify/functions/repo_github',
 });
-
-
-
-//  Router && QueryParamProvider
-// AuthWrapper && ApolloProvider?
-//    Home
-//      Repo Explorer -> Link to Commentable Code
-//    CommentableCode
-//      Dir Explorer, Doc Header + Body
-
-// Home - search q?repo="reeflife"
-
-// Code - /repo/jludden/ReefLifeSurvey---Species-Explorer
-
 
 export const App = () => {
     // // <div className="App_Background">

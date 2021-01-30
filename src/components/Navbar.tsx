@@ -12,7 +12,7 @@ import {
     RouteComponentProps,
 } from 'react-router-dom';
 import {logo} from '../images';
-import { firebaseStore } from './FirebaseChat/SigninModal';
+import { firebaseStore } from './FirebaseChat/FirebaseCommentsProvider';
 import { LoggedInStatus } from './FirebaseChat/LoggedInStatus';
 
 // import logo from '../static/emergency-fire-hazard.svg';

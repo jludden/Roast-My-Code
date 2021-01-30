@@ -152,11 +152,13 @@ export const UserAvatar = ({
     onClickHandler,
     containerStyle,
     iconStyle,
+    children
 }: {
     imageUrl?: string;
     onClickHandler?: any;
     containerStyle?: any;
     iconStyle?: any;
+    children?: React.ReactChildren;
 }) => {
     return (
         <div style={containerStyle} onClick={onClickHandler}>
@@ -166,6 +168,7 @@ export const UserAvatar = ({
             {/* <Image.Container size={32}>
                 <Image rounded src={avatar}></Image>
             </Image.Container> */}
+            {children}
         </div>
     );
 };

@@ -13,7 +13,7 @@ import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment2 } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { db, auth } from '../../services/firebase';
 import { tomorrow, ghcolors, darcula } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import { firebaseStore } from '../FirebaseChat/SigninModal';
+import { firebaseStore } from '../FirebaseChat/FirebaseCommentsProvider';
 
 export interface IDocumentProps {
     queryVariables: IGithubDocQueryVariables;
@@ -58,17 +58,24 @@ interface IGithubDocQueryVariables {
     path: string;
 }
 
-const updateComment = async (comment: RoastComment, commentsId: string, isDelete?: boolean) => {
-    const ref = db.ref('file-comments/' + commentsId + '/' + comment._id);
-    // TODO update comment at the user-comments/ and comments/ collections as well
+const updateComment = async (user: any, comment: RoastComment, filePath: string, isDelete?: boolean) => {
+    const refs = [
+        db.ref(`user-comments/${user.uid || 1}/${comment._id}`),
+        db.ref('file-comments/' + filePath + '/' + comment._id),
+        db.ref('comments/' + comment._id),
+    ];
 
     if (isDelete) {
-        await ref.remove();
+        await Promise.all(refs.map((r) => r.remove()));
     } else {
-        await ref.update({
-            timestamp: Date.now(),
-            text: comment.text,
-        });
+        await Promise.all(
+            refs.map((r) =>
+                r.update({
+                    timestamp: Date.now(),
+                    text: comment.text,
+                }),
+            ),
+        );
     }
 
     return true;
@@ -118,7 +125,7 @@ const DocCommentsLoader = (props: IDocumentProps) => {
             authenticated={authenticated}
             user={user}
             onSubmitComment={(comment) => submitComment(comment, filePath, props.queryVariables)}
-            onEditComment={(comment, isDelete) => updateComment(comment, filePath, isDelete ?? false)}
+            onEditComment={(comment, isDelete) => updateComment(user, comment, filePath, isDelete ?? false)}
             {...props}
         />
     );
