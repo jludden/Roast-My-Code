@@ -1,0 +1,28 @@
+org: jasonludden
+app: lm-github2-app
+# serverless.yml
+
+service: lm-github2
+package:
+  exclude:
+    - secrets.yml
+custom:
+  secrets: ${file(secrets.yml)}
+provider:
+  name: aws
+  runtime: nodejs12.x
+functions:
+  graphql:
+    # this is formatted as <FILENAME>.<HANDLER>
+    handler: graphql.graphqlHandler
+    environment:
+      RMC_GITHUB_PAT: '${self:custom.secrets.RMC_GITHUB_PAT}'
+    events:
+    - http:
+        path: graphql
+        method: post
+        cors: false
+    - http:
+        path: graphql
+        method: get
+        cors: false

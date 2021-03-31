@@ -1,0 +1,31 @@
+{
+  "name": "lambda_github_graphql_api",
+  "version": "1.0.0",
+  "description": "Github graphql api proxy",
+  "main": "graphql.js",
+  "scripts": {
+    "deploy": "serverless deploy",
+    "test-inline": "serverless invoke local --function graphql --data '{   resource: \"/graphql\",   path: \"/graphql\",   httpMethod: \"POST\",   headers: {     \"sec-fetch-mode\": \" cors\",     \"content-length\": \" 1218\",     referer: \" https\",     \"sec-fetch-site\": \" same-origin\",     \"accept-language\": \" en-US,en;q=0.9\",     method: \" POST\",     scheme: \" https\",     origin: \" https\",     dnt: \" 1\",     accept: \" */*\",     path: \" /.netlify/functions/repo_github\",     \"sec-gpc\": \" 1\",     authority: \" roast-my-code.com\",     \"content-type\": \" application/json\",     \"accept-encoding\": \" gzip, deflate, br\",     \"sec-fetch-dest\": \" empty\",     \"user-agent\": \" Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36\"   },   multiValueHeaders: {     \"sec-fetch-mode\": [ \" cors\" ],     \"content-length\": [ \" 1218\" ],     referer: [ \" https\" ],     \"sec-fetch-site\": [ \" same-origin\" ],     \"accept-language\": [ \" en-US,en;q=0.9\" ],     method: [ \" POST\" ],     scheme: [ \" https\" ],     origin: [ \" https\" ],     dnt: [ \" 1\" ],     accept: [ \" */*\" ],     path: [ \" /.netlify/functions/repo_github\" ],     \"sec-gpc\": [ \" 1\" ],     authority: [ \" roast-my-code.com\" ],     \"content-type\": [ \" application/json\" ],     \"accept-encoding\": [ \" gzip, deflate, br\" ],     \"sec-fetch-dest\": [ \" empty\" ],     \"user-agent\": [       \" Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36\"     ]   },   queryStringParameters: null,   multiValueQueryStringParameters: null,   pathParameters: null,   stageVariables: null,   requestContext: {     resourceId: \"piti96\",     resourcePath: \"/graphql\",     httpMethod: \"POST\",     extendedRequestId: \"cL2rYE7HoAMFqBQ=\",     requestTime: \"14/Mar/2021:16:20:50 +0000\",     path: \"/graphql\",     accountId: \"054837361267\",     protocol: \"HTTP/1.1\",     stage: \"test-invoke-stage\",     domainPrefix: \"testPrefix\",     requestTimeEpoch: 1615738850381,     requestId: \"6573243a-4df8-48cb-a422-ce612ef37f75\",     identity: {       cognitoIdentityPoolId: null,       cognitoIdentityId: null,       apiKey: \"test-invoke-api-key\",       principalOrgId: null,       cognitoAuthenticationType: null,       userArn: \"arn:aws:iam::054837361267:root\",       apiKeyId: \"test-invoke-api-key-id\",       userAgent: \"aws-internal/3 aws-sdk-java/1.11.964 Linux/4.9.230-0.1.ac.224.84.332.metal1.x86_64 OpenJDK_64-Bit_Server_VM/25.282-b08 java/1.8.0_282 vendor/Oracle_Corporation\",       accountId: \"054837361267\",       caller: \"054837361267\",       sourceIp: \"test-invoke-source-ip\",       accessKey: \"ASIAQZREPXJZ6STIWEH5\",       cognitoAuthenticationProvider: null,       user: \"054837361267\"     },     domainName: \"testPrefix.testDomainName\",     apiId: \"ams7d66xwd\"   },   body: {\"operationName\":\"SearchMostTop10Star\",\"variables\":{\"queryString\":\"\",\"first\":5},\"query\":\"query SearchMostTop10Star($queryString: String!, $first: Int) {\\n  search(query: $queryString, type: REPOSITORY, first: $first) {\\n    repositoryCount\\n    edges {\\n      node {\\n        ... on Repository {\\n          nameWithOwner\\n          name\\n          id\\n          databaseId\\n          createdAt\\n          descriptionHTML\\n          url\\n          resourcePath\\n          updatedAt\\n          defaultBranchRef {\\n            name\\n            __typename\\n          }\\n          owner {\\n            id\\n            login\\n            __typename\\n          }\\n          primaryLanguage {\\n            name\\n            color\\n            __typename\\n          }\\n          languages(first: 5) {\\n            nodes {\\n              name\\n              __typename\\n            }\\n            __typename\\n          }\\n          descriptionHTML\\n          stargazers {\\n            totalCount\\n            __typename\\n          }\\n          forks {\\n            totalCount\\n            __typename\\n          }\\n          __typename\\n        }\\n        __typename\\n      }\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}\",   isBase64Encoded: false }'",
+    "test": "serverless invoke local --function graphql --path event.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "todo"
+  },
+  "keywords": [
+    "roast-my-code", "Apollo-Server", "lambda", "AWS"
+  ],
+  "author": "jludden",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-link-http": "^1.5.17",
+    "apollo-server-lambda": "^2.21.0",
+    "cross-fetch": "^3.0.6",
+    "graphql": "^15.5.0",
+    "graphql-tools": "^7.0.4",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "serverless": "^2.30.3"
+  }
+}
