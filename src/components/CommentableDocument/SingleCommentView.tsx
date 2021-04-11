@@ -1,12 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
-
-// import 'rbx/index.css';
 import { CardHeader } from './CommentContainer';
 import { Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
-import { FaAngleDown,FaShareAlt, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench } from 'react-icons/fa';
+import { FaAngleDown, FaShareAlt, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench } from 'react-icons/fa';
 import { DropdownMenu } from '../RepoContents';
+import { notificationStore } from './DocumentCommentsView';
 
 export interface IRoastCommentProps {
     comment: RoastComment;
@@ -24,6 +23,7 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
 
     const [editMode, setEditMode] = useState(false);
     const [inputText, setInputText] = useState(comment.text);
+    const { showSuccessMessage } = useContext(notificationStore);
 
     const id = `comment~${comment._id}`;
 
@@ -49,19 +49,19 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                     <Dropdown.Menu>
                         <Dropdown.Content>
                             <Dropdown.Item as="div">
-                                <CopyLinkDropdownItem text={id} />
+                                <CopyLinkDropdownItem text={id} showSuccessMessage={showSuccessMessage} />
                             </Dropdown.Item>
                             <Dropdown.Item as="div">
-                            <Button
-                                size="small"
-                                rounded
-                                // todo onClick
-                                // onClick={() => props.handleShare()}
-                                tooltip="Share to Social Media"
-                                color="warning"
-                            >
-                                <FaShareAlt />
-                            </Button>
+                                <Button
+                                    size="small"
+                                    rounded
+                                    // todo onClick
+                                    // onClick={() => props.handleShare()}
+                                    tooltip="Share to Social Media"
+                                    color="warning"
+                                >
+                                    <FaShareAlt />
+                                </Button>
                             </Dropdown.Item>
                         </Dropdown.Content>
                     </Dropdown.Menu>
@@ -145,7 +145,13 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
     );
 };
 
-export const CopyLinkDropdownItem = ({ text: id }: { text: string }) => {
+export const CopyLinkDropdownItem = ({
+    text: id,
+    showSuccessMessage,
+}: {
+    text: string;
+    showSuccessMessage: (message: string) => void;
+}) => {
     const [copySuccess, setCopySuccess] = useState('Copy URL');
     const windowLocation = window.location.href.replace(window.location.hash, '');
 
@@ -154,26 +160,32 @@ export const CopyLinkDropdownItem = ({ text: id }: { text: string }) => {
     async function copyToClipboard(e: any) {
         (textRef as any).current.select();
 
-        await navigator.clipboard.writeText(`${windowLocation}#${id}`);
-
-        // document.execCommand('copy');
-        // This is just personal preference.
-        // I prefer to not show the whole text area selected.
-        // e.target.focus();
-        setCopySuccess('Copied!');
+        try {
+            showSuccessMessage('Copied to clipboard');
+            await navigator.clipboard.writeText(`${windowLocation}#${id}`);
+            setCopySuccess('Copied!');
+        } catch (error) {
+            console.warn('error occured writing to clipboard');
+        }
     }
 
     return (
         <div style={{ padding: '10px' }}>
             {/* <label htmlFor="comment-url-text">Permalink</label> */}
-            <textarea id="comment-url-text" ref={textRef} value={`${windowLocation}#${id}`} readOnly 
-            style={{height: '15px'}} hidden/>
-            <Button color="primary" onClick={copyToClipboard}>{copySuccess}</Button>            
+            <textarea
+                id="comment-url-text"
+                ref={textRef}
+                value={`${windowLocation}#${id}`}
+                readOnly
+                style={{ height: '15px' }}
+                hidden
+            />
+            <Button color="primary" onClick={copyToClipboard}>
+                {copySuccess}
+            </Button>
         </div>
     );
 };
-
-// export const SingleCommentInteractive
 
 const CommentCard = ({
     comment,
@@ -185,35 +197,39 @@ const CommentCard = ({
     id: string;
     cardStyle: any;
     children: any;
-}) => (
-    <Card size="small" className="card-rounded" id={id} style={cardStyle}>
-        <Card.Header>
-            <Dropdown style={{ width: '100%' }}>
-                <Card.Header.Title>
-                    <CardHeader comment={comment} />
-                </Card.Header.Title>
-                <Card.Header.Icon>
-                    <Dropdown.Trigger>
-                        <Icon>
-                            <FaAngleDown />
-                        </Icon>
-                    </Dropdown.Trigger>
-                </Card.Header.Icon>
-                <Dropdown.Menu>
-                    <Dropdown.Content>
-                        <Dropdown.Item as="div">
-                            <CopyLinkDropdownItem text={id} />
-                        </Dropdown.Item>
-                    </Dropdown.Content>
-                </Dropdown.Menu>
-            </Dropdown>
-        </Card.Header>
+}) => {
+    const { showSuccessMessage } = useContext(notificationStore);
 
-        <Card.Content>
-            <Content>{children}</Content>
-        </Card.Content>
-    </Card>
-);
+    return (
+        <Card size="small" className="card-rounded" id={id} style={cardStyle}>
+            <Card.Header>
+                <Dropdown style={{ width: '100%' }}>
+                    <Card.Header.Title>
+                        <CardHeader comment={comment} />
+                    </Card.Header.Title>
+                    <Card.Header.Icon>
+                        <Dropdown.Trigger>
+                            <Icon>
+                                <FaAngleDown />
+                            </Icon>
+                        </Dropdown.Trigger>
+                    </Card.Header.Icon>
+                    <Dropdown.Menu>
+                        <Dropdown.Content>
+                            <Dropdown.Item as="div">
+                                <CopyLinkDropdownItem text={id} showSuccessMessage={showSuccessMessage} />
+                            </Dropdown.Item>
+                        </Dropdown.Content>
+                    </Dropdown.Menu>
+                </Dropdown>
+            </Card.Header>
+
+            <Card.Content>
+                <Content>{children}</Content>
+            </Card.Content>
+        </Card>
+    );
+};
 
 export const SingleCommentUI = ({ comment, ...props }: any) => (
     <CommentCard comment={comment} {...props}>

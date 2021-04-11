@@ -65,6 +65,7 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
             showErrorMessage('ty');
             showErrorMessage(undefined);
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const isCommentAuthor: (comment: RoastComment) => boolean = (comment: RoastComment) => {
@@ -165,19 +166,31 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
 
 const DocumentCommentsWithNotificationProvider = (props: CommentsViewProps) => {
     const [writeCommentError, setWriteCommentError] = useState<string | undefined>();
+    const [timespan, setTimespan] = useState(0);
+    const [isActive, setIsActive] = useState(false);
+
+    useEffect(() => {
+        let timer: any;
+        if (isActive) {
+            timer = setTimeout(() => {
+                setWriteCommentError(undefined);
+            }, timespan);
+        }
+
+        return () => clearTimeout(timer);
+    }, [isActive, timespan, writeCommentError]);
 
     const showErrorMessage = (message: string | undefined) => {
-        if (!message) {
-            setWriteCommentError(undefined);
-        } else {
-            setWriteCommentError(message);
-            setTimeout(() => {
-                setWriteCommentError(undefined);
-            }, 2000);
-        } 
+        setWriteCommentError(message);
+        setTimespan(2000);
+        setIsActive(true);
     };
 
-    const showSuccessMessage = (message: string) => {};
+    const showSuccessMessage = (message: string) => {
+        setWriteCommentError(message);
+        setTimespan(3000);
+        setIsActive(true);
+    };
 
     return (
         <notificationStore.Provider value={{ state: { writeCommentError }, showErrorMessage, showSuccessMessage }}>
