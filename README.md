@@ -33,6 +33,10 @@ ffa000 favicon
 
 
 ## Thanks
+React-Syntax-Highlighter
+https://github.com/react-syntax-highlighter/react-syntax-highlighter#readme
+
+
 https://www.npmjs.com/package/random-avatar-generator
 https://getavataaars.com/
 
