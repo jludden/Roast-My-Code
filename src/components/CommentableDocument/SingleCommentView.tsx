@@ -72,6 +72,15 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                 <Content>
                     {!inProgress && !editMode && (
                         <>
+                            {comment.selectedText && (
+                                <Textarea
+                                    style={{ marginBottom: '10px' }}
+                                    disabled
+                                    fixedSize
+                                    size="small"
+                                    value={comment.selectedText.replace(/(\r\n|\n|\r)/gm, '')}
+                                />
+                            )}
                             <p style={style}>{comment.text}</p>
                             <div className="float-button-pane button-group-end">
                                 <Button
@@ -101,6 +110,14 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
 
                     {!inProgress && editMode && (
                         <>
+                            {comment.selectedText && (
+                                <Textarea
+                                    disabled
+                                    fixedSize
+                                    size="small"
+                                    value={comment.selectedText.replace(/(\r\n|\n|\r)/gm, '')}
+                                />
+                            )}
                             <Textarea
                                 fixedSize
                                 readOnly={false}
@@ -120,6 +137,14 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
 
                     {inProgress && (
                         <>
+                            {comment.selectedText && (
+                                <Textarea
+                                    disabled
+                                    fixedSize
+                                    size="small"
+                                    value={comment.selectedText.replace(/(\r\n|\n|\r)/gm, '')}
+                                />
+                            )}
                             <Textarea
                                 fixedSize
                                 readOnly={false}

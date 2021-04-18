@@ -80,10 +80,13 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
         try {
             if (comment.text) {
                 const success = await props.onSubmitComment(comment);
-                props.onSubmitCommentFinish(); // notify parent
+                if (!success) {
+                    showErrorMessage('Please sign in to comment');
+                    return SubmitCommentResponse.Error;
+                }
 
-                if (!success) showErrorMessage('Please sign in to comment');
-                return success ? SubmitCommentResponse.Success : SubmitCommentResponse.Error;
+                props.onSubmitCommentFinish(); // notify parent
+                return SubmitCommentResponse.Success;
             }
         } catch (e) {
             showErrorMessage(e.message);
@@ -117,7 +120,7 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
 
     return (
         <ul className="flex-item comments-pane">
-            {/* display all the saved comments */}
+            {/* display all the saved comments (in-progress comment also in the grouping) */}
             {Array.from(props.lineNumberMap, ([lineNumber, grouping]) => (
                 <CommentContainer
                     key={lineNumber}
@@ -131,7 +134,6 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                     inProgress={grouping.inProgress}
                 />
             ))}
-            {/* also display the comment in progress if any */}
             {props.inProgressComment && (
                 <>
                     {writeCommentError && (

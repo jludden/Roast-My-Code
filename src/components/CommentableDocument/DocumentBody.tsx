@@ -489,9 +489,9 @@ export class DocumentBody extends React.Component<
         const initialElement = sel.getRangeAt(0).startContainer.parentElement;
 
         // todo can just use e.target.closest('.whatever-line-number-class')?
-        const myDivOOO = this.closestElement(initialElement, (el: HTMLElement) => {
-            return el.dataset.index != null;
-        });
+        // const myDivOOO = this.closestElement(initialElement, (el: HTMLElement) => {
+        //     return el.dataset.index != null;
+        // });
 
         if (initialElement === null) return -1;
 

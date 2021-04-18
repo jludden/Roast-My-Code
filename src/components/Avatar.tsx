@@ -142,7 +142,7 @@ export const UserAvatarBadge = ({
             tooltipMultiline
         >
             {/* <Avatars index={avatar || 0} /> */}
-            <UserAvatarInner imageUrl={photoURL} />
+            {!isActive && <UserAvatarInner imageUrl={photoURL} />}
         </Button>
     </div>
 );

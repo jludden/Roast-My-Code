@@ -86,6 +86,7 @@ export const FirebaseCommentsProvider = ({ children }) => {
             queryVariables,
             text: comment.text,
             lineNumber: comment.lineNumber,
+            selectedText: comment.selectedText,
             timestamp: Date.now(),
             author: {
                 displayName: firebaseUserToRoastUserName(user),
@@ -111,6 +112,10 @@ export const FirebaseCommentsProvider = ({ children }) => {
                 return false;
             }
         });
+
+        // TODO also update index of updated repos
+        // var count = 0;
+        // db.ref(`repository/${repoId || 1}`).push(count + 1);
 
         return true;
     };
@@ -213,19 +218,4 @@ export const FirebaseQueryInner = ({ children }) => {
     if (loadCommentsError) return <div>failed to load comment query for doc</div>;
 
     return <div>{children({ comments })}</div>;
-
-    return (
-        <>
-            {comments.map((comment) => (
-                <div key={comment._id}>
-                    {comment.decodedFilePath +
-                        `[${comment._id}]` +
-                        ' was posted on' +
-                        comment.updatedAt +
-                        ' and had this text: ' +
-                        comment.text}
-                </div>
-            ))}
-        </>
-    );
 };
