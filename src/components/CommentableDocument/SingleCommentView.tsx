@@ -6,12 +6,22 @@ import { Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown }
 import { FaAngleDown, FaShareAlt, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench } from 'react-icons/fa';
 import { DropdownMenu } from '../RepoContents';
 import { notificationStore } from './DocumentCommentsView';
+import { Collapse } from 'react-collapse';
+import { firebaseStore } from '../FirebaseChat/FirebaseCommentsProvider';
+import { SocialToolbar } from './SocialMediaShare';
+
 
 export interface IRoastCommentProps {
     comment: RoastComment;
     onEditComment: (details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
     onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
     onCancelComment: () => void;
+}
+
+// permanent link to the comment based on author/repository/filepath + comment id (hash)
+export const GetCommentPermalink = (id: string): string => {
+    const windowLocation = window.location.href.replace(window.location.hash, '');
+    return `${windowLocation}#${id}`;
 }
 
 const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitComment }: IRoastCommentProps) => {
@@ -24,8 +34,13 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
     const [editMode, setEditMode] = useState(false);
     const [inputText, setInputText] = useState(comment.text);
     const { showSuccessMessage } = useContext(notificationStore);
+    const {
+        state: { user },
+    } = useContext(firebaseStore);
 
     const id = `comment~${comment._id}`;
+    const permalink = GetCommentPermalink(id);
+    const userIsCommentAuthor = user && (user as any).uid === comment.author?.uid;
 
     const updateCommentText = async () => {
         await onEditComment({ ...comment, text: inputText }, false);
@@ -46,10 +61,15 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                             </Icon>
                         </Dropdown.Trigger>
                     </Card.Header.Icon>
-                    <Dropdown.Menu>
+                    <Dropdown.Menu style={{ width: '100%' }}>
                         <Dropdown.Content>
                             <Dropdown.Item as="div">
-                                <CopyLinkDropdownItem text={id} showSuccessMessage={showSuccessMessage} />
+                                <CopyLinkDropdownItem permalink={permalink} showSuccessMessage={showSuccessMessage} />
+                                <SocialToolbar url={permalink} shareText={comment.text} comment={comment} />
+
+                            </Dropdown.Item>
+                            {/* <Dropdown.Item as="div">
+                            <SocialToolbar url={permalink} />
                             </Dropdown.Item>
                             <Dropdown.Item as="div">
                                 <Button
@@ -62,7 +82,7 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                                 >
                                     <FaShareAlt />
                                 </Button>
-                            </Dropdown.Item>
+                            </Dropdown.Item> */}
                         </Dropdown.Content>
                     </Dropdown.Menu>
                 </Dropdown>
@@ -72,17 +92,9 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                 <Content>
                     {!inProgress && !editMode && (
                         <>
-                            {comment.selectedText && (
-                                <Textarea
-                                    style={{ marginBottom: '10px' }}
-                                    disabled
-                                    fixedSize
-                                    size="small"
-                                    value={comment.selectedText.replace(/(\r\n|\n|\r)/gm, '')}
-                                />
-                            )}
+                            {/* {comment.selectedText && <QuotedText text={comment.selectedText} />} */}                                                       
                             <p style={style}>{comment.text}</p>
-                            <div className="float-button-pane button-group-end">
+                            {userIsCommentAuthor && <div className="float-button-pane button-group-end">
                                 <Button
                                     color="warning"
                                     size="small"
@@ -104,20 +116,20 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                                 >
                                     <FaWrench />
                                 </Button>
-                            </div>
+                            </div>}
                         </>
                     )}
 
                     {!inProgress && editMode && (
                         <>
-                            {comment.selectedText && (
+                            {/* {comment.selectedText && (
                                 <Textarea
                                     disabled
                                     fixedSize
                                     size="small"
                                     value={comment.selectedText.replace(/(\r\n|\n|\r)/gm, '')}
                                 />
-                            )}
+                            )} */}
                             <Textarea
                                 fixedSize
                                 readOnly={false}
@@ -137,14 +149,14 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
 
                     {inProgress && (
                         <>
-                            {comment.selectedText && (
+                            {/* {comment.selectedText && (
                                 <Textarea
                                     disabled
                                     fixedSize
                                     size="small"
                                     value={comment.selectedText.replace(/(\r\n|\n|\r)/gm, '')}
                                 />
-                            )}
+                            )} */}
                             <Textarea
                                 fixedSize
                                 readOnly={false}
@@ -171,15 +183,13 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
 };
 
 export const CopyLinkDropdownItem = ({
-    text: id,
+    permalink,
     showSuccessMessage,
 }: {
-    text: string;
+    permalink: string;
     showSuccessMessage: (message: string) => void;
 }) => {
     const [copySuccess, setCopySuccess] = useState('Copy URL');
-    const windowLocation = window.location.href.replace(window.location.hash, '');
-
     const textRef = useRef<HTMLTextAreaElement>(null);
 
     async function copyToClipboard(e: any) {
@@ -187,7 +197,7 @@ export const CopyLinkDropdownItem = ({
 
         try {
             showSuccessMessage('Copied to clipboard');
-            await navigator.clipboard.writeText(`${windowLocation}#${id}`);
+            await navigator.clipboard.writeText(permalink);
             setCopySuccess('Copied!');
         } catch (error) {
             console.warn('error occured writing to clipboard');
@@ -195,12 +205,13 @@ export const CopyLinkDropdownItem = ({
     }
 
     return (
-        <div style={{ padding: '10px' }}>
+        <>
+        {/* <div style={{ padding: '10px' }}> */}
             {/* <label htmlFor="comment-url-text">Permalink</label> */}
             <textarea
                 id="comment-url-text"
                 ref={textRef}
-                value={`${windowLocation}#${id}`}
+                value={permalink}
                 readOnly
                 style={{ height: '15px' }}
                 hidden
@@ -208,7 +219,8 @@ export const CopyLinkDropdownItem = ({
             <Button color="primary" onClick={copyToClipboard}>
                 {copySuccess}
             </Button>
-        </div>
+        {/* </div> */}
+        </>
     );
 };
 
@@ -224,6 +236,7 @@ const CommentCard = ({
     children: any;
 }) => {
     const { showSuccessMessage } = useContext(notificationStore);
+    const permalink = GetCommentPermalink(id);
 
     return (
         <Card size="small" className="card-rounded" id={id} style={cardStyle}>
@@ -239,10 +252,10 @@ const CommentCard = ({
                             </Icon>
                         </Dropdown.Trigger>
                     </Card.Header.Icon>
-                    <Dropdown.Menu>
+                    <Dropdown.Menu style={{ width: '100%' }}>
                         <Dropdown.Content>
                             <Dropdown.Item as="div">
-                                <CopyLinkDropdownItem text={id} showSuccessMessage={showSuccessMessage} />
+                                <CopyLinkDropdownItem permalink={permalink} showSuccessMessage={showSuccessMessage} />
                             </Dropdown.Item>
                         </Dropdown.Content>
                     </Dropdown.Menu>
@@ -255,6 +268,29 @@ const CommentCard = ({
         </Card>
     );
 };
+
+const QuotedText = ({ text }: { text: string }) => {
+    const [expanded, setExpanded] = useState(false);
+
+    if (!expanded) return (
+        <Button color="info" 
+        onClick={() => setExpanded(!expanded)}
+        outlined inverted rounded>Show Quoted</Button>
+    )
+
+    return (
+        <Collapse isOpened={expanded} onClick={() => setExpanded(!expanded)}>
+
+            <Textarea
+                style={{ marginBottom: '10px' }}
+                disabled
+                fixedSize
+                size="small"
+                value={text.replace(/(\r\n|\n|\r)/gm, '')}
+                />
+        </Collapse>
+    );
+}
 
 export const SingleCommentUI = ({ comment, ...props }: any) => (
     <CommentCard comment={comment} {...props}>

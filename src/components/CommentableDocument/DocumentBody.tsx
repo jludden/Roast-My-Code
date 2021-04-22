@@ -195,6 +195,7 @@ export class DocumentBody extends React.Component<
                                         <br />
                                         <span>{`selected pos + syntax top: ${selectedPos.top + syntaxY.top}`}</span> */}
                                         <AddCommentBtnGroup
+                                            selectedLine={this.state.selectedLine}
                                             handleCommentAdd={this.handleCommentAdd}
                                             handleShare={this.handleSocialMediaShare}
                                         />
@@ -307,7 +308,7 @@ export class DocumentBody extends React.Component<
             line.comments.push({
                 __typename: 'Comment',
                 _id: '-1',
-                text: inProgressComment.selectedText || '',
+                text: '', // inProgressComment.selectedText || '',
                 lineNumber: inProgressComment.lineNumber,
                 selectedText: inProgressComment.selectedText,
                 createdAt: null,

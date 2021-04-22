@@ -1,10 +1,8 @@
-import update from 'immutability-helper';
 import * as React from 'react';
 import { githubClient } from '../../App';
 import '../../App.css';
 import Document, { ErrorMessage, IDocumentProps } from '../CommentableDocument/Document';
 import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment } from './types/findRepositoryByTitle';
-import { Collapse } from 'react-collapse';
 import IntrospectionResultData, { Blob, Repository, RepositoryConnection } from '../../generated/graphql';
 import { RepositoryOwner, StargazerConnection, Language } from '../../generated/graphql'; // todo shouldnt really need
 import RepoSearchContainer from '../RepoSearch/RepoSearchContainer';
@@ -142,17 +140,7 @@ const CommentableCodeLoadRepoContainer = (props: CCContainerProps) => {
     const repoPath = window.location.pathname;
     const owner = repoPath.slice(repoPath.lastIndexOf('repo/') + 5, repoPath.lastIndexOf('/'));
     const name = repoPath.slice(repoPath.lastIndexOf('/') + 1);
-
-    // const owner2 = pathname.slice(pathname.lastIndexOf('repo/') + 5, pathname.lastIndexOf('/'));
-    // const name2 = pathname.slice(pathname.lastIndexOf('/') + 1);
-
-    // // todo
-    // const params = new URLSearchParams(search);
-    // const filePath = params.get('path');
-    // const loadFileName = params.get('file');
-
-    // const testxxxx = loadFileName;
-
+    
     // Load Repo
     const { data, error, loading, client } = useQuery<LoadGithubQueryResponse, LoadGithubQueryVars>(LOAD_REPO_QUERY, {
         variables: { owner, name },
