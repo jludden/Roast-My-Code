@@ -3,7 +3,7 @@ import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import { CardHeader } from './CommentContainer';
 import { Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
-import { FaAngleDown, FaShareAlt, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench } from 'react-icons/fa';
+import { FaAngleDown, FaShareAlt, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench, FaLink } from 'react-icons/fa';
 import { DropdownMenu } from '../RepoContents';
 import { notificationStore } from './DocumentCommentsView';
 import { Collapse } from 'react-collapse';
@@ -196,7 +196,7 @@ export const CopyLinkDropdownItem = ({
         (textRef as any).current.select();
 
         try {
-            showSuccessMessage('Copied to clipboard');
+            showSuccessMessage('Copied link to clipboard');
             await navigator.clipboard.writeText(permalink);
             setCopySuccess('Copied!');
         } catch (error) {
@@ -217,7 +217,8 @@ export const CopyLinkDropdownItem = ({
                 hidden
             />
             <Button color="primary" onClick={copyToClipboard}>
-                {copySuccess}
+                {/* {copySuccess} */}
+                <FaLink />
             </Button>
         {/* </div> */}
         </>
