@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../App.css';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { useQuery } from '@apollo/react-hooks';
@@ -39,11 +39,19 @@ import { FindRepoResults } from './CommentableCodePage/CommentsGqlQueries';
 import { url } from 'inspector';
 import { Blob, Repository } from '../generated/graphql';
 import { cache, githubClient } from '../App';
+import { db, auth } from '../services/firebase';
 
 export interface RepoContentsProps {
     repo: Repository;
     repoComments: FindRepoResults;
     loadFileHandler: (fileName: string, filePath: string) => void; // when a file is selected
+}
+
+export interface RepoDetail extends Line {
+    _id: string;
+    decodedRepoPath: string;
+    num_comments: number;
+    filePath: string;
 }
 
 // to be included in the graphQL query
@@ -65,7 +73,7 @@ export interface GithubRepoContentsQueryData {
 interface Line {
     oid: string;
     name: string;
-    object: Blob;
+    object?: Blob;
 }
 
 // todo for path - automatically go into the directory with most comments!
@@ -116,13 +124,17 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
     // React.useEffect(() => {
     //     setFilePathParam(`${branch}:`);
     // }, [branch, setFilePathParam]);
-    const filePath = filePathParam || `${branch}:`;
 
     const [vars, setVars] = React.useState({
         // path: `${branch}:`,
         repoName: repo.name,
         repoOwner: repo.owner.login,
     });
+
+    // most commented files
+    const [repoDetails, setRepoDetails] = React.useState<Record<string, RepoDetail>>({});
+
+    const filePath = filePathParam || `${branch}:`;
 
     const parts = filePath.split(':'); // 0 - branch 1 - directory path
     const paths = parts[1].split('/');
@@ -137,9 +149,9 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
         // setVars({ ...vars, path });
         setFilePathParam(path, 'pushIn');
     };
-    const handleLineClicked = (line: Line) => {
+    const handleLineClicked = (line: RepoDetail | Line, path: string = filePath) => {
         if (line && line.name && line.object && line.object.oid) {
-            loadFileHandler(line.name, filePath); // trigger update
+            loadFileHandler(line.name, path); // trigger update
         } else {
             // setVars({ ...vars, path: `${vars.path}${line.name}/` });
             setFilePathParam(`${filePath}${line.name}/`, 'pushIn');
@@ -154,27 +166,95 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
         },
     );
 
+    useEffect(() => {
+        const repoPath64 = btoa(`${vars.repoOwner}/${vars.repoName}`);
+        const repositoryCommentIndex = db.ref(`repository-files/${repoPath64}`);
+
+        // const handleChildUpdate = ({snap, text}: {snap: DataSnapshot, text?: string | null | undefined}) => {
+        const handleChildUpdate = (snap: any) => {
+            const snapval = snap.val();
+            const snapParent = snap.ref.parent;
+            // const parentkey = snap.parent().key()
+
+            console.log(snap.key + ' has this many comments' + snapval.num_comments);
+            // todo add last updated too?
+            setRepoDetails((previousState) => {
+                const newState = previousState;
+                const decodedRepoPath = atob(snap.key);
+                const repoPathParts = decodedRepoPath.split(':');
+                const fullFilePath = repoPathParts[1];
+                const filePathParts = fullFilePath.split('/');
+                const fileName = filePathParts[filePathParts.length - 1];
+
+                const branchParts = decodedRepoPath.split(':')[0].split('/');
+                const filePathStart = branchParts[branchParts.length - 1];
+
+                newState[snap.key] = {
+                    ...snapval,
+                    _id: snap.key,
+                    oid: snap.key,
+                    decodedRepoPath,
+                    num_comments: snapval.num_comments,
+                    displayName: fullFilePath,
+                    name: fileName,
+                    filePath: decodedRepoPath.slice(
+                        decodedRepoPath.indexOf(`${filePathStart}:`),
+                        decodedRepoPath.lastIndexOf(fileName),
+                    ),
+                    object: {
+                        oid: 'test',
+                    },
+                    // updatedAt: new Date(snapval.timestamp),
+                    // decodedRepoPath: btoa(snapval.key),
+                } as RepoDetail;
+
+                return newState;
+            });
+        };
+
+        try {
+            repositoryCommentIndex
+                .orderByChild('num_comments')
+                .limitToLast(5)
+                //.on('value') -- returns one snap with subnodes
+                .on('child_added', handleChildUpdate);
+
+            repositoryCommentIndex.on('child_changed', handleChildUpdate);
+        } catch (error) {
+            // setLoadCommentsError(error.message);
+            console.log('Error loading repository details: ' + error.message);
+        }
+        return () => repositoryCommentIndex.off();
+    }, [vars.repoName, vars.repoOwner]);
+
     return (
         <>
             {/* update the URL with the current search state */}
             {/* <UseUrlQuery url={vars.path} name="path" /> */}
             {/* {fileSelected && <UseUrlQuery url={fileSelected} name="file" />} */}
-            <RepoContentsPanelFrame title={title} repoComments={repoComments}>
-                <RepoContentsPanel
-                    title={title}
-                    parts={parts}
-                    inParentDirectory={inParentDirectory}
-                    handleNavTo={handleNavTo}
-                    paths={paths}
-                    loading={loading}
-                    error={error}
-                    data={data}
-                    handleLineClicked={handleLineClicked}
-                    client={client}
-                    filePath={filePath || ''}
-                    vars={vars}
-                />
-            </RepoContentsPanelFrame>
+            <RepoContentsPanelFrame
+                title={title}
+                render={(isFileTabActive) => {
+                    return isFileTabActive ? (
+                        <RepoFileTreePanel
+                            title={title}
+                            parts={parts}
+                            inParentDirectory={inParentDirectory}
+                            handleNavTo={handleNavTo}
+                            paths={paths}
+                            loading={loading}
+                            error={error}
+                            data={data}
+                            handleLineClicked={handleLineClicked}
+                            client={client}
+                            filePath={filePath || ''}
+                            vars={vars}
+                        />
+                    ) : (
+                        <RepoCommentsPanel repoDetails={repoDetails} handleLineClicked={handleLineClicked} />
+                    );
+                }}
+            />
         </>
     );
 };
@@ -185,7 +265,7 @@ export const DropdownMenu = ({ branch }: { branch: string }) => {
             <Dropdown.Trigger>
                 <Button>
                     <span>{branch}</span>
-                    <FaAngleDown style={{paddingLeft: '5px'}} />
+                    <FaAngleDown style={{ paddingLeft: '5px' }} />
                 </Button>
             </Dropdown.Trigger>
             <Dropdown.Menu>
@@ -206,10 +286,11 @@ export const DropdownMenu = ({ branch }: { branch: string }) => {
 
 interface PanelLineProps {
     file: Line;
+    children?: JSX.Element;
     onLineClicked: (file: Line) => void;
     onMouseOver: (event: React.SyntheticEvent<EventTarget>) => void;
 }
-const PanelLine: React.FunctionComponent<PanelLineProps> = props => {
+const PanelLine: React.FunctionComponent<PanelLineProps> = (props) => {
     const { file } = props;
     const fileType = file.name.substring(file.name.lastIndexOf('.'));
 
@@ -219,7 +300,7 @@ const PanelLine: React.FunctionComponent<PanelLineProps> = props => {
                 <Panel.Icon>
                     <FaImage />
                 </Panel.Icon>
-                {file.name}
+                <span>{file.name}</span>
             </Panel.Block>
         );
     }
@@ -231,8 +312,9 @@ const PanelLine: React.FunctionComponent<PanelLineProps> = props => {
             onMouseOver={props.onMouseOver}
             className="panelHover"
         >
-            <Panel.Icon>{file.object.__typename === 'Tree' ? <FaFolder /> : <FaBook />}</Panel.Icon>
+            <Panel.Icon>{file.object?.__typename === 'Tree' ? <FaFolder /> : <FaBook />}</Panel.Icon>
             <a>{file.name}</a>
+            {props.children}
         </Panel.Block>
     );
 };
@@ -241,7 +323,7 @@ interface WarningLineProps {
     text: string;
     color?: 'primary' | 'link' | 'success' | 'info' | 'warning' | 'danger' | undefined;
 }
-const PanelWarningLine: React.FunctionComponent<WarningLineProps> = props => {
+const PanelWarningLine: React.FunctionComponent<WarningLineProps> = (props) => {
     return (
         <Panel.Block backgroundColor={props.color || undefined}>
             <Panel.Icon>
@@ -254,12 +336,11 @@ const PanelWarningLine: React.FunctionComponent<WarningLineProps> = props => {
 
 const RepoContentsPanelFrame = ({
     title,
-    repoComments,
-    children,
-}: {
+    render,
+}:
+{
     title: string;
-    repoComments: FindRepoResults;
-    children: React.ReactElement;
+    render: (filesTabActive: boolean) => JSX.Element;
 }) => {
     const [filesTabActive, setfilesTabActive] = React.useState(true);
     return (
@@ -275,22 +356,42 @@ const RepoContentsPanelFrame = ({
                 </Panel.Tab>
             </Panel.Tab.Group>
 
-            {filesTabActive && children && React.cloneElement(children)}
-            {/* {!filesTabActive && (
-                <Panel.Block>
-                    
-                    <RepoCommentsListDisplayWithDelete
-                        commentListId={commentListId}
-                        documentId={documentId}
-                        data={repoComments}
-                    />
-                </Panel.Block>
-            )} */}
+            {render(filesTabActive)}
         </Panel>
     );
 };
 
-function RepoContentsPanel({
+function RepoCommentsPanel({
+    repoDetails,
+    handleLineClicked,
+}: {
+    repoDetails: Record<string, RepoDetail>;
+    handleLineClicked: (line: Line, path?: string) => void;
+}) {
+    return (
+        <React.Fragment>
+            {repoDetails &&
+                Object.keys(repoDetails).length > 0 &&
+                Object.entries(repoDetails).map(([key, file]) => (
+                    <Panel.Block key={file._id}>
+                        <PanelLine
+                            key={file._id}
+                            file={file}
+                            onLineClicked={(line) => handleLineClicked(line, file.filePath)}
+                            onMouseOver={() => {
+                                // prefetch folder on hover
+                                console.log(`mouseover prefetch? from comments`);
+                            }}
+                        >
+                            <div style={{ marginLeft: '3rem' }}>{`${file.num_comments} comments`}</div>
+                        </PanelLine>
+                    </Panel.Block>
+                ))}
+        </React.Fragment>
+    );
+}
+
+function RepoFileTreePanel({
     title,
     parts,
     inParentDirectory,
@@ -327,7 +428,7 @@ function RepoContentsPanel({
                             <FaEllipsisH />
                         </Icon>
                     </Breadcrumb.Item>
-                    {paths.map(path => (
+                    {paths.map((path) => (
                         <Breadcrumb.Item onClick={() => handleNavTo(path)} key={path}>
                             {' '}
                             {path}{' '}
@@ -356,12 +457,12 @@ function RepoContentsPanel({
                         onLineClicked={handleLineClicked}
                         onMouseOver={() => {
                             // prefetch folder on hover
-                            if (file.object.__typename === 'Tree')
+                            if (file.object?.__typename === 'Tree')
                                 console.log(`mouseover prefetch path (DISABLED): ${filePath}${file.name}/`);
-                                // client.query({
-                                //     query: REPO_CONTENTS_QUERY,
-                                //     variables: { ...vars, path: `${filePath}${file.name}/` },
-                                // });
+                            // client.query({
+                            //     query: REPO_CONTENTS_QUERY,
+                            //     variables: { ...vars, path: `${filePath}${file.name}/` },
+                            // });
                         }}
                     />
                 ))}

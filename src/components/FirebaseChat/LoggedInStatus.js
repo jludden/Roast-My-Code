@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { firebaseStore } from './FirebaseCommentsProvider';
 import { Button, Modal, Media, Title } from 'rbx';
-import { UserAvatar, UserHeader, AvataaarPicker } from '../Avatar';
+import { UserAvatar, UserHeader, AvataaarPicker } from '../Common/Avatar';
 import ErrorBoundary from '../Common/ErrorBoundary';
 import { generateUserName } from './helpers/nameGen';
 import { FaRedoAlt, FaEdit } from 'react-icons/fa';

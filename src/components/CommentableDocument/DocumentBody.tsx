@@ -181,7 +181,7 @@ export class DocumentBody extends React.Component<
                     <Column.Group>
                         <Column size="three-quarters" backgroundColor="dark">
                             {decoded && (
-                                <div style={{ position: 'relative' }} ref={this.syntaxRef}>
+                                <div style={{ position: 'relative' }} ref={this.syntaxRef} className="capture-selected">
                                     <div id="sel-text-hover" className="hover-modal" style={hoverStyle}>
                                         {/* <span>{`selected text (line ${this.state.selectedLine}): ${this.state.selectedText}`}</span> 
                                         <br />
@@ -195,6 +195,7 @@ export class DocumentBody extends React.Component<
                                         <br />
                                         <span>{`selected pos + syntax top: ${selectedPos.top + syntaxY.top}`}</span> */}
                                         <AddCommentBtnGroup
+                                            selectedLine={this.state.selectedLine}
                                             handleCommentAdd={this.handleCommentAdd}
                                             handleShare={this.handleSocialMediaShare}
                                         />
@@ -210,6 +211,7 @@ export class DocumentBody extends React.Component<
                                             return {
                                                 style: this.createLineStyle(lineNumberMap, lineNumber),
                                                 ref: this.state.lineRefs[lineNumber],
+                                                className: 'noselect'
                                             };
                                         }}
                                     >
@@ -279,12 +281,12 @@ export class DocumentBody extends React.Component<
         const selectedId = parts[parts.length - 1];
         selectedId && console.log('Looking to force comment ' + selectedId + ' to be open and scrolled to');
 
-        let previousLineNum = -10;
+        let previousLineNum = 0;
         comments.map((comment: RoastComment) => {
             const lineNumber = comment.lineNumber || 0;
             const line = lineNumberMap.get(lineNumber) || {
                 comments: [],
-                startMinized: lineNumber - previousLineNum < 8,
+                startMinized: lineNumber - previousLineNum < 10,
                 inProgress: false,
             };
 
@@ -307,7 +309,7 @@ export class DocumentBody extends React.Component<
             line.comments.push({
                 __typename: 'Comment',
                 _id: '-1',
-                text: inProgressComment.selectedText || '',
+                text: '', // inProgressComment.selectedText || '',
                 lineNumber: inProgressComment.lineNumber,
                 selectedText: inProgressComment.selectedText,
                 createdAt: null,
@@ -411,24 +413,19 @@ export class DocumentBody extends React.Component<
             this.setState({ currentlySelected: false });
             return false;
         }
-        // const range = window.getSelection().getRangeAt(0);
-        // const startContainerPosition = range.startContainer.nodeValue
-        // const endContainerPosition = parseInt(range.endContainer.parentNode.dataset.position, 10);
 
-        const sel = window.getSelection();
-        if (text && sel && sel.rangeCount > 0) {
+        if (text && selection && selection.rangeCount > 0) {
             // tslint:disable-next-line:no-console
             console.log(`selected text: ${text}`);
 
-            //   const range = sel.getRangeAt(0);
-            //   const preCaretRange = range.cloneRange();
-            //   preCaretRange.selectNodeContents(document.getElementById(
-            //     "doc-body"
-            //   ) as Node);
+            // check if it is a descendant of a node we care about
+            if (selection && selection.anchorNode 
+                && selection.anchorNode.parentElement
+                && !selection.anchorNode.parentElement.closest('.capture-selected')) {
+                return false;
+            }
 
-            //                 <div id="sel-text-hover" className="hover-modal">
-
-            const initialElement = sel.getRangeAt(0).startContainer.parentElement;
+            const initialElement = selection.getRangeAt(0).startContainer.parentElement;
 
             const selectedPos = initialElement ? initialElement.getBoundingClientRect() : {};
 
@@ -437,7 +434,7 @@ export class DocumentBody extends React.Component<
             //                     this.textHover.current
             // })
 
-            const index = this.findFirstLineNumber(sel);
+            const index = this.findFirstLineNumber(selection);
 
             // preCaretRange.selectNodeContents(range.startContainer);
 
@@ -451,14 +448,11 @@ export class DocumentBody extends React.Component<
             //   tslint:disable-next-line:no-console
             console.log(`index: ${index}`);
 
-            // make the comment submission form visible
             if (index >= 0) {
                 this.setState({ selectedLine: +index });
             }
 
-            // const comments = this.props.comments.concat(new RoastComment(index, text));
             this.setState({ currentlySelected: true, selectedText: text, selectedPos });
-            // this.setState({ comments });
         }
 
         //  const startContainerPosition = parseInt(range.startContainer.parentNode.dataset.position, 10);
@@ -489,9 +483,9 @@ export class DocumentBody extends React.Component<
         const initialElement = sel.getRangeAt(0).startContainer.parentElement;
 
         // todo can just use e.target.closest('.whatever-line-number-class')?
-        const myDivOOO = this.closestElement(initialElement, (el: HTMLElement) => {
-            return el.dataset.index != null;
-        });
+        // const myDivOOO = this.closestElement(initialElement, (el: HTMLElement) => {
+        //     return el.dataset.index != null;
+        // });
 
         if (initialElement === null) return -1;
 

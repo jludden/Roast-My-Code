@@ -60,12 +60,16 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
     } = useContext(firebaseStore);
 
     // TODO RECONSIDER NOSHIP react forgive me but i need to force a re-render to see if the refs are updated
+    // even hacking like this there are still times when comments are stuck at the top of the document because their lineRef isn't painted yet (or something like that, I don't know how it works)
     useEffect(() => {
         setTimeout(() => {
-            showErrorMessage('ty');
-            showErrorMessage(undefined);
+            requestAnimationFrame(() => {
+                showErrorMessage('ty');
+                showErrorMessage(undefined);
+            });
         });
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.documentTitle]);
 
     const isCommentAuthor: (comment: RoastComment) => boolean = (comment: RoastComment) => {
         if (user === null) return false;
@@ -79,10 +83,13 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
         try {
             if (comment.text) {
                 const success = await props.onSubmitComment(comment);
-                props.onSubmitCommentFinish(); // notify parent
+                if (!success) {
+                    showErrorMessage('Please sign in to comment');
+                    return SubmitCommentResponse.Error;
+                }
 
-                if (!success) showErrorMessage('Please sign in to comment');
-                return success ? SubmitCommentResponse.Success : SubmitCommentResponse.Error;
+                props.onSubmitCommentFinish(); // notify parent
+                return SubmitCommentResponse.Success;
             }
         } catch (e) {
             showErrorMessage(e.message);
@@ -116,7 +123,7 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
 
     return (
         <ul className="flex-item comments-pane">
-            {/* display all the saved comments */}
+            {/* display all the saved comments (in-progress comment also in the grouping) */}
             {Array.from(props.lineNumberMap, ([lineNumber, grouping]) => (
                 <CommentContainer
                     key={lineNumber}
@@ -130,7 +137,6 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
                     inProgress={grouping.inProgress}
                 />
             ))}
-            {/* also display the comment in progress if any */}
             {props.inProgressComment && (
                 <>
                     {writeCommentError && (
@@ -165,19 +171,31 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
 
 const DocumentCommentsWithNotificationProvider = (props: CommentsViewProps) => {
     const [writeCommentError, setWriteCommentError] = useState<string | undefined>();
+    const [timespan, setTimespan] = useState(0);
+    const [isActive, setIsActive] = useState(false);
+
+    useEffect(() => {
+        let timer: any;
+        if (isActive) {
+            timer = setTimeout(() => {
+                setWriteCommentError(undefined);
+            }, timespan);
+        }
+
+        return () => clearTimeout(timer);
+    }, [isActive, timespan, writeCommentError]);
 
     const showErrorMessage = (message: string | undefined) => {
-        if (!message) {
-            setWriteCommentError(undefined);
-        } else {
-            setWriteCommentError(message);
-            setTimeout(() => {
-                setWriteCommentError(undefined);
-            }, 2000);
-        } 
+        setWriteCommentError(message);
+        setTimespan(2000);
+        setIsActive(true);
     };
 
-    const showSuccessMessage = (message: string) => {};
+    const showSuccessMessage = (message: string) => {
+        setWriteCommentError(message);
+        setTimespan(3000);
+        setIsActive(true);
+    };
 
     return (
         <notificationStore.Provider value={{ state: { writeCommentError }, showErrorMessage, showSuccessMessage }}>

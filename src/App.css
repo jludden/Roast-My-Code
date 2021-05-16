@@ -1,3 +1,7 @@
+* {
+  letter-spacing: .050rem;
+}
+
 .App {
   text-align: center;
 }
@@ -181,7 +185,7 @@ a.card-footer-item {
 .hover-container {
   position: relative;
   display: inline-block;
-  width: 10rem;
+  width: 13.75rem;
   height: 2rem;
 }
 .hover-out {
@@ -198,7 +202,9 @@ a.card-footer-item {
   opacity:100;
   transition-property: all;
   transition-duration: 700ms;
-  transform: translateX(-20%);
+  /* transform: translateX(-8%); */
+  margin-left: 20%;
+  transform: translateX(-15%);
 }
     
 .comment-badge {
@@ -368,6 +374,17 @@ div.navbar-burger {
   position: absolute;
   border-style: solid;
   background-color: antiquewhite;  
+  z-index: 999;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }
 
 
