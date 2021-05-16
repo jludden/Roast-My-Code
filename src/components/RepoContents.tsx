@@ -181,7 +181,8 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
             setRepoDetails((previousState) => {
                 const newState = previousState;
                 const decodedRepoPath = atob(snap.key);
-                const fullFilePath = decodedRepoPath.split(':')[1];
+                const repoPathParts = decodedRepoPath.split(':');
+                const fullFilePath = repoPathParts[1];
                 const filePathParts = fullFilePath.split('/');
                 const fileName = filePathParts[filePathParts.length - 1];
 
@@ -336,11 +337,10 @@ const PanelWarningLine: React.FunctionComponent<WarningLineProps> = (props) => {
 const RepoContentsPanelFrame = ({
     title,
     render,
-}: // children,
+}:
 {
     title: string;
     render: (filesTabActive: boolean) => JSX.Element;
-    // children: React.ReactElement;
 }) => {
     const [filesTabActive, setfilesTabActive] = React.useState(true);
     return (

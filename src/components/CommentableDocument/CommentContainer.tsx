@@ -7,7 +7,7 @@ import { Container, Card, Button, Content, Heading, Message, Icon, Delete, Texta
 import { FaAngleDown, FaAngleUp, FaCommentAlt, FaReply } from 'react-icons/fa';
 import { Collapse } from 'react-collapse';
 import '../../App.css';
-import { UserAvatar, UserAvatarBadge, UserHeader } from '../Avatar';
+import { UserAvatar, UserAvatarBadge, UserHeader } from '../Common/Avatar';
 import {    Link,
     LinkProps,
     NavLink,
@@ -80,13 +80,15 @@ export default class CommentContainer extends React.PureComponent<ICommentContai
                     isActive={this.state.expanded}
                 />
                 <Collapse isOpened={this.state.expanded}>
-                    {comments.map((comment) => (
+                    {comments.map((comment, index) => (
                         <SingleCommentView
                             key={comment._id}
                             comment={comment}
                             onSubmitComment={this.props.onSubmitComment}
                             onEditComment={this.props.onEditComment}
                             onCancelComment={this.props.onCancelComment}
+                            index={index}
+                            onMinimizeClicked={this.onMinimizeClicked}
                         />
                     ))}
                     {this.props.children}

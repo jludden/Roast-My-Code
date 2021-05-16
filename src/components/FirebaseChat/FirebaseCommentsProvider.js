@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useReducer } from 'react';
 import Signup from '../../pages/Signup';
-import { db, auth } from '../../services/firebase';
+import { db, auth, incrementBy } from '../../services/firebase';
 import { firebaseUserToRoastUserName, firebasePhotoURLToRoastAvatar } from './LoggedInStatus';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import { generateUserName, generateAvatar } from './helpers/nameGen';
@@ -17,7 +17,7 @@ const initialState = {
 export const firebaseStore = createContext({
     state: initialState,
     dispatch: (action) => {},
-    submitComment: async (comment, filePath, queryVariables) => false,
+    submitComment: async (comment, filePath, repoPath, queryVariables) => false,
     signOut: async () => {},
 });
 
@@ -69,7 +69,7 @@ export const FirebaseCommentsProvider = ({ children }) => {
         }
     }, initialState);
 
-    const submitComment = async (comment, filePath, queryVariables) => {
+    const submitComment = async (comment, filePath, repoPath, queryVariables) => {
         if (!state.authenticated) {
             dispatch({ type: 'error', payload: 'cannot add comment - not authenticated' });
             return false;
@@ -95,27 +95,39 @@ export const FirebaseCommentsProvider = ({ children }) => {
             },
         };
 
+        const handleFirebaseWriteError = (error) => {
+            if (error) {
+                console.log('Error updating data:', error);
+
+                dispatch({ type: 'error', payload: error.message || 'permission denied' });
+
+                return false;
+            }
+        };
+
         // Write the comment to a few separate places
         var ref = db.ref();
-        // Generate a new push ID for the new post
-        var newCommentRef = await ref.child('posts').push();
+        // Generate a new push ID for the new comment
+        var newCommentRef = await ref.child('comments').push();
         var newCommentKey = newCommentRef.key;
         // Create the data we want to update
         var fbUpdates = {};
         fbUpdates[`user-comments/${user.uid || 1}/${newCommentKey}`] = true;
         fbUpdates[`file-comments/${filePath}/${newCommentKey}`] = newCommentData;
         fbUpdates[`comments/${newCommentKey}`] = newCommentData;
-        // Do a deep-path update
-        ref.update(fbUpdates, function (error) {
-            if (error) {
-                console.log('Error updating data:', error);
-                return false;
-            }
-        });
 
-        // TODO also update index of updated repos
-        // var count = 0;
-        // db.ref(`repository/${repoId || 1}`).push(count + 1);
+        // Do a deep-path update
+        ref.update(fbUpdates, handleFirebaseWriteError);
+
+        // Also update index of commented files
+        // TODO also decrement on the delete
+        const repositoryCommentIndex = db.ref(`repository-files/${repoPath}/${filePath || 1}`);
+        repositoryCommentIndex.update(
+            {
+                num_comments: incrementBy(1),
+            },
+            handleFirebaseWriteError,
+        );
 
         return true;
     };
@@ -158,6 +170,7 @@ export const FirebaseCommentsProvider = ({ children }) => {
         const unsubscribe = auth().onAuthStateChanged((user) => {
             user ? handleSignup(user) : signOut();
         });
+
         return () => unsubscribe();
     }, []);
 

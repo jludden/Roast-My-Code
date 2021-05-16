@@ -60,13 +60,16 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
     } = useContext(firebaseStore);
 
     // TODO RECONSIDER NOSHIP react forgive me but i need to force a re-render to see if the refs are updated
+    // even hacking like this there are still times when comments are stuck at the top of the document because their lineRef isn't painted yet (or something like that, I don't know how it works)
     useEffect(() => {
         setTimeout(() => {
-            showErrorMessage('ty');
-            showErrorMessage(undefined);
+            requestAnimationFrame(() => {
+                showErrorMessage('ty');
+                showErrorMessage(undefined);
+            });
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [props.documentTitle]);
 
     const isCommentAuthor: (comment: RoastComment) => boolean = (comment: RoastComment) => {
         if (user === null) return false;

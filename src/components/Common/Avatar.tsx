@@ -31,10 +31,13 @@ import {
     FaUserGraduate,
     FaUserNinja,
     FaRedoAlt,
+    FaCaretSquareUp,
+    FaAngleDoubleRight,
+    FaAngleDoubleLeft,
 } from 'react-icons/fa';
-import RoastComment, { User } from './CommentableCodePage/types/findRepositoryByTitle';
-import { generateAvatar } from './FirebaseChat/helpers/nameGen';
-import '../App.css';
+import RoastComment, { User } from '../CommentableCodePage/types/findRepositoryByTitle';
+import { generateAvatar } from '../FirebaseChat/helpers/nameGen';
+import '../../App.css';
 
 export interface IAppProps {
     isLoggedIn: boolean;
@@ -143,6 +146,7 @@ export const UserAvatarBadge = ({
         >
             {/* <Avatars index={avatar || 0} /> */}
             {!isActive && <UserAvatarInner imageUrl={photoURL} />}
+            {isActive && <FaAngleDoubleLeft />}
         </Button>
     </div>
 );

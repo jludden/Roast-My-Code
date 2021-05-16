@@ -58,7 +58,13 @@ interface IGithubDocQueryVariables {
     path: string;
 }
 
-const updateComment = async (user: any, comment: RoastComment, filePath: string, isDelete?: boolean) => {
+const updateComment = async (
+    user: any,
+    comment: RoastComment,
+    filePath: string,
+    repoPath: string,
+    isDelete?: boolean,
+) => {
     const refs = [
         db.ref(`user-comments/${user.uid || 1}/${comment._id}`),
         db.ref('file-comments/' + filePath + '/' + comment._id),
@@ -66,6 +72,7 @@ const updateComment = async (user: any, comment: RoastComment, filePath: string,
     ];
 
     if (isDelete) {
+        // todo d
         await Promise.all(refs.map((r) => r.remove()));
     } else {
         await Promise.all(
@@ -87,6 +94,11 @@ const DocCommentsLoader = (props: IDocumentProps) => {
         return btoa(`${owner}/${name}/${path}`);
     }, [props.queryVariables]);
 
+    const repoPath = useMemo(() => {
+        const { owner, name, path } = props.queryVariables;
+        return btoa(`${owner}/${name}`);
+    }, [props.queryVariables]);
+
     const {
         dispatch,
         submitComment,
@@ -100,16 +112,16 @@ const DocCommentsLoader = (props: IDocumentProps) => {
         const dbRef = db.ref('file-comments/' + filePath);
         try {
             dbRef.on('value', (snapshot) => {
-                const chats: RoastComment[] = [];
+                const comments: RoastComment[] = [];
                 snapshot.forEach((snap) => {
                     const val = snap.val();
-                    chats.push({
+                    comments.push({
                         _id: snap.key,
                         updatedAt: new Date(val.timestamp),
                         ...val,
                     });
                 });
-                setComments(chats);
+                setComments(comments);
             });
         } catch (error) {
             setLoadCommentsError(error.message);
@@ -124,8 +136,8 @@ const DocCommentsLoader = (props: IDocumentProps) => {
             comments={comments}
             authenticated={authenticated}
             user={user}
-            onSubmitComment={(comment) => submitComment(comment, filePath, props.queryVariables)}
-            onEditComment={(comment, isDelete) => updateComment(user, comment, filePath, isDelete ?? false)}
+            onSubmitComment={(comment) => submitComment(comment, filePath, repoPath, props.queryVariables)}
+            onEditComment={(comment, isDelete) => updateComment(user, comment, filePath, repoPath, isDelete ?? false)}
             {...props}
         />
     );

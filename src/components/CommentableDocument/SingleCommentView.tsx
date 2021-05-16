@@ -3,7 +3,7 @@ import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import { CardHeader } from './CommentContainer';
 import { Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
-import { FaAngleDown, FaShareAlt, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench, FaLink } from 'react-icons/fa';
+import { FaAngleDown, FaShareAlt, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench, FaLink, FaMinusSquare, FaEllipsisV } from 'react-icons/fa';
 import { DropdownMenu } from '../RepoContents';
 import { notificationStore } from './DocumentCommentsView';
 import { Collapse } from 'react-collapse';
@@ -16,6 +16,8 @@ export interface IRoastCommentProps {
     onEditComment: (details: RoastComment, isDelete?: boolean) => Promise<SubmitCommentResponse>;
     onSubmitComment: (comment: RoastComment) => Promise<SubmitCommentResponse>; // handler for submitting a new comment
     onCancelComment: () => void;
+    index: number;
+    onMinimizeClicked?: () => void;
 }
 
 // permanent link to the comment based on author/repository/filepath + comment id (hash)
@@ -24,7 +26,8 @@ export const GetCommentPermalink = (id: string): string => {
     return `${windowLocation}#${id}`;
 }
 
-const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitComment }: IRoastCommentProps) => {
+const SingleCommentView = (props: IRoastCommentProps) => {
+    const { comment, onEditComment, onCancelComment, onSubmitComment, index, onMinimizeClicked } = props;
     const inProgress = +comment._id < 0;
     let style = {};
     if (inProgress) {
@@ -55,9 +58,13 @@ const SingleCommentView = ({ comment, onEditComment, onCancelComment, onSubmitCo
                         <CardHeader comment={comment} />
                     </Card.Header.Title>
                     <Card.Header.Icon>
+                        {index === 0 && <Icon onClick={onMinimizeClicked}>
+                            <FaMinusSquare />                        
+                        </Icon>}
                         <Dropdown.Trigger>
                             <Icon>
-                                <FaAngleDown />
+                                {/* <FaAngleDown /> */}
+                                <FaEllipsisV />
                             </Icon>
                         </Dropdown.Trigger>
                     </Card.Header.Icon>
