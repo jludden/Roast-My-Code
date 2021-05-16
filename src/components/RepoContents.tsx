@@ -47,10 +47,11 @@ export interface RepoContentsProps {
     loadFileHandler: (fileName: string, filePath: string) => void; // when a file is selected
 }
 
-export interface RepoDetail {
+export interface RepoDetail extends Line {
     _id: string;
     decodedRepoPath: string;
     num_comments: number;
+    filePath: string;
 }
 
 // to be included in the graphQL query
@@ -148,9 +149,9 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
         // setVars({ ...vars, path });
         setFilePathParam(path, 'pushIn');
     };
-    const handleLineClicked = (line: Line) => {
+    const handleLineClicked = (line: RepoDetail | Line, path: string = filePath) => {
         if (line && line.name && line.object && line.object.oid) {
-            loadFileHandler(line.name, filePath); // trigger update
+            loadFileHandler(line.name, path); // trigger update
         } else {
             // setVars({ ...vars, path: `${vars.path}${line.name}/` });
             setFilePathParam(`${filePath}${line.name}/`, 'pushIn');
@@ -179,11 +180,29 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
             // todo add last updated too?
             setRepoDetails((previousState) => {
                 const newState = previousState;
+                const decodedRepoPath = atob(snap.key);
+                const fullFilePath = decodedRepoPath.split(':')[1];
+                const filePathParts = fullFilePath.split('/');
+                const fileName = filePathParts[filePathParts.length - 1];
+
+                const branchParts = decodedRepoPath.split(':')[0].split('/');
+                const filePathStart = branchParts[branchParts.length - 1];
+
                 newState[snap.key] = {
                     ...snapval,
                     _id: snap.key,
-                    decodedRepoPath: atob(snap.key),
+                    oid: snap.key,
+                    decodedRepoPath,
                     num_comments: snapval.num_comments,
+                    displayName: fullFilePath,
+                    name: fileName,
+                    filePath: decodedRepoPath.slice(
+                        decodedRepoPath.indexOf(`${filePathStart}:`),
+                        decodedRepoPath.lastIndexOf(fileName),
+                    ),
+                    object: {
+                        oid: 'test',
+                    },
                     // updatedAt: new Date(snapval.timestamp),
                     // decodedRepoPath: btoa(snapval.key),
                 } as RepoDetail;
@@ -212,22 +231,29 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
             {/* update the URL with the current search state */}
             {/* <UseUrlQuery url={vars.path} name="path" /> */}
             {/* {fileSelected && <UseUrlQuery url={fileSelected} name="file" />} */}
-            <RepoContentsPanelFrame title={title} repoComments={repoComments} repoDetails={repoDetails}>
-                <RepoFileTreePanel
-                    title={title}
-                    parts={parts}
-                    inParentDirectory={inParentDirectory}
-                    handleNavTo={handleNavTo}
-                    paths={paths}
-                    loading={loading}
-                    error={error}
-                    data={data}
-                    handleLineClicked={handleLineClicked}
-                    client={client}
-                    filePath={filePath || ''}
-                    vars={vars}
-                />
-            </RepoContentsPanelFrame>
+            <RepoContentsPanelFrame
+                title={title}
+                render={(isFileTabActive) => {
+                    return isFileTabActive ? (
+                        <RepoFileTreePanel
+                            title={title}
+                            parts={parts}
+                            inParentDirectory={inParentDirectory}
+                            handleNavTo={handleNavTo}
+                            paths={paths}
+                            loading={loading}
+                            error={error}
+                            data={data}
+                            handleLineClicked={handleLineClicked}
+                            client={client}
+                            filePath={filePath || ''}
+                            vars={vars}
+                        />
+                    ) : (
+                        <RepoCommentsPanel repoDetails={repoDetails} handleLineClicked={handleLineClicked} />
+                    );
+                }}
+            />
         </>
     );
 };
@@ -273,9 +299,7 @@ const PanelLine: React.FunctionComponent<PanelLineProps> = (props) => {
                 <Panel.Icon>
                     <FaImage />
                 </Panel.Icon>
-                <span>
-                {file.name}
-                </span>              
+                <span>{file.name}</span>
             </Panel.Block>
         );
     }
@@ -287,7 +311,7 @@ const PanelLine: React.FunctionComponent<PanelLineProps> = (props) => {
             onMouseOver={props.onMouseOver}
             className="panelHover"
         >
-            <Panel.Icon>{ file.object?.__typename === 'Tree' ? <FaFolder /> : <FaBook />}</Panel.Icon>
+            <Panel.Icon>{file.object?.__typename === 'Tree' ? <FaFolder /> : <FaBook />}</Panel.Icon>
             <a>{file.name}</a>
             {props.children}
         </Panel.Block>
@@ -311,14 +335,12 @@ const PanelWarningLine: React.FunctionComponent<WarningLineProps> = (props) => {
 
 const RepoContentsPanelFrame = ({
     title,
-    repoComments,
-    repoDetails,
-    children,
-}: {
+    render,
+}: // children,
+{
     title: string;
-    repoComments: FindRepoResults;
-    repoDetails: Record<string, RepoDetail>;
-    children: React.ReactElement;
+    render: (filesTabActive: boolean) => JSX.Element;
+    // children: React.ReactElement;
 }) => {
     const [filesTabActive, setfilesTabActive] = React.useState(true);
     return (
@@ -334,40 +356,40 @@ const RepoContentsPanelFrame = ({
                 </Panel.Tab>
             </Panel.Tab.Group>
 
-            {filesTabActive && children && React.cloneElement(children)}
-            {!filesTabActive &&
-                repoDetails &&
-                Object.keys(repoDetails).length > 0 &&
-                Object.entries(repoDetails).map(([key, file]) => (
-                    <Panel.Block key={file._id}>                        
-                        <PanelLine
-                            key={file._id}
-                            file={{ 
-                                oid: file._id,
-                                name: file.decodedRepoPath.split(':')[1],
-                            }}
-                            onLineClicked={handleLineClicked}
-                            onMouseOver={() => {
-                                // prefetch folder on hover
-                                    console.log(`mouseover prefetch? from comments`);
-                            
-                            }}
-                        >
-                            <div style={{ marginLeft: '3rem' }}                           >
-                                {`${file.num_comments} comments`}                            
-                            </div>
-                        </PanelLine>
-                    </Panel.Block>
-                ))}
+            {render(filesTabActive)}
         </Panel>
     );
 };
 
-// function RepoCommentsPanel({
-
-// }: {
-
-// }) 
+function RepoCommentsPanel({
+    repoDetails,
+    handleLineClicked,
+}: {
+    repoDetails: Record<string, RepoDetail>;
+    handleLineClicked: (line: Line, path?: string) => void;
+}) {
+    return (
+        <React.Fragment>
+            {repoDetails &&
+                Object.keys(repoDetails).length > 0 &&
+                Object.entries(repoDetails).map(([key, file]) => (
+                    <Panel.Block key={file._id}>
+                        <PanelLine
+                            key={file._id}
+                            file={file}
+                            onLineClicked={(line) => handleLineClicked(line, file.filePath)}
+                            onMouseOver={() => {
+                                // prefetch folder on hover
+                                console.log(`mouseover prefetch? from comments`);
+                            }}
+                        >
+                            <div style={{ marginLeft: '3rem' }}>{`${file.num_comments} comments`}</div>
+                        </PanelLine>
+                    </Panel.Block>
+                ))}
+        </React.Fragment>
+    );
+}
 
 function RepoFileTreePanel({
     title,
