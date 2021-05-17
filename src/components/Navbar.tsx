@@ -29,7 +29,7 @@ const CCNavbar = () => {
             <Navbar.Brand className="App-brand">
                 <Navbar.Item as={AdapterLink} to="/">
                     <img src={logo} alt="Roast My Code Logo" role="presentation" width="medium" height="medium" />
-                    <Title color="primary">&nbsp;Roast My Code</Title>
+                    <Title color="primary">&nbsp;Roast-My-Code</Title>
                 </Navbar.Item>
                 <Navbar.Burger />
             </Navbar.Brand>
