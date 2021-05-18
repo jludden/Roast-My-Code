@@ -17,6 +17,7 @@ functions:
     handler: graphql.graphqlHandler
     environment:
       RMC_GITHUB_PAT: '${self:custom.secrets.RMC_GITHUB_PAT}'
+      RMC_GRAPHQL_CORS_ALLOW: '${self:custom.secrets.RMC_GRAPHQL_CORS_ALLOW}'
     events:
     - http:
         path: graphql

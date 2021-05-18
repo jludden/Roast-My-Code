@@ -58,7 +58,7 @@ exports.graphqlHandler = async function(event, context) {
           "isBase64Encoded": false,
           "headers": {
             ...output.headers,
-            "access-control-allow-origin": "*" //"https://roast-my-code.com"
+            "access-control-allow-origin": process.env.RMC_GRAPHQL_CORS_ALLOW
           },
         });
     }
