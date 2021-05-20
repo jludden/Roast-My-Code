@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import '../App.css';
 // import 'rbx/index.css';
 import { Navbar, Button, Title } from 'rbx';
@@ -11,7 +11,7 @@ import {
     NavLink,
     RouteComponentProps,
 } from 'react-router-dom';
-import {logo} from '../images';
+import { logo, logoAlt } from '../images';
 import { firebaseStore } from './FirebaseChat/FirebaseCommentsProvider';
 import { LoggedInStatus } from './FirebaseChat/LoggedInStatus';
 
@@ -26,10 +26,24 @@ const CCNavbar = () => {
 
     return (
         <Navbar as="div" className="App-header">
+            {/* <img src={logo} alt="Roast My Code Logo" role="presentation" width="medium" height="medium" /> */}
+
             <Navbar.Brand className="App-brand">
                 <Navbar.Item as={AdapterLink} to="/">
-                    <img src={logo} alt="Roast My Code Logo" role="presentation" width="medium" height="medium" />
-                    <Title color="primary">&nbsp;Roast-My-Code</Title>
+                    <div className="logo" style={{ position: 'relative', height: '100%' }}>
+                        <img
+                            src={logo}
+                            alt={logoAlt}
+                            role="presentation"
+                            width="medium"
+                            height="medium"
+                            style={{
+                                maxHeight: '8.75rem',
+                                position: 'absolute',
+                            }}
+                        />
+                    </div>
+                    <Title color="primary">&nbsp;&nbsp;Roast-My-Code</Title>
                 </Navbar.Item>
                 <Navbar.Burger />
             </Navbar.Brand>
@@ -55,18 +69,20 @@ const CCNavbar = () => {
                             {/* <Link to="/about"><Navbar.Item>About</Navbar.Item></Link> */}
                             <Navbar.Item as={AdapterLink} to="/about">
                                 About
-                            </Navbar.Item>                         
+                            </Navbar.Item>
                             <Navbar.Divider />
-                            <Navbar.Item as={AdapterLink} to="/inquiry">Report an issue</Navbar.Item>
+                            <Navbar.Item as={AdapterLink} to="/inquiry">
+                                Report an issue
+                            </Navbar.Item>
                         </Navbar.Dropdown>
                     </Navbar.Item>
                 </Navbar.Segment>
 
                 <Navbar.Segment align="end">
                     <Navbar.Item as="div">
-                    <LoggedInStatus />
+                        <LoggedInStatus />
                         {/* <Button.Group> */}
-                            {/* <Button color="primary">
+                        {/* <Button color="primary">
                 <strong>Sign up</strong>
               </Button>
               <Button color="light">Log in</Button> */}
