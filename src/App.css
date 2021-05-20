@@ -272,6 +272,14 @@ div.navbar-burger {
   {
     width: 3rem;
   }
+  .link-to-site-code-long
+  {
+    display: none;
+  }
+  .link-to-site-code-short
+  {
+    display: inline-block;
+  }
 }
 
 /* smallscreen and up */
@@ -290,6 +298,14 @@ div.navbar-burger {
 {
   width: 5rem;
 }
+.link-to-site-code-long
+  {
+    display: inline-block;
+  }
+  .link-to-site-code-short
+  {
+    display: none;
+  }
 }
 
 /* large screen and up */

@@ -67,7 +67,8 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
                                     color="link"
                                     href="/repo/jludden/Roast-My-Code?path=master%3Asrc%2F"
                                 >
-                                    This website's code
+                                    <span className="link-to-site-code-long">This website's code</span>
+                                    <span className="link-to-site-code-short">!</span>
                                 </Button>
                             </span>
                         </div>
