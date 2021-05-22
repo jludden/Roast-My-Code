@@ -111,26 +111,23 @@ export interface ICommentGrouping {
 
 // reset refs when document changes
 const initRefList = (bodyContent: string) => {
-    const num = bodyContent.split(/\r\n|\r|\n/).length; 
+    const num = bodyContent.split(/\r\n|\r|\n/).length;
     const arr = [React.createRef<HTMLElement>()]; // line 0 unused
     for (let i = 0; i < num; i++) {
         arr.push(React.createRef<HTMLElement>());
     }
     return arr;
-}
+};
 
 type IDocumentBodyCombinedProps = IDocumentBodyPropsWithTheme & IDocumentCommentProps;
 
-export class DocumentBody extends React.Component<
-    IDocumentBodyCombinedProps,
-    IDocumentBodyState
-> {
+export class DocumentBody extends React.Component<IDocumentBodyCombinedProps, IDocumentBodyState> {
     private syntaxRef: React.RefObject<HTMLDivElement>;
 
     constructor(props: IDocumentBodyPropsWithTheme & IDocumentCommentProps) {
         super(props);
         this.syntaxRef = React.createRef();
-       
+
         this.state = {
             clicksCnt: 0,
             currentlySelected: false,
@@ -146,24 +143,27 @@ export class DocumentBody extends React.Component<
         const { hash } = window.location;
         const id = hash.replace('#', '');
         if (id) {
-            setTimeout(() => requestAnimationFrame(() => {
+            setTimeout(() =>
+                requestAnimationFrame(() => {
                     const element = document.getElementById(id);
                     console.log('scrolling to: ' + id + '\n element ' + (element ? 'found' : 'not found'));
                     if (element) element.scrollIntoView();
-                }
-            ));
+                }),
+            );
         }
     }
 
-    static getDerivedStateFromProps(nextProps: IDocumentBodyCombinedProps, prevState: IDocumentBodyState):
-        IDocumentBodyState {
+    static getDerivedStateFromProps(
+        nextProps: IDocumentBodyCombinedProps,
+        prevState: IDocumentBodyState,
+    ): IDocumentBodyState {
         if (prevState.documentId !== nextProps.documentId) {
             return {
                 ...prevState,
                 lineRefs: initRefList(nextProps.content),
-            };        
-        } 
-        
+            };
+        }
+
         return prevState;
     }
 
@@ -225,7 +225,7 @@ export class DocumentBody extends React.Component<
                                     <SyntaxHighlighter
                                         language={language}
                                         style={this.props.theme}
-                                        wrapLongLines ={this.props.wrapLongLines}
+                                        wrapLongLines={this.props.wrapLongLines}
                                         className="left-align"
                                         showLineNumbers={true}
                                         wrapLines={true}
@@ -233,7 +233,7 @@ export class DocumentBody extends React.Component<
                                             return {
                                                 style: this.createLineStyle(lineNumberMap, lineNumber),
                                                 ref: this.state.lineRefs[lineNumber],
-                                                className: 'noselect'
+                                                className: 'noselect',
                                             };
                                         }}
                                     >
@@ -441,9 +441,12 @@ export class DocumentBody extends React.Component<
             console.log(`selected text: ${text}`);
 
             // check if it is a descendant of a node we care about
-            if (selection && selection.anchorNode 
-                && selection.anchorNode.parentElement
-                && !selection.anchorNode.parentElement.closest('.capture-selected')) {
+            if (
+                selection &&
+                selection.anchorNode &&
+                selection.anchorNode.parentElement &&
+                !selection.anchorNode.parentElement.closest('.capture-selected')
+            ) {
                 return false;
             }
 

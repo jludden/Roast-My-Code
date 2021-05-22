@@ -151,20 +151,31 @@ const SingleCommentView = (props: IRoastCommentProps) => {
                                     value={comment.selectedText.replace(/(\r\n|\n|\r)/gm, '')}
                                 />
                             )} */}
-                            <Textarea
-                                fixedSize
-                                readOnly={false}
-                                value={inputText}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)}
+                            <PromptWrapper
+                                render={(setIsBlocking: any) => {
+                                    return (
+                                        <>
+                                            <Textarea
+                                                fixedSize
+                                                readOnly={false}
+                                                value={inputText}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    setInputText(e.target.value);
+                                                    setIsBlocking(e.target.value.length > 0);
+                                                }}
+                                            />
+                                            <Button.Group size="small" className="button-group-end">
+                                                <Button color="warning" rounded onClick={() => setEditMode(false)}>
+                                                    Cancel
+                                                </Button>
+                                                <Button color="primary" rounded onClick={() => updateCommentText()}>
+                                                    Save
+                                                </Button>
+                                            </Button.Group>
+                                            </>
+                                    );
+                                }}
                             />
-                            <Button.Group size="small" className="button-group-end">
-                                <Button color="warning" rounded onClick={() => setEditMode(false)}>
-                                    Cancel
-                                </Button>
-                                <Button color="primary" rounded onClick={() => updateCommentText()}>
-                                    Save
-                                </Button>
-                            </Button.Group>
                         </>
                     )}
 
