@@ -96,6 +96,9 @@ export interface Todo {
     _id: string;
 }
 
+// https://docs.github.com/en/graphql/overview/explorer
+    // "name": "ReefLifeSurvey---Species-Explorer",
+    // "owner": "jludden"  
 export const LOAD_REPO_QUERY = gql`
     query LoadRepo($owner: String!, $name: String!) {
         repository(owner: $owner, name: $name) {
@@ -116,6 +119,9 @@ export const LOAD_REPO_QUERY = gql`
                 nodes {
                     name
                 }
+            }
+            defaultBranchRef {
+                name
             }
             descriptionHTML
             stargazers {
@@ -284,7 +290,8 @@ export const CommentableCodeInner3 = ({
     const [filePathParam, setFilePathParam] = useQueryParam('path', StringParam);
 
     const params = new URLSearchParams(window.location.search);
-    const fileName = params.get('file') || 'master:README.md';
+    const branch = repo.defaultBranchRef ? repo.defaultBranchRef.name : 'master';
+    const fileName = params.get('file') || `${branch}:README.md`;
 
     // todo 2 - include whole path before file (1 path for search dir, 1 for loaded file)
 

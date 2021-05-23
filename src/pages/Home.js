@@ -8,28 +8,8 @@ import { Hero, Title, Container, Message, Box, Textarea, Button, Card, Content, 
 import { Search } from './Search';
 
 export const Home = () => {
-    const comment = {
-        text: 'hello',
-        author: { displayName: 'user 1' },
-        queryVariables: {
-            name: 'ReefLifeSurvey---Species-Explorer',
-            owner: 'jludden',
-            path: 'master:README.md',
-        },
-    };
-
     return (
         <div className="feat-comments">
-            {/* <Hero primary="danger">
-                <Hero.Body>
-                    <Container>
-                        <Title>Roast My Code</Title>
-                        <a href="/Search">
-                            <Button color="info">Search</Button>
-                        </a>
-                    </Container>
-                </Hero.Body>
-            </Hero> */}
             <div className="home-content">
                 {/* <Title size={1}>Search Code Repositories</Title> */}
                 <Search />

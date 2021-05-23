@@ -3,13 +3,24 @@ import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import { CardHeader } from './CommentContainer';
 import { Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
-import { FaAngleDown, FaShareAlt, FaAngleUp, FaCommentAlt, FaReply, FaTrash, FaWrench, FaLink, FaMinusSquare, FaEllipsisV } from 'react-icons/fa';
+import {
+    FaAngleDown,
+    FaShareAlt,
+    FaAngleUp,
+    FaCommentAlt,
+    FaReply,
+    FaTrash,
+    FaWrench,
+    FaLink,
+    FaMinusSquare,
+    FaEllipsisV,
+} from 'react-icons/fa';
 import { DropdownMenu } from '../RepoContents';
 import { notificationStore } from './DocumentCommentsView';
 import { Collapse } from 'react-collapse';
 import { firebaseStore } from '../FirebaseChat/FirebaseCommentsProvider';
 import { SocialToolbar } from './SocialMediaShare';
-
+import { Prompt } from 'react-router-dom';
 
 export interface IRoastCommentProps {
     comment: RoastComment;
@@ -24,10 +35,10 @@ export interface IRoastCommentProps {
 export const GetCommentPermalink = (id: string): string => {
     const windowLocation = window.location.href.replace(window.location.hash, '');
     return `${windowLocation}#${id}`;
-}
+};
 
-const SingleCommentView = (props: IRoastCommentProps) => {
-    const { comment, onEditComment, onCancelComment, onSubmitComment, index, onMinimizeClicked } = props;
+const SingleCommentView = (props: IRoastCommentProps & { setIsBlocking: any }) => {
+    const { comment, onEditComment, onCancelComment, onSubmitComment, index, onMinimizeClicked, setIsBlocking } = props;
     const inProgress = +comment._id < 0;
     let style = {};
     if (inProgress) {
@@ -58,9 +69,11 @@ const SingleCommentView = (props: IRoastCommentProps) => {
                         <CardHeader comment={comment} />
                     </Card.Header.Title>
                     <Card.Header.Icon>
-                        {index === 0 && <Icon onClick={onMinimizeClicked}>
-                            <FaMinusSquare />                        
-                        </Icon>}
+                        {index === 0 && (
+                            <Icon onClick={onMinimizeClicked}>
+                                <FaMinusSquare />
+                            </Icon>
+                        )}
                         <Dropdown.Trigger>
                             <Icon>
                                 {/* <FaAngleDown /> */}
@@ -73,7 +86,6 @@ const SingleCommentView = (props: IRoastCommentProps) => {
                             <Dropdown.Item as="div">
                                 <CopyLinkDropdownItem permalink={permalink} showSuccessMessage={showSuccessMessage} />
                                 <SocialToolbar url={permalink} shareText={comment.text} comment={comment} />
-
                             </Dropdown.Item>
                             {/* <Dropdown.Item as="div">
                             <SocialToolbar url={permalink} />
@@ -99,31 +111,33 @@ const SingleCommentView = (props: IRoastCommentProps) => {
                 <Content>
                     {!inProgress && !editMode && (
                         <>
-                            {/* {comment.selectedText && <QuotedText text={comment.selectedText} />} */}                                                       
+                            {/* {comment.selectedText && <QuotedText text={comment.selectedText} />} */}
                             <p style={style}>{comment.text}</p>
-                            {userIsCommentAuthor && <div className="float-button-pane button-group-end">
-                                <Button
-                                    color="warning"
-                                    size="small"
-                                    rounded
-                                    onClick={() => onEditComment(comment, true)}
-                                    tooltip={'Delete'}
-                                >
-                                    <FaTrash />
-                                </Button>
-                                <Button
-                                    color="primary"
-                                    size="small"
-                                    rounded
-                                    onClick={() => {
-                                        onCancelComment();
-                                        setEditMode(true);
-                                    }}
-                                    tooltip={'Edit'}
-                                >
-                                    <FaWrench />
-                                </Button>
-                            </div>}
+                            {userIsCommentAuthor && (
+                                <div className="float-button-pane button-group-end">
+                                    <Button
+                                        color="warning"
+                                        size="small"
+                                        rounded
+                                        onClick={() => onEditComment(comment, true)}
+                                        tooltip={'Delete'}
+                                    >
+                                        <FaTrash />
+                                    </Button>
+                                    <Button
+                                        color="primary"
+                                        size="small"
+                                        rounded
+                                        onClick={() => {
+                                            onCancelComment();
+                                            setEditMode(true);
+                                        }}
+                                        tooltip={'Edit'}
+                                    >
+                                        <FaWrench />
+                                    </Button>
+                                </div>
+                            )}
                         </>
                     )}
 
@@ -141,7 +155,10 @@ const SingleCommentView = (props: IRoastCommentProps) => {
                                 fixedSize
                                 readOnly={false}
                                 value={inputText}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    setInputText(e.target.value);
+                                    setIsBlocking(e.target.value.length > 0);
+                                }}
                             />
                             <Button.Group size="small" className="button-group-end">
                                 <Button color="warning" rounded onClick={() => setEditMode(false)}>
@@ -156,6 +173,7 @@ const SingleCommentView = (props: IRoastCommentProps) => {
 
                     {inProgress && (
                         <>
+                            {' '}
                             {/* {comment.selectedText && (
                                 <Textarea
                                     disabled
@@ -167,7 +185,10 @@ const SingleCommentView = (props: IRoastCommentProps) => {
                             <Textarea
                                 fixedSize
                                 readOnly={false}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    setInputText(e.target.value);
+                                    setIsBlocking(e.target.value.length > 0);
+                                }}
                             />
                             <Button.Group size="small" className="button-group-end">
                                 <Button color="warning" rounded onClick={() => onCancelComment()}>
@@ -213,7 +234,7 @@ export const CopyLinkDropdownItem = ({
 
     return (
         <>
-        {/* <div style={{ padding: '10px' }}> */}
+            {/* <div style={{ padding: '10px' }}> */}
             {/* <label htmlFor="comment-url-text">Permalink</label> */}
             <textarea
                 id="comment-url-text"
@@ -227,7 +248,7 @@ export const CopyLinkDropdownItem = ({
                 {/* {copySuccess} */}
                 <FaLink />
             </Button>
-        {/* </div> */}
+            {/* </div> */}
         </>
     );
 };
@@ -280,25 +301,25 @@ const CommentCard = ({
 const QuotedText = ({ text }: { text: string }) => {
     const [expanded, setExpanded] = useState(false);
 
-    if (!expanded) return (
-        <Button color="info" 
-        onClick={() => setExpanded(!expanded)}
-        outlined inverted rounded>Show Quoted</Button>
-    )
+    if (!expanded)
+        return (
+            <Button color="info" onClick={() => setExpanded(!expanded)} outlined inverted rounded>
+                Show Quoted
+            </Button>
+        );
 
     return (
         <Collapse isOpened={expanded} onClick={() => setExpanded(!expanded)}>
-
             <Textarea
                 style={{ marginBottom: '10px' }}
                 disabled
                 fixedSize
                 size="small"
                 value={text.replace(/(\r\n|\n|\r)/gm, '')}
-                />
+            />
         </Collapse>
     );
-}
+};
 
 export const SingleCommentUI = ({ comment, ...props }: any) => (
     <CommentCard comment={comment} {...props}>
@@ -306,4 +327,24 @@ export const SingleCommentUI = ({ comment, ...props }: any) => (
     </CommentCard>
 );
 
-export default SingleCommentView;
+export const PromptWrapper = ({ render }: { render: (setIsBlocking: any) => JSX.Element }) => {
+    const [isBlocked, setIsBlocked] = useState(false);
+    return (
+        <>
+            <Prompt when={isBlocked} message={'Are you sure you want to abandon your comment?'} />
+            {render(setIsBlocked)}
+        </>
+    );
+};
+
+const PromptWrappedSingleCommentView = (props: IRoastCommentProps) => {
+    return (
+        <PromptWrapper
+            render={(setIsBlocking: any) => {
+                return <SingleCommentView {...props} setIsBlocking={setIsBlocking} />;
+            }}
+        />
+    );
+};
+
+export default PromptWrappedSingleCommentView;

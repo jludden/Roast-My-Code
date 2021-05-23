@@ -261,12 +261,24 @@ div.navbar-burger {
   }
   .home-content
   {
-    padding:2em;
+    padding:0em 1em 1em 1em;
   }
   .recent-card-text-container
   {
     padding-left: 1rem;
     justify-content: flex-end;
+  }
+  .logo
+  {
+    width: 3rem;
+  }
+  .link-to-site-code-long
+  {
+    display: none;
+  }
+  .link-to-site-code-short
+  {
+    display: inline-block;
   }
 }
 
@@ -275,13 +287,25 @@ div.navbar-burger {
 
 .home-content
 {
-  padding: 2em 4em 2em 4em;
+  padding: 0em 2em 1em 2em;
 }
 .recent-card-text-container
 {
   padding-left: 4rem;
   justify-content: space-between;
 }
+.logo
+{
+  width: 5rem;
+}
+.link-to-site-code-long
+  {
+    display: inline-block;
+  }
+  .link-to-site-code-short
+  {
+    display: none;
+  }
 }
 
 /* large screen and up */
@@ -298,7 +322,11 @@ div.navbar-burger {
 }
 .home-content
 {
-  padding:4em 16em 4em 16em;
+  padding:0em 16em 2em 16em;
+}
+.logo
+{
+
 }
 
 }

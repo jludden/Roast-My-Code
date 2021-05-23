@@ -7,12 +7,12 @@ import '../../App.css';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 import { Blob, Repository } from '../../generated/graphql';
-import { Container, Message, Progress } from 'rbx';
+import { Container, Message, Progress, Section, Box, Title } from 'rbx';
 import { githubClient } from '../../App';
 import { FindRepoResults } from '../CommentableCodePage/CommentsGqlQueries';
 import { findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data as RoastComment2 } from '../CommentableCodePage/types/findRepositoryByTitle';
 import { db, auth } from '../../services/firebase';
-import { tomorrow, ghcolors, darcula } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { tomorrow, ghcolors, darcula, vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { firebaseStore } from '../FirebaseChat/FirebaseCommentsProvider';
 
 export interface IDocumentProps {
@@ -185,7 +185,7 @@ const DocumentLoader = (props: IDocumentProps & IDocumentCommentProps) => {
 };
 
 const DocumentView = (props: IDocumentProps & IDocumentCommentProps & { data: any }) => {
-    const availableThemes = [tomorrow, ghcolors, darcula];
+    const availableThemes = [tomorrow, ghcolors, darcula, vscDarkPlus];
     const [theme, setTheme] = React.useState(tomorrow);
     const [wrapLongLines, setWrapLongLines] = React.useState(true);
 
@@ -207,23 +207,33 @@ const DocumentView = (props: IDocumentProps & IDocumentCommentProps & { data: an
                 cycleTheme={cycleTheme}
                 changeSetting={changeSetting}
             />
-            <DocumentBody
-                {...props}
-                name={props.documentName}
-                content={props.data.repository.object.text}
-                comments={props.comments}
-                repoComments={props.repoComments}
-                repoId={''}
-                // repoId={props.repoComments.findRepositoryByTitle._id}
-                repoTitle={props.repoComments.currentRepoTitle}
-                documentId={''}
-                documentTitle={props.queryVariables.path}
-                commentListId={''}
-                theme={theme}
-                wrapLongLines={wrapLongLines}
-                onSubmitComment={props.onSubmitComment}
-                onEditComment={props.onEditComment}
-            />
+
+            {!!props.data.repository.object.text && props.data.repository.object.text.length > 200000 && (
+                <Container>
+                    <Box>
+                        <Title> File too large to render ¯\_(ツ)_/¯</Title>
+                    </Box>
+                </Container>
+            )}
+            {!!props.data.repository.object.text && props.data.repository.object.text.length < 200000 && (
+                <DocumentBody
+                    {...props}
+                    name={props.documentName}
+                    content={props.data.repository.object.text}
+                    comments={props.comments}
+                    repoComments={props.repoComments}
+                    repoId={''}
+                    // repoId={props.repoComments.findRepositoryByTitle._id}
+                    repoTitle={props.repoComments.currentRepoTitle}
+                    documentId={''}
+                    documentTitle={props.queryVariables.path}
+                    commentListId={''}
+                    theme={theme}
+                    wrapLongLines={wrapLongLines}
+                    onSubmitComment={props.onSubmitComment}
+                    onEditComment={props.onEditComment}
+                />
+            )}
         </>
     );
 };
