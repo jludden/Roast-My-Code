@@ -37,8 +37,8 @@ export const GetCommentPermalink = (id: string): string => {
     return `${windowLocation}#${id}`;
 };
 
-const SingleCommentView = (props: IRoastCommentProps) => {
-    const { comment, onEditComment, onCancelComment, onSubmitComment, index, onMinimizeClicked } = props;
+const SingleCommentView = (props: IRoastCommentProps & { setIsBlocking: any }) => {
+    const { comment, onEditComment, onCancelComment, onSubmitComment, index, onMinimizeClicked, setIsBlocking } = props;
     const inProgress = +comment._id < 0;
     let style = {};
     if (inProgress) {
@@ -151,31 +151,23 @@ const SingleCommentView = (props: IRoastCommentProps) => {
                                     value={comment.selectedText.replace(/(\r\n|\n|\r)/gm, '')}
                                 />
                             )} */}
-                            <PromptWrapper
-                                render={(setIsBlocking: any) => {
-                                    return (
-                                        <>
-                                            <Textarea
-                                                fixedSize
-                                                readOnly={false}
-                                                value={inputText}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    setInputText(e.target.value);
-                                                    setIsBlocking(e.target.value.length > 0);
-                                                }}
-                                            />
-                                            <Button.Group size="small" className="button-group-end">
-                                                <Button color="warning" rounded onClick={() => setEditMode(false)}>
-                                                    Cancel
-                                                </Button>
-                                                <Button color="primary" rounded onClick={() => updateCommentText()}>
-                                                    Save
-                                                </Button>
-                                            </Button.Group>
-                                            </>
-                                    );
+                            <Textarea
+                                fixedSize
+                                readOnly={false}
+                                value={inputText}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    setInputText(e.target.value);
+                                    setIsBlocking(e.target.value.length > 0);
                                 }}
                             />
+                            <Button.Group size="small" className="button-group-end">
+                                <Button color="warning" rounded onClick={() => setEditMode(false)}>
+                                    Cancel
+                                </Button>
+                                <Button color="primary" rounded onClick={() => updateCommentText()}>
+                                    Save
+                                </Button>
+                            </Button.Group>
                         </>
                     )}
 
@@ -190,49 +182,31 @@ const SingleCommentView = (props: IRoastCommentProps) => {
                                     value={comment.selectedText.replace(/(\r\n|\n|\r)/gm, '')}
                                 />
                             )} */}
-                            <PromptWrapper
-                                render={(setIsBlocking: any) => {
-                                    return (
-                                        <>
-                                            <Textarea
-                                                fixedSize
-                                                readOnly={false}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    setInputText(e.target.value);
-                                                    setIsBlocking(e.target.value.length > 0);
-                                                }}
-                                            />
-                                            <Button.Group size="small" className="button-group-end">
-                                                <Button color="warning" rounded onClick={() => onCancelComment()}>
-                                                    Cancel
-                                                </Button>
-                                                <Button
-                                                    color="primary"
-                                                    rounded
-                                                    onClick={() => onSubmitComment({ ...comment, text: inputText })}
-                                                >
-                                                    Save
-                                                </Button>
-                                            </Button.Group>
-                                        </>
-                                    );
+                            <Textarea
+                                fixedSize
+                                readOnly={false}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    setInputText(e.target.value);
+                                    setIsBlocking(e.target.value.length > 0);
                                 }}
                             />
+                            <Button.Group size="small" className="button-group-end">
+                                <Button color="warning" rounded onClick={() => onCancelComment()}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    rounded
+                                    onClick={() => onSubmitComment({ ...comment, text: inputText })}
+                                >
+                                    Save
+                                </Button>
+                            </Button.Group>
                         </>
                     )}
                 </Content>
             </Card.Content>
         </Card>
-    );
-};
-
-export const PromptWrapper = ({ render }: { render: (setIsBlocking: any) => JSX.Element }) => {
-    const [isBlocked, setIsBlocked] = useState(false);
-    return (
-        <>
-            <Prompt when={isBlocked} message={'Are you sure you want to abandon your comment?'} />
-            {render(setIsBlocked)}
-        </>
     );
 };
 
@@ -353,4 +327,24 @@ export const SingleCommentUI = ({ comment, ...props }: any) => (
     </CommentCard>
 );
 
-export default SingleCommentView;
+export const PromptWrapper = ({ render }: { render: (setIsBlocking: any) => JSX.Element }) => {
+    const [isBlocked, setIsBlocked] = useState(false);
+    return (
+        <>
+            <Prompt when={isBlocked} message={'Are you sure you want to abandon your comment?'} />
+            {render(setIsBlocked)}
+        </>
+    );
+};
+
+const PromptWrappedSingleCommentView = (props: IRoastCommentProps) => {
+    return (
+        <PromptWrapper
+            render={(setIsBlocking: any) => {
+                return <SingleCommentView {...props} setIsBlocking={setIsBlocking} />;
+            }}
+        />
+    );
+};
+
+export default PromptWrappedSingleCommentView;
