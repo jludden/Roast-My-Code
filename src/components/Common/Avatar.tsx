@@ -81,7 +81,7 @@ export const AvataaarPicker = ({ imageUrl, setImageUrl }: any) => {
     const [generateMore, setGenerateMore] = React.useState(1);
 
     React.useEffect(() => {
-        var tmp = [...generated];
+        const tmp = [...generated];
         setGenerated(tmp.map((_) => generateAvatar()));
     }, [generateMore]);
 

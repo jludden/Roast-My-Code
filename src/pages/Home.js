@@ -4,30 +4,43 @@ import { db } from '../services/firebase';
 import { FirebaseQueryInner } from '../components/FirebaseChat/FirebaseCommentsProvider';
 import { SingleCommentUI } from '../components/CommentableDocument/SingleCommentView';
 import { CardHeader } from '../components/CommentableDocument/CommentContainer';
-import { Hero, Title, Container, Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown, Section } from 'rbx';
+import {
+    Hero,
+    Title,
+    Container,
+    Message,
+    Box,
+    Textarea,
+    Button,
+    Card,
+    Content,
+    Icon,
+    Delete,
+    Dropdown,
+    Section,
+} from 'rbx';
 import { Search } from './Search';
 
 export const Home = () => {
     return (
         <div className="feat-comments">
             <div className="home-content">
-                {/* <Title size={1}>Search Code Repositories</Title> */}
-                <Search />
+                    <Search />
             </div>
             <div className="home-content">
                 <Section>
-                <Title size={1}>Recent Comments</Title>
-                <FirebaseQueryInner>
-                    {({ comments }) => (
-                        <ul>
-                            {comments.map((comment) => (
-                                <li key={comment._id}>
-                                    <RecentCommentCard key={comment._id} comment={comment} />
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </FirebaseQueryInner>
+                    <Title size={1}>Recent Comments</Title>
+                    <FirebaseQueryInner>
+                        {({ comments }) => (
+                            <ul>
+                                {comments.map((comment) => (
+                                    <li key={comment._id}>
+                                        <RecentCommentCard key={comment._id} comment={comment} />
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </FirebaseQueryInner>
                 </Section>
             </div>
         </div>

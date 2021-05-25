@@ -388,6 +388,7 @@ export const CommentableCodeInner2 = ({
     // const loadFileHandler = (fileName: string, filePath: string) => {
     //     setDocumentPath({ fileName, filePath });
     // };
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const loadFileHandler = (fileName: string, filePath: string) => {};
 
     return (

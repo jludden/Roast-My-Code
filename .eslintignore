@@ -4,5 +4,6 @@
 # Ignore built files except build/index.js
 build/*
 built-lambda/*
+src/generated/*
 
 # !build/index.js

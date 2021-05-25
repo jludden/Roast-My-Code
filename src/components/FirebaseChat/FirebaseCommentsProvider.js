@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React, { createContext, useContext, useState, useEffect, useReducer } from 'react';
 import Signup from '../../pages/Signup';
 import { db, auth, incrementBy } from '../../services/firebase';
