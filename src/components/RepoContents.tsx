@@ -116,11 +116,25 @@ export const REPO_CONTENTS_QUERY = gql`
     }
 `;
 
+export const parseRepo = (snap: any) => {
+    const decodedRepoPath = atob(snap.key);
+    const repoPathParts = decodedRepoPath.split(':');
+    const fullFilePath = repoPathParts[1];
+    const filePathParts = fullFilePath.split('/');
+    const fileName = filePathParts[filePathParts.length - 1];
+
+    const branchParts = decodedRepoPath.split(':')[0].split('/');
+    const filePathStart = branchParts[branchParts.length - 1];
+
+    return { decodedRepoPath, repoPathParts, fullFilePath, filePathParts, fileName, branchParts, filePathStart };
+};
+
 export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoContentsProps) => {
     const branch = repo.defaultBranchRef ? repo.defaultBranchRef.name : 'master';
     const title = (repo && repo.nameWithOwner) || 'Search Github Repositories';
 
-    const [filePathParam, setFilePathParam] = useQueryParam('path', StringParam);
+    const [fileParam, setFileParam] = useQueryParam('file', StringParam);         // current opened file
+    const [filePathParam, setFilePathParam] = useQueryParam('path', StringParam); // directory
     // React.useEffect(() => {
     //     setFilePathParam(`${branch}:`);
     // }, [branch, setFilePathParam]);
@@ -134,6 +148,11 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
     // most commented files
     const [repoDetails, setRepoDetails] = React.useState<Record<string, RepoDetail>>({});
 
+    const fileNameParts = !!fileParam ? fileParam.split(':') : [];
+    const currentFileNamePath = fileNameParts.length > 1 ? fileNameParts[1] : undefined;
+    const currentFileNamePathParts = !!currentFileNamePath ? currentFileNamePath.split('/') : [];
+    const currentFileName = currentFileNamePathParts.length > 0 ? currentFileNamePathParts[currentFileNamePathParts.length - 1] : undefined;
+    
     const filePath = filePathParam || `${branch}:`;
 
     const parts = filePath.split(':'); // 0 - branch 1 - directory path
@@ -180,14 +199,24 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
             // todo add last updated too?
             setRepoDetails((previousState) => {
                 const newState = previousState;
-                const decodedRepoPath = atob(snap.key);
-                const repoPathParts = decodedRepoPath.split(':');
-                const fullFilePath = repoPathParts[1];
-                const filePathParts = fullFilePath.split('/');
-                const fileName = filePathParts[filePathParts.length - 1];
+                // const decodedRepoPath = atob(snap.key);
+                // const repoPathParts = decodedRepoPath.split(':');
+                // const fullFilePath = repoPathParts[1];
+                // const filePathParts = fullFilePath.split('/');
+                // const fileName = filePathParts[filePathParts.length - 1];
 
-                const branchParts = decodedRepoPath.split(':')[0].split('/');
-                const filePathStart = branchParts[branchParts.length - 1];
+                // const branchParts = decodedRepoPath.split(':')[0].split('/');
+                // const filePathStart = branchParts[branchParts.length - 1];
+
+                const {
+                    decodedRepoPath,
+                    repoPathParts,
+                    fullFilePath,
+                    filePathParts,
+                    fileName,
+                    branchParts,
+                    filePathStart,
+                } = parseRepo(snap);
 
                 newState[snap.key] = {
                     ...snapval,
@@ -248,6 +277,7 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
                             handleLineClicked={handleLineClicked}
                             client={client}
                             filePath={filePath || ''}
+                            currentFileName={currentFileName}
                             vars={vars}
                         />
                     ) : (
@@ -285,6 +315,7 @@ export const DropdownMenu = ({ branch }: { branch: string }) => {
 };
 
 interface PanelLineProps {
+    isActive: boolean;
     file: Line;
     children?: JSX.Element;
     onLineClicked: (file: Line) => void;
@@ -307,13 +338,13 @@ const PanelLine: React.FunctionComponent<PanelLineProps> = (props) => {
 
     return (
         <Panel.Block
-            active
+            active={!props.isActive}
             onClick={() => props.onLineClicked(file)}
             onMouseOver={props.onMouseOver}
             className="panelHover"
         >
             <Panel.Icon>{file.object?.__typename === 'Tree' ? <FaFolder /> : <FaBook />}</Panel.Icon>
-            <a>{file.name}</a>
+            <a className={props.isActive ? "panel-line-active" : ""}>{file.name}</a>
             {props.children}
         </Panel.Block>
     );
@@ -337,8 +368,7 @@ const PanelWarningLine: React.FunctionComponent<WarningLineProps> = (props) => {
 const RepoContentsPanelFrame = ({
     title,
     render,
-}:
-{
+}: {
     title: string;
     render: (filesTabActive: boolean) => JSX.Element;
 }) => {
@@ -375,6 +405,7 @@ function RepoCommentsPanel({
                 Object.entries(repoDetails).map(([key, file]) => (
                     <Panel.Block key={file._id}>
                         <PanelLine
+                            isActive={false}
                             key={file._id}
                             file={file}
                             onLineClicked={(line) => handleLineClicked(line, file.filePath)}
@@ -403,6 +434,7 @@ function RepoFileTreePanel({
     handleLineClicked,
     client,
     filePath,
+    currentFileName,
     vars,
 }: {
     title: string;
@@ -416,6 +448,7 @@ function RepoFileTreePanel({
     handleLineClicked: (line: Line) => void;
     client: any;
     filePath: string;
+    currentFileName: string | null | undefined;
     vars: { repoName: string; repoOwner: string };
 }) {
     return (
@@ -455,6 +488,7 @@ function RepoFileTreePanel({
                         key={file.oid}
                         file={file}
                         onLineClicked={handleLineClicked}
+                        isActive={!!currentFileName && file.name.includes(currentFileName)}
                         onMouseOver={() => {
                             // prefetch folder on hover
                             if (file.object?.__typename === 'Tree')

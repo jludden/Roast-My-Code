@@ -128,6 +128,10 @@ span.boxclose{
   background-color: lightgray;
 }
 
+.panel-line-active {
+  color: #65cae4;
+}
+
 /* .hide-after-notify {
   animation: hide-animation 1.6s ease-in 6s;
   visibility: hidden;
@@ -238,6 +242,10 @@ a.card-footer-item {
 .select.is-multiple {
   height: auto;
   padding: 0;
+}
+
+span.tag.is-rounded {
+  background-color: #234d4d;
 }
 
 /* navbar overrides */
@@ -393,6 +401,16 @@ div.navbar-burger {
 
 .float-button-pane > button {
   margin-top: 0.5rem;
+}
+
+.float-emjoi-pane {
+  float: right;
+  flex-direction: row;
+  right: 0px;
+  margin-right: -1.25rem;
+  visibility: visible;
+  background-color: gray;
+  border-radius: 10px;
 }
 
 .hover-modal {  
