@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../App.css';
 import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub } from 'react-icons/fa';
-// import 'rbx/index.css';
+import { RecommendedRepositories } from './RecommendedRepos';
 import {
     Section,
     Title,
@@ -31,6 +31,8 @@ export interface IRepoSearchContainerProps {
 }
 
 const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
+    const [currentTab, setCurrentTab] = useState(true);
+
     const [queryString, setQueryString] = useQueryParam('q', StringParam);
     const queryVariables = {
         queryString: queryString || '',
@@ -74,32 +76,38 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
                         </div>
                     </Panel.Heading>
                     <Panel.Tab.Group>
-                        <Panel.Tab active>search all</Panel.Tab>
-                        <Panel.Tab onClick={() => props.loadRecommendedRepo()}>recommended</Panel.Tab>
+                        <Panel.Tab active={!!currentTab} onClick={() => setCurrentTab(true)}>search all</Panel.Tab>
+                        <Panel.Tab active={!currentTab} onClick={() => setCurrentTab(false)}>recommended</Panel.Tab>
                         {/* <Panel.Tab>most commented</Panel.Tab>
                         <Panel.Tab>starred</Panel.Tab>
                         <Panel.Tab>personal</Panel.Tab> */}
                     </Panel.Tab.Group>
 
-                    <Panel.Block>
-                        <Control iconLeft>
-                            <Input
-                                size="small"
-                                type="text"
-                                placeholder={queryString || 'search'}
-                                onChange={handleQueryChange}
-                            />
-                            <Icon size="small" align="left">
-                                <FaSearch />
-                            </Icon>
-                        </Control>
-                    </Panel.Block>
+                    {currentTab && (
+                        <>
+                            <Panel.Block>
+                                <Control iconLeft>
+                                    <Input
+                                        size="small"
+                                        type="text"
+                                        placeholder={queryString || 'search'}
+                                        onChange={handleQueryChange}
+                                    />
+                                    <Icon size="small" align="left">
+                                        <FaSearch />
+                                    </Icon>
+                                </Control>
+                            </Panel.Block>
 
-                    <RepoSearch
-                        // githubClient={githubClient}
-                        queryVariables={queryVariables}
-                        loadRepoHandler={props.loadRepoHandler}
-                    />
+                            <RepoSearch
+                                // githubClient={githubClient}
+                                queryVariables={queryVariables}
+                                loadRepoHandler={props.loadRepoHandler}
+                            />
+                        </>
+                    )}
+
+                    {!currentTab && <RecommendedRepositories />}
                 </Panel>
             </Container>
         </Section>
