@@ -2,6 +2,7 @@ import React, { useState, useRef, useContext } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import { CardHeader } from './CommentContainer';
+import { Emoji } from 'emoji-mart';
 import { Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
 import {
     FaAngleDown,
@@ -113,6 +114,11 @@ const SingleCommentView = (props: IRoastCommentProps & { setIsBlocking: any }) =
                         <>
                             {/* {comment.selectedText && <QuotedText text={comment.selectedText} />} */}
                             <p style={style}>{comment.text}</p>
+                            {!userIsCommentAuthor && (
+                                <div className="float-emjoi-pane">
+                                    <Emoji emoji=':santa::skin-tone-3:' size={16} />
+                                    </div>
+                            )}
                             {userIsCommentAuthor && (
                                 <div className="float-button-pane button-group-end">
                                     <Button
