@@ -199,15 +199,6 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
             // todo add last updated too?
             setRepoDetails((previousState) => {
                 const newState = previousState;
-                // const decodedRepoPath = atob(snap.key);
-                // const repoPathParts = decodedRepoPath.split(':');
-                // const fullFilePath = repoPathParts[1];
-                // const filePathParts = fullFilePath.split('/');
-                // const fileName = filePathParts[filePathParts.length - 1];
-
-                // const branchParts = decodedRepoPath.split(':')[0].split('/');
-                // const filePathStart = branchParts[branchParts.length - 1];
-
                 const {
                     decodedRepoPath,
                     repoPathParts,
@@ -243,6 +234,7 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
 
         try {
             repositoryCommentIndex
+                .child('files')
                 .orderByChild('num_comments')
                 .limitToLast(5)
                 //.on('value') -- returns one snap with subnodes

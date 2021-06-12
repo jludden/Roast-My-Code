@@ -30,17 +30,36 @@ import {
 import { db, auth } from '../../services/firebase';
 
 export const RecommendedRepositories = () => {
+    const [repos, setRepos] = useState({});
+
     useEffect(() => {
         // const repoPath64 = btoa(`${vars.repoOwner}/${vars.repoName}`);
         // const repositoryCommentIndex = db.ref(`repository-files/${repoPath64}`);
-        const repositoryCommentIndex = db.ref(`repository-files/`);
+        const repoIndex = db.ref(`repository-files/`);
 
         // const handleChildUpdate = ({snap, text}: {snap: DataSnapshot, text?: string | null | undefined}) => {
-        // const handleChildUpdate = (snap) => {
-        //     const snapval = snap.val();
-        //     const snapParent = snap.ref.parent;
-        //     // const parentkey = snap.parent().key()
+        const handleChildUpdate = (snap) => {
+            const snapval = snap.val();
+            const key = atob(snap.key);
+            // Object.keys(snapval)[0];
+            
+            // const path = atob(key);
 
+            // const newState = [...repos];
+            // newState[key] = snapval;
+            // for (const [key, value] of Object.entries(snapval)) {
+            //     const path = atob(key);
+            //     newState[path] = value;
+                
+            // };
+            // setRepos(newState);
+            setRepos((previousState) => {
+                const newState = {...previousState};
+
+                newState[key] = snapval;
+                return newState;
+            })
+        }
         //     console.log(snap.key + ' has this many comments' + snapval.num_comments);
         //     // todo add last updated too?
         //     setRepoDetails((previousState) => {
@@ -77,35 +96,38 @@ export const RecommendedRepositories = () => {
         //     });
         // };
 
-        // try {
-        //     repositoryCommentIndex
-        //         .orderByChild('num_comments')
-        //         .limitToLast(5)
-        //         //.on('value') -- returns one snap with subnodes
-        //         .on('child_added', handleChildUpdate);
+        try {
+            repoIndex
+                // .orderByChild('num_comments')
+                .limitToLast(5)
+                //.on('value') -- returns one snap with subnodes
+                .on('child_added', handleChildUpdate);
 
-        //     repositoryCommentIndex.on('child_changed', handleChildUpdate);
-        // } catch (error) {
-        //     // setLoadCommentsError(error.message);
-        //     console.log('Error loading repository details: ' + error.message);
-        // }
-        // return () => repositoryCommentIndex.off();
+            repoIndex.on('child_changed', handleChildUpdate);
+        } catch (error) {
+            // setLoadCommentsError(error.message);
+            console.log('Error loading repository details: ' + error.message);
+        }
+        return () => repoIndex.off();
     }, []);
 
-
-    const edges = [{
-        node: {
-            nameWithOwner: "bob",
-            id: 123,
-            primaryLanguage: {
-                name: "tom",
-                url: "123",
-                stargazers: {
-                    totalCount: 6
+    const edges = [];
+    for (const [key, value] of Object.entries(repos)) {
+        edges.push({
+            node: {
+                nameWithOwner: key,
+                id: key,
+                primaryLanguage: {
+                    name: "tom",
+                    url: "123",
+                    stargazers: {
+                        totalCount: 6
+                    }
                 }
             }
         }
-    }];
+        )
+    };
 
     return (
         <>
