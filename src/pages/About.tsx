@@ -28,6 +28,10 @@ const About = () => {
                 </a>
             </p>
             <p>
+                Heartfelt thanks for the Roast-My-Code Logo from [杰意](http://www.ecologyofwhy.com/about)
+                Check out more of their work at [ecologyofwhy.com](http://www.ecologyofwhy.com/)
+            </p>
+            <p>
                 Many thanks to: 
                 
                 React-Syntax-Highlighter

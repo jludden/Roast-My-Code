@@ -1,43 +1,23 @@
 [![Netlify Status](https://api.netlify.com/api/v1/badges/82659b9c-1bae-4c53-8a1f-39480988a17f/deploy-status)](https://app.netlify.com/sites/jludden-react/deploys)
 
-# Roast My Code
+# [Roast My Code](www.roast-my-code.com)
 
-## Idea
-This repository started as a test bed for me to learn many new technologies: React, Typescript, GraphQL, AWS Amplify, and many more. In fact, when I first started writing it I was almost exclusively a back-end developer, with a very fragile grasp of HTML, CSS, and React. With that in mind, don't be surprised to find some truly terrible and un-idiomatic React code in this repository. I'm okay with that - my goal was to learn these technologies, not to master them. I like to think that if I was reviewing a pull request of this quality, I would send it back with quite a few comments. What issues can you find?
+## About
+This repository started as a test bed for me to learn many new technologies: React, Typescript, GraphQL, and other web technologies like Firebase and AWS. Although I hacked some npm packages together, the truth is I still have a very limited understanding of all of the above. With that in mind, don't be surprised to find some truly terrible and un-idiomatic code in this repository. I'm okay with that - my goal was to ~~pad my resume~~ broadly learn about modern web tech, not to become a master overnight. I like to think that if I was reviewing a pull request of this quality, I would send it back with quite a few comments. What issues can you find?
 
 ## Screenshots
 
-Github repository search and file tree:
+### Search Github Repositories
+<img src="screenshots/rmc_search_repos.png" width="90%">
 
-<img src="screenshots/rmc_github_search.png" width="40%">
-<img src="screenshots/rmc_github_repo_tree.png" width="60%">
-
-Code viewing and commenting:
-<img src="screenshots/rmc_code_review.png" with="90%">
-favicon:
-https://gauger.io/fonticon/
- * fire-alt
-
-images:
-undraw.co
- * annotation
-
-https://thenounproject.com/search/?q=smores
- * ehh
-
-https://delesign.com/free-designs/graphics
- * emergency fire
-
-colors:
-ffa000 favicon
-
+### Syntax highlighting and adding comments:
+<img src="screenshots/rmc_commenting_2.png" with="90%">
 
 ## Thanks
-React-Syntax-Highlighter
-https://github.com/react-syntax-highlighter/react-syntax-highlighter#readme
+Roast-My-Code Logo from [杰意](http://www.ecologyofwhy.com/)
 
+[React-Syntax-Highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter#readme)
 
-https://www.npmjs.com/package/random-avatar-generator
-https://getavataaars.com/
+[avataaars](https://getavataaars.com/) and [random-avatar-generator](https://www.npmjs.com/package/random-avatar-generator)
 
-https://github.com/aceakash/project-name-generator
+[project-name-generator](https://github.com/aceakash/project-name-generator)

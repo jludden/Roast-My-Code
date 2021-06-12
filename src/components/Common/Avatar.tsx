@@ -206,7 +206,8 @@ export const UserHeader = ({ user }: { user?: User }) => {
     const userHeaderTextStyle = {
         // fontWeight: 'bold',
         fontSize: '16px',
-        paddingLeft: '10px',
+        fontWeight: 200,
+        padding: '4px 4px 0px 4px',
     };
 
     if (!user)
