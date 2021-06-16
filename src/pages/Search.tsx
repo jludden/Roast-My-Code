@@ -2,7 +2,7 @@ import React from 'react';
 import '../App.css';
 import { Container } from 'rbx';
 import { Redirect } from 'react-router-dom';
-import { Repository } from '../generated/graphql';
+import { Repository, Scalars } from '../generated/graphql';
 import RepoSearchContainer from '../components/RepoSearch/RepoSearchContainer';
 import './Search.css';
 
@@ -29,7 +29,7 @@ export const Search = (props: IHomeProps) => {
             {shouldRedirect.length > 0 && <Redirect to={`/repo${shouldRedirect}`} push />}
 
             <RepoSearchContainer
-                loadRepoHandler={(repo: Repository) => setShouldRedirect(repo.resourcePath)}
+                loadRepoHandler={(path: Scalars["URI"]) => setShouldRedirect(path)}
                 loadRecommendedRepo={() => setShouldRedirect('/jludden/ReefLifeSurvey---Species-Explorer')}
             />
             {props.children && React.cloneElement(props.children)}

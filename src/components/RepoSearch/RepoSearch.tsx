@@ -31,12 +31,12 @@ import {
 } from 'react-icons/fa';
 import { githubClient } from '../../App';
 import RepoContents from '../RepoContents';
-import { Repository } from '../../generated/graphql';
+import { Repository, Scalars } from '../../generated/graphql';
 
 export interface IGithubQueryProps {
     // githubClient: ApolloClient<T>;
     queryVariables: IGithubQueryVariables;
-    loadRepoHandler: (repo: Repository) => void; // when a repository is selected
+    loadRepoHandler: (path: Scalars["URI"]) => void; // when a repository is selected
 }
 // to be included in the graphQL query
 export interface IGithubQueryVariables {
@@ -86,7 +86,7 @@ const RepoSearch = (props: IGithubQueryProps) => {
                 data.search.edges.map(repo => (
                     <Panel.Block
                         key={repo.node.id}
-                        onClick={() => props.loadRepoHandler(repo.node)}
+                        onClick={() => props.loadRepoHandler(repo.node.resourcePath)}
                         className="panelHover"
                     >
                         <Panel.Icon>

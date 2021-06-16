@@ -127,7 +127,7 @@ export const FirebaseCommentsProvider = ({ children }) => {
         // TODO also decrement on the delete
         const repositoryIndex = db.ref(`repository-files/${repoPath}`);
         const repositoryFileCommentIndex = repositoryIndex.child(`files/${filePath || 1}`); //db.ref(`repository-files/${repoPath}/files/${filePath || 1}`);
-        const repositoryLanguageCommentIndex = repositoryIndex.child(`languages/${fileLang || 'other'}`)
+        const repositoryLanguageCommentIndex = repositoryIndex.child(`languages/${fileLang || 'other'}`);
         repositoryIndex.update(
             {
                 num_comments: incrementBy(1),
@@ -138,6 +138,12 @@ export const FirebaseCommentsProvider = ({ children }) => {
         repositoryFileCommentIndex.update(
             {
                 num_comments: incrementBy(1),                
+            },
+            handleFirebaseWriteError,
+        );
+        repositoryLanguageCommentIndex.update(
+            {
+                num_comments: incrementBy(1),
             },
             handleFirebaseWriteError,
         );
@@ -218,7 +224,7 @@ export const FirebaseQueryInner = ({ children }) => {
         try {
             dbRef
                 .orderByChild('timestamp')
-                .limitToLast(20)
+                .limitToLast(10)
                 .on('child_added', function (snap) {
                     const snapval = snap.val();
                     console.log(

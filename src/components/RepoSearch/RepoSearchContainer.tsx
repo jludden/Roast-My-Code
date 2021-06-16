@@ -20,13 +20,13 @@ import {
 } from 'rbx';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import IntrospectionResultData, { Repository } from '../../generated/graphql';
+import IntrospectionResultData, { Repository, Scalars } from '../../generated/graphql';
 import RepoSearch, { IGithubQueryVariables, IGithubQueryProps } from './RepoSearch';
 // import { analytics } from '../../services/firebase';
 // import { githubClient } from '../../App';
 
 export interface IRepoSearchContainerProps {
-    loadRepoHandler: (repo: Repository) => void; // when a repository is selected
+    loadRepoHandler: (path: Scalars["URI"]) => void; // when a repository is selected
     loadRecommendedRepo: () => void;
 }
 
@@ -107,7 +107,7 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
                         </>
                     )}
 
-                    {!currentTab && <RecommendedRepositories />}
+                    {!currentTab && <RecommendedRepositories loadRepoHandler={props.loadRepoHandler}/>}
                 </Panel>
             </Container>
         </Section>

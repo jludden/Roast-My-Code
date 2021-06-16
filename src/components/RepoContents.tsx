@@ -117,16 +117,22 @@ export const REPO_CONTENTS_QUERY = gql`
 `;
 
 export const parseRepo = (snap: any) => {
-    const decodedRepoPath = atob(snap.key);
-    const repoPathParts = decodedRepoPath.split(':');
-    const fullFilePath = repoPathParts[1];
-    const filePathParts = fullFilePath.split('/');
-    const fileName = filePathParts[filePathParts.length - 1];
+    // try {    
+        const decodedRepoPath = atob(snap.key);
+        const repoPathParts = decodedRepoPath.split(':');
+        const fullFilePath = repoPathParts[1];
+        const filePathParts = fullFilePath.split('/');
+        const fileName = filePathParts[filePathParts.length - 1];
 
-    const branchParts = decodedRepoPath.split(':')[0].split('/');
-    const filePathStart = branchParts[branchParts.length - 1];
+        const branchParts = decodedRepoPath.split(':')[0].split('/');
+        const filePathStart = branchParts[branchParts.length - 1];
 
-    return { decodedRepoPath, repoPathParts, fullFilePath, filePathParts, fileName, branchParts, filePathStart };
+        return { decodedRepoPath, repoPathParts, fullFilePath, filePathParts, fileName, branchParts, filePathStart };
+    // }
+    // catch (e) {
+    //     console.log("Error parsing repo: "+e);
+    //     return {decodedRepoPath: ""};
+    // }
 };
 
 export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoContentsProps) => {
@@ -187,7 +193,7 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
 
     useEffect(() => {
         const repoPath64 = btoa(`${vars.repoOwner}/${vars.repoName}`);
-        const repositoryCommentIndex = db.ref(`repository-files/${repoPath64}`);
+        const repositoryCommentIndex = db.ref(`repository-files/${repoPath64}/files`);
 
         // const handleChildUpdate = ({snap, text}: {snap: DataSnapshot, text?: string | null | undefined}) => {
         const handleChildUpdate = (snap: any) => {
@@ -234,7 +240,7 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
 
         try {
             repositoryCommentIndex
-                .child('files')
+                // .child('files')
                 .orderByChild('num_comments')
                 .limitToLast(5)
                 //.on('value') -- returns one snap with subnodes
