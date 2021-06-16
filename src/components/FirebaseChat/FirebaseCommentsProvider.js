@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React, { createContext, useContext, useState, useEffect, useReducer } from 'react';
 import Signup from '../../pages/Signup';
 import { db, auth, incrementBy } from '../../services/firebase';
@@ -81,6 +82,9 @@ export const FirebaseCommentsProvider = ({ children }) => {
             return false;
         }
 
+        const docTitleParts = queryVariables.path.split('.');
+        const fileLang = docTitleParts[docTitleParts.length - 1];
+
         const newCommentData = {
             filePath,
             queryVariables,
@@ -121,8 +125,23 @@ export const FirebaseCommentsProvider = ({ children }) => {
 
         // Also update index of commented files
         // TODO also decrement on the delete
-        const repositoryCommentIndex = db.ref(`repository-files/${repoPath}/${filePath || 1}`);
-        repositoryCommentIndex.update(
+        const repositoryIndex = db.ref(`repository-files/${repoPath}`);
+        const repositoryFileCommentIndex = repositoryIndex.child(`files/${filePath || 1}`); //db.ref(`repository-files/${repoPath}/files/${filePath || 1}`);
+        const repositoryLanguageCommentIndex = repositoryIndex.child(`languages/${fileLang || 'other'}`);
+        repositoryIndex.update(
+            {
+                num_comments: incrementBy(1),
+                last_updated: Date.now(),
+            },
+            handleFirebaseWriteError,
+        );
+        repositoryFileCommentIndex.update(
+            {
+                num_comments: incrementBy(1),                
+            },
+            handleFirebaseWriteError,
+        );
+        repositoryLanguageCommentIndex.update(
             {
                 num_comments: incrementBy(1),
             },
@@ -205,7 +224,7 @@ export const FirebaseQueryInner = ({ children }) => {
         try {
             dbRef
                 .orderByChild('timestamp')
-                .limitToLast(20)
+                .limitToLast(10)
                 .on('child_added', function (snap) {
                     const snapval = snap.val();
                     console.log(

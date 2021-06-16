@@ -183,6 +183,7 @@ const SingleCommentView = (props: IRoastCommentProps & { setIsBlocking: any }) =
                                 />
                             )} */}
                             <Textarea
+                                autoFocus
                                 fixedSize
                                 readOnly={false}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

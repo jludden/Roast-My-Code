@@ -19,7 +19,8 @@
     "jsx": "react",
     "noImplicitUseStrict": true,
     "alwaysStrict": false,
-    "strict": true
+    "strict": true,
+    "noFallthroughCasesInSwitch": true
   },
   "include": [
     "src"

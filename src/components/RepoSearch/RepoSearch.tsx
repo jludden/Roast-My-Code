@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import ApolloClient, { gql } from 'apollo-boost';
-
 import { useQuery } from '@apollo/react-hooks';
 import {
     Progress,
@@ -32,14 +30,13 @@ import {
     FaExternalLinkAlt,
 } from 'react-icons/fa';
 import { githubClient } from '../../App';
-
 import RepoContents from '../RepoContents';
-import { Repository } from '../../generated/graphql';
+import { Repository, Scalars } from '../../generated/graphql';
 
 export interface IGithubQueryProps {
     // githubClient: ApolloClient<T>;
     queryVariables: IGithubQueryVariables;
-    loadRepoHandler: (repo: Repository) => void; // when a repository is selected
+    loadRepoHandler: (path: Scalars["URI"]) => void; // when a repository is selected
 }
 // to be included in the graphQL query
 export interface IGithubQueryVariables {
@@ -89,7 +86,7 @@ const RepoSearch = (props: IGithubQueryProps) => {
                 data.search.edges.map(repo => (
                     <Panel.Block
                         key={repo.node.id}
-                        onClick={() => props.loadRepoHandler(repo.node)}
+                        onClick={() => props.loadRepoHandler(repo.node.resourcePath)}
                         className="panelHover"
                     >
                         <Panel.Icon>
@@ -98,7 +95,7 @@ const RepoSearch = (props: IGithubQueryProps) => {
                         <p>{repo.node.nameWithOwner} </p>
                         {/* : last updated at {repo.node.updatedAt}</p> */}
                         {repo.node.primaryLanguage && (
-                            <Tag.Group>
+                            <Tag.Group style={{ paddingLeft: '1rem' }}>
                                 <Tag rounded> {repo.node.primaryLanguage.name} </Tag>
                                 <Tag rounded>
                                     <Panel.Icon>
