@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from 'rbx';
 import { FaCommentDots, FaShareAlt } from 'react-icons/fa';
-import { SocialToolbar } from './SocialMediaShare';
+import { SocialToolbar } from '../Common/SocialMediaShare';
 
 export const AddCommentBtnGroup = ({ styles, selectedLine, ...props }: any) => {
     const [expandSocial, setExpandSocial] = useState(false);

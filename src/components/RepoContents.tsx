@@ -481,6 +481,7 @@ function RepoFileTreePanel({
 
             {!loading &&
                 data &&
+                data.repository.folder &&
                 data.repository.folder.entries.map((file) => (
                     <PanelLine
                         key={file.oid}

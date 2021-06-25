@@ -21,7 +21,7 @@ import { DropdownMenu } from '../RepoContents';
 import { notificationStore } from './DocumentCommentsView';
 import { Collapse } from 'react-collapse';
 import { firebaseStore } from '../FirebaseChat/FirebaseCommentsProvider';
-import { SocialToolbar } from './SocialMediaShare';
+import { SocialToolbar } from '../Common/SocialMediaShare';
 import { Prompt } from 'react-router-dom';
 
 export interface IRoastCommentProps {
