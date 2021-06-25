@@ -24,6 +24,7 @@ export interface findRepositoryByTitle_findRepositoryByTitle_documentsList_data_
   updatedAt: string | null;
   author: User | undefined;
   // author: findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data_author | null;
+  reactions: {[emojiKey: string]: number};
 }
 export default findRepositoryByTitle_findRepositoryByTitle_documentsList_data_commentsList_data_comments_data;
 

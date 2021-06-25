@@ -2,7 +2,8 @@ import React, { useState, useRef, useContext } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import { CardHeader } from './CommentContainer';
-import { Emoji } from 'emoji-mart';
+import { Emoji, Picker, EmojiData } from 'emoji-mart';
+import data from 'emoji-mart/data/twitter.json';
 import { Message, Box, Textarea, Button, Card, Content, Icon, Delete, Dropdown } from 'rbx';
 import {
     FaAngleDown,
@@ -62,6 +63,11 @@ const SingleCommentView = (props: IRoastCommentProps & { setIsBlocking: any }) =
         setEditMode(false);
     };
 
+    const [pickedEmoji, setPickedEmoji] = useState<EmojiData|string>(':santa::skin-tone-3:');
+    const handleEmojiPicked = (emoji: EmojiData, event: any) => {
+        setPickedEmoji(emoji);
+    };
+
     return (
         <Card size="small" className="card-rounded" id={id} style={style}>
             <Card.Header>
@@ -88,21 +94,6 @@ const SingleCommentView = (props: IRoastCommentProps & { setIsBlocking: any }) =
                                 <CopyLinkDropdownItem permalink={permalink} showSuccessMessage={showSuccessMessage} />
                                 <SocialToolbar url={permalink} shareText={comment.text} comment={comment} />
                             </Dropdown.Item>
-                            {/* <Dropdown.Item as="div">
-                            <SocialToolbar url={permalink} />
-                            </Dropdown.Item>
-                            <Dropdown.Item as="div">
-                                <Button
-                                    size="small"
-                                    rounded
-                                    // todo onClick
-                                    // onClick={() => props.handleShare()}
-                                    tooltip="Share to Social Media"
-                                    color="warning"
-                                >
-                                    <FaShareAlt />
-                                </Button>
-                            </Dropdown.Item> */}
                         </Dropdown.Content>
                     </Dropdown.Menu>
                 </Dropdown>
@@ -115,9 +106,33 @@ const SingleCommentView = (props: IRoastCommentProps & { setIsBlocking: any }) =
                             {/* {comment.selectedText && <QuotedText text={comment.selectedText} />} */}
                             <p style={style}>{comment.text}</p>
                             {!userIsCommentAuthor && (
-                                <div className="float-emjoi-pane">
-                                    <Emoji emoji=':santa::skin-tone-3:' size={16} />
-                                    </div>
+                                <>
+                                <div className="float-emoji-pane">
+                                    {  (typeof pickedEmoji === "string") ? pickedEmoji : `${pickedEmoji.id}: ${pickedEmoji.name}` }
+                                    <Emoji emoji={pickedEmoji} size={16} />
+                                </div>
+                                <div className="float-emoji-pane">    
+                                    {comment.reactions && Object.entries(comment.reactions).map(
+                                        ([emojiKey, numReactions]) => (
+                                            <div>
+                                            <Emoji emoji={emojiKey}  size={32}/>
+                                            <span>{numReactions}</span>
+                                            </div>
+                                        )
+                                    )}
+                                    
+
+                                    {/* <NimblePicker set='twitter' data={data} /> */}
+                                    <Picker 
+                                    set='twitter'
+                                    onClick={handleEmojiPicked}
+                                    recent={['+1', 'joy', 'heart_eyes', 'nauseated_face']}
+                                    showPreview={false}
+                                    emojiTooltip={true}
+                                    exclude={['places']}
+                                    />
+                                </div>
+                                </>
                             )}
                             {userIsCommentAuthor && (
                                 <div className="float-button-pane button-group-end">

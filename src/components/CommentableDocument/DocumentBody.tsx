@@ -337,6 +337,7 @@ export class DocumentBody extends React.Component<IDocumentBodyCombinedProps, ID
                 createdAt: null,
                 updatedAt: null,
                 author: inProgressComment.author,
+                reactions: {},
             });
             line.inProgress = true;
             line.startMinized = false;
