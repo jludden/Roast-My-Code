@@ -19,6 +19,7 @@ export const firebaseStore = createContext({
     state: initialState,
     dispatch: (action) => {},
     submitComment: async (comment, filePath, repoPath, queryVariables) => false,
+    addCommentReaction: async (comment, filePath, repoPath, queryVariables) => false,
     signOut: async () => {},
 });
 
@@ -151,6 +152,28 @@ export const FirebaseCommentsProvider = ({ children }) => {
         return true;
     };
 
+    const addCommentReaction = async (commentKey, repoPath, emojiKey) => {
+        // const repositoryIndex = db.ref(`repository-files/${repoPath}`);
+        // const repositoryFileCommentIndex = repositoryIndex.child(`files/${filePath || 1}`); //db.ref(`repository-files/${repoPath}/files/${filePath || 1}`);
+        // fbUpdates[`file-comments/${filePath}/${newCommentKey}`] = newCommentData;
+        
+        try {
+            const reactionRef = db.ref(`repository-files/${repoPath}/${commentKey}/reactions/${emojiKey}`);
+            // var test = Object.v          
+            reactionRef.update(
+                {
+                    num_reactions: incrementBy(1),
+                    // use emojikeey value
+                    // figure out rate limiting or other way to slow user
+                },
+                handleFirebaseWriteError,
+            )
+        }
+        catch (e) {
+            console.log(e);
+        }
+    };
+
     const signOut = async () => {
         await auth().signOut();
         dispatch({ type: 'signOut' });
@@ -194,7 +217,7 @@ export const FirebaseCommentsProvider = ({ children }) => {
     }, []);
 
     return (
-        <firebaseStore.Provider value={{ state, submitComment, signOut, updateUserDetails, dispatch }}>
+        <firebaseStore.Provider value={{ state, submitComment, addCommentReaction, signOut, updateUserDetails, dispatch }}>
             {children}
         </firebaseStore.Provider>
     );

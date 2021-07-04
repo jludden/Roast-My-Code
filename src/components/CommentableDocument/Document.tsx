@@ -102,6 +102,7 @@ const DocCommentsLoader = (props: IDocumentProps) => {
     const {
         dispatch,
         submitComment,
+        addCommentReaction,
         state: { showUserDetails, user, authenticated, firebaseError },
     } = useContext(firebaseStore);
 
@@ -138,6 +139,7 @@ const DocCommentsLoader = (props: IDocumentProps) => {
             user={user}
             onSubmitComment={(comment) => submitComment(comment, filePath, repoPath, props.queryVariables)}
             onEditComment={(comment, isDelete) => updateComment(user, comment, filePath, repoPath, isDelete ?? false)}
+            onCommentReaction={(comment) => addCommentReaction(comment, filePath, repoPath, props.queryVariables)}
             {...props}
         />
     );
@@ -147,6 +149,7 @@ export interface IDocumentCommentProps {
     comments: RoastComment[];
     onSubmitComment: (comment: RoastComment) => Promise<boolean>;
     onEditComment: (comment: RoastComment, isDelete?: boolean) => Promise<boolean>;
+    onCommentReaction: (comment: RoastComment) => Promise<boolean>;
     authenticated: boolean;
     user: any;
 }
