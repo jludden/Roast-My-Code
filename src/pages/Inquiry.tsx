@@ -75,9 +75,8 @@ const Inquiry = () => {
                         <Field.Body>
                             <Field>
                                 <Control>
-                                    <Select.Container name="category">
-                                        {/* color="danger */}
-                                        <Select multiple size={3}>
+                                    <Select.Container>
+                                        <Select name="category" multiple size={3}>
                                             <Select.Option value="bug">Bug Report</Select.Option>
                                             <Select.Option value="suggestion">Suggestion</Select.Option>
                                             <Select.Option value="miscellaneous">Miscellaneous</Select.Option>
@@ -103,6 +102,12 @@ const Inquiry = () => {
                             <Button color="primary" type="submit">
                                 Submit
                             </Button>
+                        </Field.Body>
+                    </Field>
+                    <Field horizontal>
+                        <Field.Label size="normal"></Field.Label>
+                        <Field.Body>
+                            <span>Or, email me directly at admin@roast-my-code.com</span>
                         </Field.Body>
                     </Field>
 
