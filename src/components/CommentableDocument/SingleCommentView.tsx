@@ -161,10 +161,24 @@ const SingleCommentView = (props: IRoastCommentProps & { setIsBlocking: any }) =
                                 }}
                             />
                             <Button.Group size="small" className="button-group-end">
-                                <Button color="warning" rounded onClick={() => setEditMode(false)}>
+                                <Button
+                                    color="warning"
+                                    rounded
+                                    onClick={() => {
+                                        setIsBlocking(false);
+                                        setEditMode(false);
+                                    }}
+                                >
                                     Cancel
                                 </Button>
-                                <Button color="primary" rounded onClick={() => updateCommentText()}>
+                                <Button
+                                    color="primary"
+                                    rounded
+                                    onClick={() => {
+                                        setIsBlocking(false);
+                                        updateCommentText();
+                                    }}
+                                >
                                     Save
                                 </Button>
                             </Button.Group>
@@ -192,13 +206,23 @@ const SingleCommentView = (props: IRoastCommentProps & { setIsBlocking: any }) =
                                 }}
                             />
                             <Button.Group size="small" className="button-group-end">
-                                <Button color="warning" rounded onClick={() => onCancelComment()}>
+                                <Button
+                                    color="warning"
+                                    rounded
+                                    onClick={() => {
+                                        setIsBlocking(false);
+                                        onCancelComment();
+                                    }}
+                                >
                                     Cancel
                                 </Button>
                                 <Button
                                     color="primary"
                                     rounded
-                                    onClick={() => onSubmitComment({ ...comment, text: inputText })}
+                                    onClick={() => {
+                                        setIsBlocking(false);
+                                        onSubmitComment({ ...comment, text: inputText });
+                                    }}
                                 >
                                     Save
                                 </Button>
