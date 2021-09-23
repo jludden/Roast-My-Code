@@ -242,6 +242,7 @@ export const FirebaseQueryInner = ({ children }) => {
                     ]);
                 });
         } catch (error) {
+            console.log('Error parsing file path in FirebaseCommentsProvider: ' + e);
             setLoadCommentsError(error.message);
         }
         return () => dbRef.off();

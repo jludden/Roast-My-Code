@@ -117,7 +117,7 @@ export const REPO_CONTENTS_QUERY = gql`
 `;
 
 export const parseRepo = (snap: any) => {
-    // try {    
+    try {
         const decodedRepoPath = atob(snap.key);
         const repoPathParts = decodedRepoPath.split(':');
         const fullFilePath = repoPathParts[1];
@@ -128,18 +128,17 @@ export const parseRepo = (snap: any) => {
         const filePathStart = branchParts[branchParts.length - 1];
 
         return { decodedRepoPath, repoPathParts, fullFilePath, filePathParts, fileName, branchParts, filePathStart };
-    // }
-    // catch (e) {
-    //     console.log("Error parsing repo: "+e);
-    //     return {decodedRepoPath: ""};
-    // }
+    } catch (e) {
+        console.log('Error parsing repo in RepoContents: ' + e);
+        return { decodedRepoPath: '' };
+    }
 };
 
 export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoContentsProps) => {
     const branch = repo.defaultBranchRef ? repo.defaultBranchRef.name : 'master';
     const title = (repo && repo.nameWithOwner) || 'Search Github Repositories';
 
-    const [fileParam, setFileParam] = useQueryParam('file', StringParam);         // current opened file
+    const [fileParam, setFileParam] = useQueryParam('file', StringParam); // current opened file
     const [filePathParam, setFilePathParam] = useQueryParam('path', StringParam); // directory
     // React.useEffect(() => {
     //     setFilePathParam(`${branch}:`);
@@ -157,8 +156,9 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
     const fileNameParts = !!fileParam ? fileParam.split(':') : [];
     const currentFileNamePath = fileNameParts.length > 1 ? fileNameParts[1] : undefined;
     const currentFileNamePathParts = !!currentFileNamePath ? currentFileNamePath.split('/') : [];
-    const currentFileName = currentFileNamePathParts.length > 0 ? currentFileNamePathParts[currentFileNamePathParts.length - 1] : undefined;
-    
+    const currentFileName =
+        currentFileNamePathParts.length > 0 ? currentFileNamePathParts[currentFileNamePathParts.length - 1] : undefined;
+
     const filePath = filePathParam || `${branch}:`;
 
     const parts = filePath.split(':'); // 0 - branch 1 - directory path
@@ -192,8 +192,13 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
     );
 
     useEffect(() => {
-        const repoPath64 = btoa(`${vars.repoOwner}/${vars.repoName}`);
-        const repositoryCommentIndex = db.ref(`repository-files/${repoPath64}/files`);
+        let repositoryCommentIndex: firebase.database.Reference | undefined = undefined;
+        try {
+            const repoPath64 = btoa(`${vars.repoOwner}/${vars.repoName}`);
+            repositoryCommentIndex = db.ref(`repository-files/${repoPath64}/files`);
+        } catch (error) {
+            console.log('Repo Contents -> Repo Explorer -> UseEffect: threw btoa error converting repository owner & name');
+        }
 
         // const handleChildUpdate = ({snap, text}: {snap: DataSnapshot, text?: string | null | undefined}) => {
         const handleChildUpdate = (snap: any) => {
@@ -225,7 +230,7 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
                     name: fileName,
                     filePath: decodedRepoPath.slice(
                         decodedRepoPath.indexOf(`${filePathStart}:`),
-                        decodedRepoPath.lastIndexOf(fileName),
+                        decodedRepoPath.lastIndexOf(fileName || ''),
                     ),
                     object: {
                         oid: 'test',
@@ -239,19 +244,22 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
         };
 
         try {
-            repositoryCommentIndex
-                // .child('files')
-                .orderByChild('num_comments')
-                .limitToLast(5)
-                //.on('value') -- returns one snap with subnodes
-                .on('child_added', handleChildUpdate);
+            if (repositoryCommentIndex !== undefined) {
+                repositoryCommentIndex
+                    // .child('files')
+                    .orderByChild('num_comments')
+                    .limitToLast(5)
+                    //.on('value') -- returns one snap with subnodes
+                    .on('child_added', handleChildUpdate);
 
-            repositoryCommentIndex.on('child_changed', handleChildUpdate);
+                repositoryCommentIndex.on('child_changed', handleChildUpdate);
+            }
+
         } catch (error) {
             // setLoadCommentsError(error.message);
-            console.log('Error loading repository details: ' + error.message);
+            console.log('Error loading repository details: ' + (error as {message: string}).message);
         }
-        return () => repositoryCommentIndex.off();
+        return () => repositoryCommentIndex?.off();
     }, [vars.repoName, vars.repoOwner]);
 
     return (
@@ -259,6 +267,13 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
             {/* update the URL with the current search state */}
             {/* <UseUrlQuery url={vars.path} name="path" /> */}
             {/* {fileSelected && <UseUrlQuery url={fileSelected} name="file" />} */}
+            {error && 
+            <div>
+                <h1>Error Loading Comments</h1>
+                {error.message  && <h4>{error.message}</h4>}
+            </div>
+            }
+            {/* <Repo */}
             <RepoContentsPanelFrame
                 title={title}
                 render={(isFileTabActive) => {
@@ -342,7 +357,7 @@ const PanelLine: React.FunctionComponent<PanelLineProps> = (props) => {
             className="panelHover"
         >
             <Panel.Icon>{file.object?.__typename === 'Tree' ? <FaFolder /> : <FaBook />}</Panel.Icon>
-            <a className={props.isActive ? "panel-line-active" : ""}>{file.name}</a>
+            <a className={props.isActive ? 'panel-line-active' : ''}>{file.name}</a>
             {props.children}
         </Panel.Block>
     );
@@ -449,6 +464,9 @@ function RepoFileTreePanel({
     currentFileName: string | null | undefined;
     vars: { repoName: string; repoOwner: string };
 }) {
+    // const hasError = error || !data || !data.repository || !data.repository.folder || !data?.repository?.folder?.entries;
+    const loadSuccess1: boolean = (data && data.repository && !!data.repository.folder) || false;
+    const loadSuccess = loadSuccess1 && data && data.repository.folder.entries;
     return (
         <>
             <Panel.Block>
@@ -474,12 +492,10 @@ function RepoFileTreePanel({
                 </Panel.Block>
             )}
 
-            {!loading &&
-                (error || !data || !data.repository || !data.repository.folder || !data.repository.folder.entries) && (
-                    <PanelWarningLine text="Error :(" color="danger" />
-                )}
+            {!loading && !loadSuccess && <PanelWarningLine text="Error :(" color="danger" />}
 
             {!loading &&
+                loadSuccess &&
                 data &&
                 data.repository.folder.entries.map((file) => (
                     <PanelLine

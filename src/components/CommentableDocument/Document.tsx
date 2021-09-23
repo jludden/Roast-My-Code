@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useContext, useReducer } from 'react';
 import { SubmitCommentResponse } from '../CommentableCodePage/CommentableCode';
 import RoastComment from '../CommentableCodePage/types/findRepositoryByTitle';
 import DocumentBody from './DocumentBody';
@@ -105,7 +105,7 @@ const DocCommentsLoader = (props: IDocumentProps) => {
         state: { showUserDetails, user, authenticated, firebaseError },
     } = useContext(firebaseStore);
 
-    const [loadCommentsError, setLoadCommentsError] = useState();
+    const [loadCommentsError, setLoadCommentsError] = useState<string>();
     const [comments, setComments] = useState([] as RoastComment[]);
 
     useEffect(() => {
@@ -124,7 +124,7 @@ const DocCommentsLoader = (props: IDocumentProps) => {
                 setComments(comments);
             });
         } catch (error) {
-            setLoadCommentsError(error.message);
+            setLoadCommentsError((error as { message: string }).message);
         }
         return () => dbRef.off();
     }, [filePath]);
@@ -155,10 +155,13 @@ const DocumentLoader = (props: IDocumentProps & IDocumentCommentProps) => {
     console.log(
         `fetching document with query: ${GITHUB_DOCUMENT_QUERY} \n parameters== name: ${props.queryVariables.name} path:${props.queryVariables.path} owner:${props.queryVariables.owner}`,
     );
+    const [retryCount, forceUpdate] = useReducer((x) => x + 1, 0); // if query fails, let's retry
     const { data, error, loading } = useQuery<IGithubDocResponse, IGithubDocQueryVariables>(GITHUB_DOCUMENT_QUERY, {
         variables: props.queryVariables,
         client: githubClient as any,
     }); // todo potentially could get repoComments from cache.readQuery instead of passing it down?!
+
+
 
     if (loading) {
         return <Progress color="info" />;
@@ -166,6 +169,11 @@ const DocumentLoader = (props: IDocumentProps & IDocumentCommentProps) => {
 
     if (error || !data || !data.repository || !data.repository.object || !data.repository.object.text) {
         return <ErrorMessage />;
+    }
+
+    if (error && retryCount < 4) {
+        console.log('document load query failed, retrying...');
+        forceUpdate();
     }
 
     // OLD STUFF TO FIND COMMENTS RELATED TO THIS DOC
