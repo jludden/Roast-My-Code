@@ -139,20 +139,6 @@ export class DocumentBody extends React.Component<IDocumentBodyCombinedProps, ID
         };
     }
 
-    componentDidMount() {
-        const { hash } = window.location;
-        const id = hash.replace('#', '');
-        if (id) {
-            setTimeout(() =>
-                requestAnimationFrame(() => {
-                    const element = document.getElementById(id);
-                    console.log('scrolling to: ' + id + '\n element ' + (element ? 'found' : 'not found'));
-                    if (element) element.scrollIntoView();
-                }),
-            );
-        }
-    }
-
     static getDerivedStateFromProps(
         nextProps: IDocumentBodyCombinedProps,
         prevState: IDocumentBodyState,

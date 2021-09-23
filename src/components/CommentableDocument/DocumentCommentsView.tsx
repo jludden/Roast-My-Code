@@ -66,6 +66,18 @@ const DocumentCommentsView = (props: CommentsViewProps) => {
             requestAnimationFrame(() => {
                 showErrorMessage('ty');
                 showErrorMessage(undefined);
+
+                const { hash } = window.location;
+                const id = hash.replace('#', '');
+                if (id) {
+                    setTimeout(() =>
+                        requestAnimationFrame(() => {
+                            const element = document.getElementById(id);
+                            console.log('scrolling to: ' + id + '\n element ' + (element ? 'found' : 'not found'));
+                            if (element) element.scrollIntoView();
+                        }), 700
+                    );
+                }
             });
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
