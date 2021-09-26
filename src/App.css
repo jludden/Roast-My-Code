@@ -5,8 +5,6 @@
 .App {
   text-align: center;
 }
-/* tab-size: 4; -- todo would be cool to reduce tab size */
-
 
 .App-header {
   background-color: #222;
@@ -152,9 +150,19 @@ span.boxclose{
   color: #AEAEAE;
 } */
 
-.code-doc > span {
+.code-doc span {
   letter-spacing: normal;
-
+  font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+  font-size: 1em;
+  text-align: left;
+  white-space: pre-wrap;
+  word-spacing: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  line-height: 1.5;
+  tab-size: 2;
+  hyphens: none;
+  margin-bottom: initial !important;
 }
 
 /* .hide-after-notify {
@@ -313,6 +321,9 @@ div.navbar-burger {
   {
     display: inline-block;
   }
+  span.linenumber.react-syntax-highlighter-line-number {
+    min-width: 1em !important;
+  }
 }
 
 /* smallscreen and up */
@@ -339,6 +350,9 @@ div.navbar-burger {
   {
     display: none;
   }
+  span.linenumber.react-syntax-highlighter-line-number {
+    min-width: 1em !important;
+  }
 }
 
 /* large screen and up */
@@ -349,19 +363,21 @@ div.navbar-burger {
   .large-sc-only {
     display: flex;
   }
-.home-container
-{
-  margin: 20px;
-}
-.home-content
-{
-  padding:0em 16em 2em 16em;
-}
-.logo
-{
+  .home-container
+  {
+    margin: 20px;
+  }
+  .home-content
+  {
+    padding:0em 16em 2em 16em;
+  }
+  .logo
+  {
 
-}
-
+  }  
+  span.linenumber.react-syntax-highlighter-line-number {
+    min-width: 3em !important;
+  }
 }
 
 .panel-block:first-of-type {

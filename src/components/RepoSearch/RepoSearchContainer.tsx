@@ -88,7 +88,7 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
 
                     {currentTab && (
                         <>
-                            <Panel.Block>
+                            <Panel.Block style={{paddingBottom: '0.25em'}}>
                                 <Control iconLeft>
                                     <Input
                                         color="light"
