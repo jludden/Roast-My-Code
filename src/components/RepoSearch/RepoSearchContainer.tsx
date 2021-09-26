@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../../App.css';
-import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub } from 'react-icons/fa';
+import { FaBeer, FaBook, FaSearch, FaCodeBranch, FaGithub, FaShareSquare, FaPlay } from 'react-icons/fa';
 import { RecommendedRepositories } from './RecommendedRepos';
 import {
     Section,
@@ -69,13 +69,16 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
                                     color="link"
                                     href="/repo/jludden/Roast-My-Code?path=master%3Asrc%2F"
                                 >
+                                    {/* <FaShareAltSquare />
+                                    <FaShareSquare /> */}
+                                    <Icon><FaPlay /></Icon>
                                     <span className="link-to-site-code-long">This website's code</span>
                                     <span className="link-to-site-code-short">!</span>
                                 </Button>
                             </span>
                         </div>
                     </Panel.Heading>
-                    <Panel.Tab.Group>
+                    <Panel.Tab.Group className="panel-container">
                         <Panel.Tab active={!!currentTab} onClick={() => setCurrentTab(true)}>search all</Panel.Tab>
                         <Panel.Tab active={!currentTab} onClick={() => setCurrentTab(false)}>recommended</Panel.Tab>
                         {/* <Panel.Tab>most commented</Panel.Tab>
@@ -88,7 +91,9 @@ const RepoSearchContainer = (props: IRepoSearchContainerProps) => {
                             <Panel.Block>
                                 <Control iconLeft>
                                     <Input
+                                        color="light"
                                         size="small"
+                                        className="input-dark"
                                         type="text"
                                         placeholder={queryString || 'search'}
                                         onChange={handleQueryChange}

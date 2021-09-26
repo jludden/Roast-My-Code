@@ -119,17 +119,42 @@ span.boxclose{
   right: 5%; */
 }
 
+.input-dark {
+  background-color: #d1d1d1 !important;
+}
 /* add hover effects for our search repo and repo contents panels */
 /* .panel-block:hover {
   background-color: lightgray;
 }  */
 
-.panelHover:hover {
-  background-color: lightgray;
+/* .panelHover:first-child {
+  padding-top: 0.5em;
+} */
+
+.panel-container {
+  margin-bottom: 0.2em;
 }
 
+.panelblock .panelHover {
+  /* padding: .225em .75em; */
+  border-bottom: none;
+  padding: .15em .75em;
+
+}
+.panelHover:hover {
+  background-color: lightgray;
+ }
+
 .panel-line-active {
-  color: #65cae4;
+  
+}
+/* .panel-line-inactive {
+  color: #AEAEAE;
+} */
+
+.code-doc > span {
+  letter-spacing: normal;
+
 }
 
 /* .hide-after-notify {
@@ -337,6 +362,11 @@ div.navbar-burger {
 
 }
 
+}
+
+.panel-block:first-of-type {
+  border-bottom: 1px solid #ededed;
+  margin-top: 1em;
 }
 
 /* search panel overflow fix */

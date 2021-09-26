@@ -15,3 +15,27 @@ $family-primary: $rmc-body-font;
     font-size: 2.25rem;
     font-family: $rmc-body-font;
 }
+
+.panel-block:not(:first-child):not(:last-child) {
+    border-bottom: none;
+}
+
+// .panel-block:nth-of-type(2) {
+//     color: lime;
+//   }
+
+ 
+//   .panel-block:nth-child(2) {
+//     color: rgb(151, 52, 93);
+//   }
+// .panel-block:first-child {
+//     padding-top: 0.5em;
+//   }
+
+.panel-block {
+    align-items: center;
+    color: 	hsl(0, 0%, 86%);
+    display: flex;
+    justify-content: flex-start;
+    padding: 0.15em 0.65em;
+}

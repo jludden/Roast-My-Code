@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { firebaseStore } from './FirebaseCommentsProvider';
-import { Button, Modal, Media, Title } from 'rbx';
+import { Button, Modal, Media, Title, Input } from 'rbx';
 import { UserAvatar, UserHeader, AvataaarPicker } from '../Common/Avatar';
 import ErrorBoundary from '../Common/ErrorBoundary';
 import { generateUserName } from './helpers/nameGen';
@@ -159,12 +159,12 @@ export const UserDetailsModal = () => {
                                 {user && (
                                     <>
                                         <div>
-                                            <input
-                                                type="text"
-                                                id="displayname"
-                                                name="displayname"
+                                            <Input
                                                 value={displayName}
                                                 onChange={(event) => setDisplayName(event.target.value)}
+                                                type="name"
+                                                name="displayname"
+                                                id="displayname"
                                             />
                                             <Button
                                                 title="Random name"

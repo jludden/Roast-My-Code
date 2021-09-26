@@ -15,6 +15,7 @@ import {
     FaExclamationCircle,
     FaAngleDown,
     FaImage,
+    FaComments
 } from 'react-icons/fa';
 import {
     Section,
@@ -197,7 +198,9 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
             const repoPath64 = btoa(`${vars.repoOwner}/${vars.repoName}`);
             repositoryCommentIndex = db.ref(`repository-files/${repoPath64}/files`);
         } catch (error) {
-            console.log('Repo Contents -> Repo Explorer -> UseEffect: threw btoa error converting repository owner & name');
+            console.log(
+                'Repo Contents -> Repo Explorer -> UseEffect: threw btoa error converting repository owner & name',
+            );
         }
 
         // const handleChildUpdate = ({snap, text}: {snap: DataSnapshot, text?: string | null | undefined}) => {
@@ -254,10 +257,9 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
 
                 repositoryCommentIndex.on('child_changed', handleChildUpdate);
             }
-
         } catch (error) {
             // setLoadCommentsError(error.message);
-            console.log('Error loading repository details: ' + (error as {message: string}).message);
+            console.log('Error loading repository details: ' + (error as { message: string }).message);
         }
         return () => repositoryCommentIndex?.off();
     }, [vars.repoName, vars.repoOwner]);
@@ -267,12 +269,12 @@ export const RepoExplorer = ({ repo, repoComments, loadFileHandler }: RepoConten
             {/* update the URL with the current search state */}
             {/* <UseUrlQuery url={vars.path} name="path" /> */}
             {/* {fileSelected && <UseUrlQuery url={fileSelected} name="file" />} */}
-            {error && 
-            <div>
-                <h1>Error Loading Comments</h1>
-                {error.message  && <h4>{error.message}</h4>}
-            </div>
-            }
+            {error && (
+                <div>
+                    <h1>Error Loading Comments</h1>
+                    {error.message && <h4>{error.message}</h4>}
+                </div>
+            )}
             {/* <Repo */}
             <RepoContentsPanelFrame
                 title={title}
@@ -334,33 +336,33 @@ interface PanelLineProps {
     onLineClicked: (file: Line) => void;
     onMouseOver: (event: React.SyntheticEvent<EventTarget>) => void;
 }
-const PanelLine: React.FunctionComponent<PanelLineProps> = (props) => {
+const PanelLine: React.FunctionComponent<PanelLineProps> = (props): JSX.Element => {
     const { file } = props;
-    const fileType = file.name.substring(file.name.lastIndexOf('.'));
-
-    if (['.jpg', '.png', '.gif', '.ico', '.mp4', '.avi'].includes(fileType)) {
-        return (
-            <Panel.Block>
-                <Panel.Icon>
-                    <FaImage />
-                </Panel.Icon>
-                <span>{file.name}</span>
-            </Panel.Block>
-        );
-    }
 
     return (
         <Panel.Block
-            active={!props.isActive}
+            active={props.isActive}
             onClick={() => props.onLineClicked(file)}
             onMouseOver={props.onMouseOver}
             className="panelHover"
         >
-            <Panel.Icon>{file.object?.__typename === 'Tree' ? <FaFolder /> : <FaBook />}</Panel.Icon>
-            <a className={props.isActive ? 'panel-line-active' : ''}>{file.name}</a>
+            <Panel.Icon>
+                <FileIcon file={file} /> 
+            </Panel.Icon>
+            {/* //has-text-grey-lighter */}
+            <span className={props.isActive ? 'panel-line-active' : 'panel-line-inactive'}>{file.name}</span>
             {props.children}
         </Panel.Block>
     );
+};
+
+const FileIcon = ({ file }: { file: Line }) => {
+    const fileType = file.name.substring(file.name.lastIndexOf('.'));
+    if (['.jpg', '.png', '.gif', '.ico', '.mp4', '.avi', 'svg'].includes(fileType)) {
+        return <FaImage />;
+    }
+
+    return file.object?.__typename === 'Tree' ? <FaFolder /> : <FaBook />;
 };
 
 interface WarningLineProps {
@@ -416,7 +418,6 @@ function RepoCommentsPanel({
             {repoDetails &&
                 Object.keys(repoDetails).length > 0 &&
                 Object.entries(repoDetails).map(([key, file]) => (
-                    <Panel.Block key={file._id}>
                         <PanelLine
                             isActive={false}
                             key={file._id}
@@ -427,9 +428,13 @@ function RepoCommentsPanel({
                                 console.log(`mouseover prefetch? from comments`);
                             }}
                         >
-                            <div style={{ marginLeft: '3rem' }}>{`${file.num_comments} comments`}</div>
+                            <Tag rounded style={{ marginLeft: '1rem' }}>
+                                <Panel.Icon>
+                                    <FaComments />
+                                </Panel.Icon>
+                                {file.num_comments}
+                            </Tag>
                         </PanelLine>
-                    </Panel.Block>
                 ))}
         </React.Fragment>
     );
@@ -469,7 +474,7 @@ function RepoFileTreePanel({
     const loadSuccess = loadSuccess1 && data && data.repository.folder.entries;
     return (
         <>
-            <Panel.Block>
+            <Panel.Block style={{ padding: '0.3rem' }}>
                 <DropdownMenu branch={parts[0]} />
                 <Breadcrumb align="centered">
                     <Breadcrumb.Item>
@@ -478,6 +483,7 @@ function RepoFileTreePanel({
                         </Icon>
                     </Breadcrumb.Item>
                     {paths.map((path) => (
+                        //  color='info' as="div"
                         <Breadcrumb.Item onClick={() => handleNavTo(path)} key={path}>
                             {' '}
                             {path}{' '}
@@ -494,10 +500,26 @@ function RepoFileTreePanel({
 
             {!loading && !loadSuccess && <PanelWarningLine text="Error :(" color="danger" />}
 
+            
             {!loading &&
                 loadSuccess &&
-                data &&
-                data.repository.folder.entries.map((file) => (
+                data && data.repository.folder.entries
+                    .sort((a, b) => {
+                        if (a.object)
+                        {
+                            if ( b.object)
+                            {
+                                const a1: string = a.object?.__typename || '';
+                                const b1 = b.object.__typename || '';
+                                return -1 * a1.localeCompare(b1);
+                            }
+                        }
+                        if (!a.object)
+                        {
+                            return 1;
+                        }
+                        return 0;})
+                    .map((file) => (
                     <PanelLine
                         key={file.oid}
                         file={file}

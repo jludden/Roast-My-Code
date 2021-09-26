@@ -212,7 +212,7 @@ export class DocumentBody extends React.Component<IDocumentBodyCombinedProps, ID
                                         language={language}
                                         style={this.props.theme}
                                         wrapLongLines={this.props.wrapLongLines}
-                                        className="left-align"
+                                        className="left-align code-doc"
                                         showLineNumbers={true}
                                         wrapLines={true}
                                         lineProps={(lineNumber) => {
